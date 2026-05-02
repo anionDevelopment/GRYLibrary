@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.Logging.GRYLogger;
+﻿using GRYLibrary.Core.APIServer.Services.Logger;
+using GRYLibrary.Core.Logging.GRYLogger;
 using MySqlConnector;
 using System;
 using System.Data.Common;
@@ -8,7 +9,11 @@ namespace GRYLibrary.Core.APIServer.Services.Database
 {
     public class MariaDBDatabaseInteractor : GenericDatabaseInteractor
     {
-        public MariaDBDatabaseInteractor(IDatabasePersistenceConfiguration configuration,IGRYLog log) : base(configuration, log)
+
+        public MariaDBDatabaseInteractor(IDatabasePersistenceConfiguration configuration, IServerLog log) : this(configuration, log.Logger)
+        {
+        }
+        public MariaDBDatabaseInteractor(IDatabasePersistenceConfiguration configuration, IGRYLog log) : base(configuration, log)
         {
         }
 
@@ -27,7 +32,7 @@ namespace GRYLibrary.Core.APIServer.Services.Database
         {
             DbConnection connection = this.GetConnection();
             Misc.Utilities.AssertCondition(connection.State == System.Data.ConnectionState.Open, $"Connection of {connection.GetType().Name} is not open.");
-            return new MySqlCommand(sql,(MySqlConnection) connection);
+            return new MySqlCommand(sql, (MySqlConnection)connection);
         }
 
         public override string CreateSQLStatementForCreatingMigrationMaintenanceTableIfNotExist(string migrationTableName)

@@ -2,7 +2,7 @@
 
 namespace GRYLibrary.Core.Exceptions
 {
-    public class NotReadyException:Exception
+    public class NotReadyException : Exception
     {
         public NotReadyException() : base()
         {
@@ -10,7 +10,7 @@ namespace GRYLibrary.Core.Exceptions
         public NotReadyException(string message) : base(message)
         {
         }
-        public NotReadyException(string message,Exception exception) : base(message,exception)
+        public NotReadyException(string message, Exception exception) : base(message, exception)
         {
         }
     }

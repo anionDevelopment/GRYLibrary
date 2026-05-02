@@ -22,7 +22,7 @@ namespace GRYLibrary.Core.APIServer.Mid.AutS
         private readonly IAuthenticationService _AuthenticationService;
         private readonly ICredentialsProvider _CredentialsProvider;
         private readonly IGRYLog _Log;
-        public AutSRMiddleware(RequestDelegate next, IRoleBasedAuthorizationService authorizationService, IAuthenticationService authenticationService, ICredentialsProvider credentialsProvider, IAutSRConfiguration authorizationConfiguration,IServerLog log) : base(next,log.Logger, authorizationConfiguration)
+        public AutSRMiddleware(RequestDelegate next, IRoleBasedAuthorizationService authorizationService, IAuthenticationService authenticationService, ICredentialsProvider credentialsProvider, IAutSRConfiguration authorizationConfiguration, IServerLog log) : base(next, log.Logger, authorizationConfiguration)
         {
             this._AuthorizationService = authorizationService;
             this._AuthenticationService = authenticationService;
@@ -41,7 +41,7 @@ namespace GRYLibrary.Core.APIServer.Mid.AutS
                 System.Collections.Generic.ISet<string> authorizedGroups = authorizedAttribute.Groups;
                 ISet<Role> userroles = user.GetAllRoles();
                 bool result = this._AuthorizationService.IsAuthorized(userroles.Select(r => r.Name).ToHashSet(), authorizedGroups);
-                this._Log.Log($"User {user.Id} is" + (result ? string.Empty : " not") + $" authorized. " + "Groups of user: {" + string.Join(", ", userroles.Select(r=>r.Name)) + "}; Authorized groups: {" + string.Join(", ", authorizedGroups) + "}", Microsoft.Extensions.Logging.LogLevel.Trace);
+                this._Log.Log($"User {user.Id} is" + (result ? string.Empty : " not") + $" authorized. " + "Groups of user: {" + string.Join(", ", userroles.Select(r => r.Name)) + "}; Authorized groups: {" + string.Join(", ", authorizedGroups) + "}", Microsoft.Extensions.Logging.LogLevel.Trace);
                 return result;
             }
             else

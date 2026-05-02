@@ -1,4 +1,5 @@
 ﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.Migration;
@@ -26,6 +27,9 @@ namespace GRYLibrary.Core.APIServer.Services.Database
         public IGRYLog Log { get; private set; }
         private bool _LogConnectionErrors = false;
         private bool _IsDisposed = false;
+        public GenericDatabaseInteractor(IDatabasePersistenceConfiguration configuration, IServerLog log) : this(configuration, log.Logger)
+        {
+        }
         public GenericDatabaseInteractor(IDatabasePersistenceConfiguration configuration, IGRYLog log)
         {
             this.Log = log;
@@ -81,7 +85,7 @@ namespace GRYLibrary.Core.APIServer.Services.Database
                     }
                     Thread.Sleep(TimeSpan.FromSeconds(5));//connected. wait some seconds and before checking again if the database is still available.
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     this.LastConnectionException = e;
                     Thread.Sleep(TimeSpan.FromSeconds(2));//not connected. wait a few seconds until checking again if the database is avbailable.

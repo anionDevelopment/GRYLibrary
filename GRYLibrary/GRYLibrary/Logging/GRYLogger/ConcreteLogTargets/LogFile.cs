@@ -50,11 +50,11 @@ namespace GRYLibrary.Core.Logging.GRYLogger.ConcreteLogTargets
             return result;
         }
 
-        private string GetRotatedLogFile(string logfile,uint counter)
+        private string GetRotatedLogFile(string logfile, uint counter)
         {
             string folder = Path.GetDirectoryName(logfile);
             string filename = Path.GetFileNameWithoutExtension(logfile);
-            string result = Path.Combine(folder, $"{filename}.archive.{counter.ToString().PadLeft(6,'0')}.log");
+            string result = Path.Combine(folder, $"{filename}.archive.{counter.ToString().PadLeft(6, '0')}.log");
             return result;
         }
 

@@ -10,7 +10,7 @@ namespace GRYLibrary.Core.APIServer.Services.Init
     /// <summary>
     /// Does business-logic-related initialization.
     /// </summary>
-    public interface IInitializationService<CommandlineParameter>: IInitializationService
+    public interface IInitializationService<CommandlineParameter> : IInitializationService
         where CommandlineParameter : RunServer
     {
         public void Initialize(CommandlineParameter commandlineParameter);

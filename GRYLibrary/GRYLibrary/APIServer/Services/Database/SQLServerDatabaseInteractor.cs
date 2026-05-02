@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.Logging.GRYLogger;
+﻿using GRYLibrary.Core.APIServer.Services.Logger;
+using GRYLibrary.Core.Logging.GRYLogger;
 using System;
 using System.Data.Common;
 
@@ -6,6 +7,9 @@ namespace GRYLibrary.Core.APIServer.Services.Database
 {
     public class SQLServerDatabaseInteractor : GenericDatabaseInteractor
     {
+        public SQLServerDatabaseInteractor(IDatabasePersistenceConfiguration configuration, IServerLog log) : this(configuration, log.Logger)
+        {
+        }
         public SQLServerDatabaseInteractor(IDatabasePersistenceConfiguration configuration, IGRYLog log) : base(configuration, log)
         {
         }

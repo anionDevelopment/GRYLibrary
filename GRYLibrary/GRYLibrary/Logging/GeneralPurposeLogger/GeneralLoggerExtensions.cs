@@ -10,7 +10,7 @@ namespace GRYLibrary.Core.Logging.GeneralPurposeLogger
 {
     public static class GeneralLoggerExtensions
     {
-       
+
         public static void Log(this IGeneralLogger logger, string actionName, LogLevel logLevelForOverhead, bool throwExceptionIfOccurrs, bool logStartOfAction, bool logExceptionOfAtion, bool logEndOfAtion, bool printDuration, Action action)
         {
             if (logStartOfAction)
@@ -29,7 +29,7 @@ namespace GRYLibrary.Core.Logging.GeneralPurposeLogger
                 stopwatch.Stop();
                 if (logExceptionOfAtion)
                 {
-                    logger.Log( $"Error in action \"{actionName}\".", exception);
+                    logger.Log($"Error in action \"{actionName}\".", exception);
                 }
                 if (throwExceptionIfOccurrs)
                 {
@@ -69,7 +69,7 @@ namespace GRYLibrary.Core.Logging.GeneralPurposeLogger
                 }
                 catch (Exception exception)
                 {
-                    logger.Log( $"Error occurred while doing action for item '{name}'.", exception);
+                    logger.Log($"Error occurred while doing action for item '{name}'.", exception);
                     if (!continueOnError)
                     {
                         throw;
@@ -86,9 +86,9 @@ namespace GRYLibrary.Core.Logging.GeneralPurposeLogger
         }
 
 
-        public static IGRYLog SetupLogger(GRYLogConfiguration configuration, string basePath, string subnamespace,string name)
+        public static IGRYLog SetupLogger(GRYLogConfiguration configuration, string basePath, string subnamespace, string name)
         {
-            GRYLog result = GRYLog.Create(configuration,name,false);
+            GRYLog result = GRYLog.Create(configuration, name, false);
             result.UseSubNamespace(subnamespace);
             result.BasePath = basePath;
             return result;

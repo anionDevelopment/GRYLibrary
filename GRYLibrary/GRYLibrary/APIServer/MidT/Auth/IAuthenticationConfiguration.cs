@@ -9,6 +9,6 @@ namespace GRYLibrary.Core.APIServer.MidT.Auth
         /// <summary>
         /// Key: Authentication-provider-name
         /// </summary>
-        public IDictionary<string,IAuthenticationProviderConfiguration> AuthentificationMethods { get; set; }
+        public IDictionary<string, IAuthenticationProviderConfiguration> AuthentificationMethods { get; set; }
     }
 }

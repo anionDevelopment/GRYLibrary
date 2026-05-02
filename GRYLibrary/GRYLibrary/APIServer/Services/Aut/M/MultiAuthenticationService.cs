@@ -11,7 +11,7 @@ namespace GRYLibrary.Core.APIServer.Services.Aut.M
     public class MultiAuthenticationService<TUser> : IAuthenticationService<TUser>
         where TUser : User
     {
-       private readonly IAuthenticationConfiguration _AuthenticationConfiguration;
+        private readonly IAuthenticationConfiguration _AuthenticationConfiguration;
 
         public MultiAuthenticationService(IAuthenticationConfiguration authenticationConfiguration)
         {

@@ -8,7 +8,7 @@ namespace GRYLibrary.Core.APIServer.Services
         public abstract bool ContainsCredentials(HttpContext context);
 
         public abstract string ExtractSecret(HttpContext context);
-        public  bool TryGetAuthentication(HttpContext context, out string? accessToken)
+        public bool TryGetAuthentication(HttpContext context, out string? accessToken)
         {
             try
             {

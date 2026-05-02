@@ -13,7 +13,7 @@ namespace GRYLibrary.Core.APIServer.Services.CredC
 
         public static (string key, string value, CookieOptions options) GetAccessTokenExpiredCookie(string username)
         {
-            return GetCookieWithSpecificExpiredDate(username, new DateTimeOffset(1970, 1, 1, 0, 0, 0,TimeSpan.Zero), string.Empty);
+            return GetCookieWithSpecificExpiredDate(username, new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero), string.Empty);
         }
 
         public static (string key, string value, CookieOptions options) GetCookieWithSpecificExpiredDate(string username, DateTimeOffset expiredDate, string accessToken)

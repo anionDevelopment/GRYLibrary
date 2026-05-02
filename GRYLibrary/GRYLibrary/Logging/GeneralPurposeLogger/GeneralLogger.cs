@@ -29,9 +29,9 @@ namespace GRYLibrary.Core.Logging.GeneralPurposeLogger
             return CreateUsingGRYLog(configuration, Directory.GetCurrentDirectory());
         }
 
-        public static IGRYLog CreateUsingGRYLog(IGRYLogConfiguration configuration, string basePath = null,string? name=null)
+        public static IGRYLog CreateUsingGRYLog(IGRYLogConfiguration configuration, string basePath = null, string? name = null)
         {
-            return CreateUsingGRYLog(configuration, basePath, GRYLog.Create(configuration,name),name);
+            return CreateUsingGRYLog(configuration, basePath, GRYLog.Create(configuration, name), name);
         }
         public static IGRYLog CreateUsingGRYLog(IGRYLogConfiguration configuration, string basePath, IGRYLog logToUse, string? name = null)
         {

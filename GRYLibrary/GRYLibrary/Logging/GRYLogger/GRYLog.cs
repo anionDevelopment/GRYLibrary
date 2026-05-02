@@ -33,7 +33,7 @@ namespace GRYLibrary.Core.Logging.GRYLogger
         public delegate void ErrorOccurredEventHandler(Exception exception, LogItem logItem);
         private static uint _LoggerCounter = 0;
         private readonly string _LoggerId;
-        public uint LoggerNumber{ get; private set; }
+        public uint LoggerNumber { get; private set; }
         public string? Name { get; private set; }
         private bool AnyLogTargetEnabled
         {
@@ -58,7 +58,7 @@ namespace GRYLibrary.Core.Logging.GRYLogger
             {
                 _LoggerCounter = _LoggerCounter + 1;
                 this.Name = name;
-                this._LoggerId = (this.Name == null ? this.GetType().Name+ _LoggerCounter.ToString() : this.Name) ;
+                this._LoggerId = (this.Name == null ? this.GetType().Name + _LoggerCounter.ToString() : this.Name);
                 this.LoggerNumber = _LoggerCounter;
                 this._ConsoleDefaultColor = System.Console.ForegroundColor;
                 this.Configuration = configuration;
@@ -66,7 +66,7 @@ namespace GRYLibrary.Core.Logging.GRYLogger
                 this._Initialized = true;
             }
         }
-        public static GRYLog Create(string? name = null, bool verbose = false, bool useGRYLogFormat = true,bool useNameAsSubnamespace=false)
+        public static GRYLog Create(string? name = null, bool verbose = false, bool useGRYLogFormat = true, bool useNameAsSubnamespace = false)
         {
             GRYLog result = Create(new GRYLogConfiguration(true), name);
             foreach (GRYLogTarget target in result.Configuration.LogTargets)

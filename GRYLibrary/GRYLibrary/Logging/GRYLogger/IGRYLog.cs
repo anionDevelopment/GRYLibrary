@@ -26,6 +26,6 @@ namespace GRYLibrary.Core.Logging.GRYLogger
         public void Log(Func<string> getMessageFunction, Exception? exception, LogLevel logLevel);
         public void Log(LogItem logitem);
         public void ApplyConfiguration(IGRYLogConfiguration configuration);
-        public void RunTask(Action updatePreviewsInRuntimeData, string taskName,bool catchErrors,LogLevel logLevelForOverhead);
+        public void RunTask(Action updatePreviewsInRuntimeData, string taskName, bool catchErrors, LogLevel logLevelForOverhead);
     }
 }

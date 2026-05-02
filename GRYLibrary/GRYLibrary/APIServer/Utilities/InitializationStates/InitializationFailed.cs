@@ -1,6 +1,6 @@
 ﻿namespace GRYLibrary.Core.APIServer.Utilities.InitializationStates
 {
-    public sealed class InitializationFailed: InitializationState
+    public sealed class InitializationFailed : InitializationState
     {
         public override void Accept(IInitializationStateVisitor visitor)
         {

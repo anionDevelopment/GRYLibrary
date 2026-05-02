@@ -11,7 +11,7 @@ namespace GRYLibrary.Core.APIServer.MidT.Maint
         private readonly IInitializationService _InitializationService;
         protected abstract (string ContentType, string bodyContent) GetMaintenanceSite(HttpContext context);
         //Returns true if and only if the context is allowed to be loaded even in maintenance-mode.
-        protected MaintenanceSiteMiddleware(RequestDelegate next,IInitializationService initializationService, IMaintenanceSiteConfiguration maintenanceSiteConfiguration) : base(next)
+        protected MaintenanceSiteMiddleware(RequestDelegate next, IInitializationService initializationService, IMaintenanceSiteConfiguration maintenanceSiteConfiguration) : base(next)
         {
             this._MaintenanceSiteConfiguration = maintenanceSiteConfiguration;
             this._InitializationService = initializationService;

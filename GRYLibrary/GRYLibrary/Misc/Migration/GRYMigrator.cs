@@ -21,7 +21,7 @@ namespace GRYLibrary.Core.Misc.Migration
         private readonly IList<MigrationInstance> _Migrations;
         public const string MigrationTableName = "GRYMigrationInformation";
         private readonly IGenericDatabaseInteractor _DatabaseInteractor;
-        public GRYMigrator( ITimeService timeService, IList<MigrationInstance> migrations, IGenericDatabaseInteractor databaseInteractor)
+        public GRYMigrator(ITimeService timeService, IList<MigrationInstance> migrations, IGenericDatabaseInteractor databaseInteractor)
         {
             this._Logger = databaseInteractor.Log;
             this._TimeService = timeService;

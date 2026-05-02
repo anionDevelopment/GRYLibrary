@@ -13,11 +13,11 @@ namespace GRYLibrary.Core.Exceptions
         {
         }
 
-        public InternalAlgorithmException(Exception innerException,string errorId) : base(CalculateMessage(errorId),innerException)
+        public InternalAlgorithmException(Exception innerException, string errorId) : base(CalculateMessage(errorId), innerException)
         {
         }
 
-        public InternalAlgorithmException(Exception innerException,string errorId, string message) : base(CalculateMessage(errorId, message),innerException)
+        public InternalAlgorithmException(Exception innerException, string errorId, string message) : base(CalculateMessage(errorId, message), innerException)
         {
         }
 

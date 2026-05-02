@@ -1277,7 +1277,7 @@ namespace GRYLibrary.Core.Misc
         }
         public static async Task WaitUntilConditionIsTrueAsync(Func<bool> condition, string actionName)
         {
-           await WaitUntilConditionIsTrueAsync(condition, TimeSpan.FromDays(14), actionName);
+            await WaitUntilConditionIsTrueAsync(condition, TimeSpan.FromDays(14), actionName);
         }
         public static async Task WaitUntilConditionIsTrueAsync(Func<bool> condition, TimeSpan timeout, string actionName)
         {
@@ -1293,7 +1293,7 @@ namespace GRYLibrary.Core.Misc
         }
         public static async Task WaitUntilConditionIsTrueAsync(Func<(bool, Exception?)> condition, string actionName)
         {
-           await WaitUntilConditionIsTrueAsync(condition, TimeSpan.FromDays(14), actionName);
+            await WaitUntilConditionIsTrueAsync(condition, TimeSpan.FromDays(14), actionName);
         }
         public static async Task WaitUntilConditionIsTrueAsync(Func<(bool, Exception?)> condition, TimeSpan timeout, string actionName)
         {
@@ -1301,7 +1301,7 @@ namespace GRYLibrary.Core.Misc
             if (!RunWithTimeout(() =>
             {
                 (bool, Exception?) lastResult = condition();
-                lastException=lastResult.Item2;
+                lastException = lastResult.Item2;
                 while (!lastResult.Item1)
                 {
                     Thread.Sleep(50);
@@ -1310,7 +1310,7 @@ namespace GRYLibrary.Core.Misc
                 }
             }, timeout))
             {
-                throw new TimeoutException($"Action {actionName} resulted not in true within the timeout of {GRYLibrary.Core.Misc.Utilities.DurationToUserFriendlyString(timeout)}.",lastException);
+                throw new TimeoutException($"Action {actionName} resulted not in true within the timeout of {GRYLibrary.Core.Misc.Utilities.DurationToUserFriendlyString(timeout)}.", lastException);
             }
         }
         public static ISet<string> ToCaseInsensitiveSet(this ISet<string> input)

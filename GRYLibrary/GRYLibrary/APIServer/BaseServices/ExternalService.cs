@@ -13,15 +13,15 @@ namespace GRYLibrary.Core.APIServer.BaseServices
         public string ExternalServiceName { get; private set; }
         public string ServiceNotAvailableMessage { get; private set; }
         public abstract (bool, Exception?) IsAvailable();
-        
-         protected ExternalService(string externalServiceName, IGeneralLogger logger)
-         {
-             this.ExternalServiceName = externalServiceName;
-             this._Logger = logger;
-             this.IsConnected = false;
-             this.ServiceNotAvailableMessage = $"Service {this.ExternalServiceName} is not available.";
-         }
-        
+
+        protected ExternalService(string externalServiceName, IGeneralLogger logger)
+        {
+            this.ExternalServiceName = externalServiceName;
+            this._Logger = logger;
+            this.IsConnected = false;
+            this.ServiceNotAvailableMessage = $"Service {this.ExternalServiceName} is not available.";
+        }
+
         public void EnsureServiceIsConnected()
         {
             if (!this.TryConnect(out Exception exception))

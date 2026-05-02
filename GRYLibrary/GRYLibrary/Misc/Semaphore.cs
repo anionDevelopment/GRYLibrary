@@ -14,7 +14,7 @@ namespace GRYLibrary.Core.Misc
         {
             lock (this._LockObject)
             {
-                GUtilities.WaitUntilConditionIsTrue(() => this._Semaphore,"Wait-until-semaphore-opens");
+                GUtilities.WaitUntilConditionIsTrue(() => this._Semaphore, "Wait-until-semaphore-opens");
                 this._Semaphore = false;
             }
         }

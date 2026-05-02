@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.Logging.GRYLogger;
+﻿using GRYLibrary.Core.APIServer.Services.Logger;
+using GRYLibrary.Core.Logging.GRYLogger;
 using System;
 using System.Data.Common;
 
@@ -7,6 +8,9 @@ namespace GRYLibrary.Core.APIServer.Services.Database
     public class OracleDatabaseInteractor : GenericDatabaseInteractor
     {
 
+        public OracleDatabaseInteractor(IDatabasePersistenceConfiguration configuration, IServerLog log) : this(configuration, log.Logger)
+        {
+        }
         public OracleDatabaseInteractor(IDatabasePersistenceConfiguration configuration, IGRYLog log) : base(configuration, log)
         {
         }

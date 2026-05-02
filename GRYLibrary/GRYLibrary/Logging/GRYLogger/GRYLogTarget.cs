@@ -79,7 +79,7 @@ namespace GRYLibrary.Core.Logging.GRYLogger
         }
         public static ISet<LogLevel> GetAllLogLevel()
         {
-            ISet<LogLevel> result=new HashSet<LogLevel>() {
+            ISet<LogLevel> result = new HashSet<LogLevel>() {
                 LogLevel.Trace,
                 LogLevel.Debug,
                 LogLevel.Information,

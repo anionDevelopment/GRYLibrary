@@ -24,7 +24,7 @@ namespace GRYLibrary.Core.Misc.ConsoleApplication
         private readonly ExecutionMode _ExecutionMode;
         private readonly SentenceBuilder _SentenceBuilder;
         private readonly GRYConsoleApplicationInitialInformation _GRYConsoleApplicationInitialInformation;
-        public GRYConsoleApplication(ParserBase mains, string programName, string programVersion, string programDescription, bool programCanRunWithoutArguments, ExecutionMode executionMode, GRYEnvironment environment, string? additionalHelpText,IGRYLog log)
+        public GRYConsoleApplication(ParserBase mains, string programName, string programVersion, string programDescription, bool programCanRunWithoutArguments, ExecutionMode executionMode, GRYEnvironment environment, string? additionalHelpText, IGRYLog log)
         {
             this._Mains = mains;
             this._ProgramName = programName;

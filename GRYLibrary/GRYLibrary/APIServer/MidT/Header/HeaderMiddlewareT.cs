@@ -12,7 +12,7 @@ namespace GRYLibrary.Core.APIServer.MidT.Header
 
         public override Task Invoke(HttpContext context)
         {
-            this.SetHeaders(context); 
+            this.SetHeaders(context);
             return this._Next(context);
         }
 

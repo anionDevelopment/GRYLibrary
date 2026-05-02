@@ -22,7 +22,7 @@ namespace GRYLibrary.Core.APIServer.Utilities
         }
         public IGRYLog Handle(Analysis analysis)
         {
-            return GRYLog.Create(this._LoggerName,this._Verbose);
+            return GRYLog.Create(this._LoggerName, this._Verbose);
         }
 
         public IGRYLog Handle(RunProgram runProgram)

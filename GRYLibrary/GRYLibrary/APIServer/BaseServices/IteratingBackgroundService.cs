@@ -88,7 +88,7 @@ namespace GRYLibrary.Core.APIServer.BaseServices
                 this._Logger.Log($"Background-service {this.GetType().Name} is now stopped.", LogLevel.Information);
             }
         }
-        public  void StopAndWait()
+        public void StopAndWait()
         {
             this.Stop().Wait();
         }
@@ -110,7 +110,7 @@ namespace GRYLibrary.Core.APIServer.BaseServices
         {
             if (this._Disposed)
             {
-                return; 
+                return;
             }
 
             if (disposing)

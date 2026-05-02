@@ -91,7 +91,7 @@ namespace GRYLibrary.Core.APIServer
             GRYLibrary.Core.Misc.Utilities.AssertCondition(Directory.Exists(configFolder), $"Folder \"{configFolder}\" does not exist.");
             string InitializationFile = Path.Combine(configFolder, "MaintenanceMode.enabled");
             log.Log($"Set maintenance mode to {maintenanceModeEnabled}", LogLevel.Information);
-            log.Log($"Maintenance-File: {InitializationFile}; {nameof(this._ManualMaintenanceModeEnabled)}: {this._ManualMaintenanceModeEnabled}; {nameof(this._TechnicalMaintenanceModeEnabled)}: {this._TechnicalMaintenanceModeEnabled}",LogLevel.Debug);
+            log.Log($"Maintenance-File: {InitializationFile}; {nameof(this._ManualMaintenanceModeEnabled)}: {this._ManualMaintenanceModeEnabled}; {nameof(this._TechnicalMaintenanceModeEnabled)}: {this._TechnicalMaintenanceModeEnabled}", LogLevel.Debug);
             try
             {
                 if (maintenanceModeEnabled)
@@ -267,7 +267,7 @@ namespace GRYLibrary.Core.APIServer
             {
                 this.CreateRequiredFolder(config.CommandlineParameter.RealRun);
                 this.SetTechnicalMaintenanceModeEnabled(true, logger);
-                var serverLog = this.GetApplicationLogger(persistedAPIServerConfiguration, initializeLogAsVerbose,config.CommandlineParameter.EnforceVerbose, this._ApplicationConstants.GetLogFolder());
+                var serverLog = this.GetApplicationLogger(persistedAPIServerConfiguration, initializeLogAsVerbose, config.CommandlineParameter.EnforceVerbose, this._ApplicationConstants.GetLogFolder());
                 logger = serverLog.Logger;
                 logger.Log($"Start {this._Configuration.InitializationInformation.ApplicationConstants.ApplicationName} (v{this._Configuration.InitializationInformation.ApplicationConstants.ApplicationVersion})", LogLevel.Information);
                 logger.Log($"Environment: {this._Configuration.InitializationInformation.ApplicationConstants.Environment}", LogLevel.Debug);
@@ -703,10 +703,10 @@ namespace GRYLibrary.Core.APIServer
             }
         }
 
-        private IServerLog GetApplicationLogger(IPersistedAPIServerConfiguration<PersistedApplicationSpecificConfiguration> persistedApplicationSpecificConfiguration, bool initialVerboseValue,bool enforceVerbose,string logFolder)
+        private IServerLog GetApplicationLogger(IPersistedAPIServerConfiguration<PersistedApplicationSpecificConfiguration> persistedApplicationSpecificConfiguration, bool initialVerboseValue, bool enforceVerbose, string logFolder)
         {
             ServerLog result = new ServerLog(persistedApplicationSpecificConfiguration.ApplicationLogConfiguration, logFolder);
-            if(enforceVerbose)
+            if (enforceVerbose)
             {
                 result.Logger.Configuration.AddLogLevel(LogLevel.Debug);
             }

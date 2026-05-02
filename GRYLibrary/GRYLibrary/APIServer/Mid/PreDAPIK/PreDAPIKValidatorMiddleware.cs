@@ -10,7 +10,7 @@ namespace GRYLibrary.Core.APIServer.Mid.PreDAPIK
     public class PreDAPIKValidatorMiddleware : APIKeyValidatorMiddleware
     {
         private readonly IPreDAPIKValidatorConfiguration _PreDAPIKValidatorConfiguration;
-        public PreDAPIKValidatorMiddleware(RequestDelegate next, IPreDAPIKValidatorConfiguration apiKeyValidatorSettings,IGRYLog log) : base(next, apiKeyValidatorSettings,log)
+        public PreDAPIKValidatorMiddleware(RequestDelegate next, IPreDAPIKValidatorConfiguration apiKeyValidatorSettings, IGRYLog log) : base(next, apiKeyValidatorSettings, log)
         {
             this._PreDAPIKValidatorConfiguration = apiKeyValidatorSettings;
         }

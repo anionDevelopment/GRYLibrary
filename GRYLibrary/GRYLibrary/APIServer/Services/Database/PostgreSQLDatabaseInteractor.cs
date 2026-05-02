@@ -1,4 +1,5 @@
-﻿using GRYLibrary.Core.Logging.GRYLogger;
+﻿using GRYLibrary.Core.APIServer.Services.Logger;
+using GRYLibrary.Core.Logging.GRYLogger;
 using Npgsql;
 using NpgsqlTypes;
 using System;
@@ -9,6 +10,9 @@ namespace GRYLibrary.Core.APIServer.Services.Database
 {
     public class PostgreSQLDatabaseInteractor : GenericDatabaseInteractor
     {
+        public PostgreSQLDatabaseInteractor(IDatabasePersistenceConfiguration configuration, IServerLog log) : this(configuration, log.Logger)
+        {
+        }
         public PostgreSQLDatabaseInteractor(IDatabasePersistenceConfiguration configuration, IGRYLog log) : base(configuration, log)
         {
         }
@@ -78,7 +82,7 @@ WHERE schemaname NOT IN ('pg_catalog', 'information_schema');";
             NpgsqlDbType dbType = this.GetType(adaptedType, parameterName);
             return new NpgsqlParameter()
             {
-                ParameterName = "@"+parameterName,
+                ParameterName = "@" + parameterName,
                 Value = formattedValue,
                 NpgsqlDbType = dbType,
             };
@@ -90,11 +94,11 @@ WHERE schemaname NOT IN ('pg_catalog', 'information_schema');";
             if (value == null)
             {
                 result = DBNull.Value;
-            }            
+            }
             else if (value is DateTimeOffset typedValue)
             {
-                 result= typedValue.ToUniversalTime();
-            }            
+                result = typedValue.ToUniversalTime();
+            }
             else if (value is UInt16 valusAsUInt16)
             {
                 result = (Int16)valusAsUInt16;
@@ -118,7 +122,7 @@ WHERE schemaname NOT IN ('pg_catalog', 'information_schema');";
             return result;
         }
 
-        private NpgsqlDbType GetType(Type type,string parameterName)
+        private NpgsqlDbType GetType(Type type, string parameterName)
         {
             return type switch
             {

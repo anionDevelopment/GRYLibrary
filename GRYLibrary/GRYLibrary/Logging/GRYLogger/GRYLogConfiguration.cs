@@ -136,7 +136,7 @@ namespace GRYLibrary.Core.Logging.GRYLogger
             }
         }
 
-        public static GRYLogConfiguration GetCommonConfiguration(string? logFile , bool verbose = false)
+        public static GRYLogConfiguration GetCommonConfiguration(string? logFile, bool verbose = false)
         {
             return GetCommonConfiguration(AbstractFilePath.FromString(logFile), verbose);
         }

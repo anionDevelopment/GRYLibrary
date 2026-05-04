@@ -64,8 +64,8 @@ namespace GRYLibrary.Core.APIServer.Services.Database
                 {
                     lock (Lock)
                     {
-                        (bool isAlreadyAvailable, Exception? exc) = this.IsAvailable();
-                        if (!isAlreadyAvailable)
+                        bool isAlreadyConnected = this.IsConnected(out _);
+                        if (!isAlreadyConnected)
                         {
                             try
                             {

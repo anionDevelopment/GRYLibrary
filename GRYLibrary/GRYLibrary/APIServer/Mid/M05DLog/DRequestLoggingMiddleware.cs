@@ -33,6 +33,7 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
         private readonly Encoding _Encoding = new UTF8Encoding(false);
         private readonly Counter _RequestCounterSum;
         private readonly Counter _RequestCounter2xx;
+        private readonly Counter _RequestCounter3xx;
         private readonly Counter _RequestCounter4xx;
         private readonly Counter _RequestCounter5xx;
         private readonly Counter _RequestCounterOther;
@@ -66,11 +67,13 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
             this._RequestCounterSum.IncTo(0);
             this._RequestCounter2xx = Metrics.CreateCounter("http_requests_2xx", "Sum of all HTTP-requests with 2xx-response-statuscode", counterMetricConfig);
             this._RequestCounter2xx.IncTo(0);
+            this._RequestCounter3xx = Metrics.CreateCounter("http_requests_3xx", "Sum of all HTTP-requests with 3xx-response-statuscode", counterMetricConfig);
+            this._RequestCounter3xx.IncTo(0);
             this._RequestCounter4xx = Metrics.CreateCounter("http_requests_4xx", "Sum of all HTTP-requests with 4xx-response-statuscode", counterMetricConfig);
             this._RequestCounter4xx.IncTo(0);
             this._RequestCounter5xx = Metrics.CreateCounter("http_requests_5xx", "Sum of all HTTP-requests with 5xx-response-statuscode", counterMetricConfig);
             this._RequestCounter5xx.IncTo(0);
-            this._RequestCounterOther = Metrics.CreateCounter("http_requests_oher", "Sum of all HTTP-requests with other response-statuscode", counterMetricConfig);
+            this._RequestCounterOther = Metrics.CreateCounter("http_requests_other", "Sum of all HTTP-requests with other response-statuscode", counterMetricConfig);
             this._RequestCounterOther.IncTo(0);
         }
         /// <inheritdoc/>
@@ -116,21 +119,26 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
         private void AddDataToMetrics(Request request)
         {
             this._RequestCounterSum.WithLabels(this.GetDomain()).Inc();
+            string domain = this.GetDomain();
             if (200 <= request.ResponseStatusCode && request.ResponseStatusCode < 300)
             {
-                this._RequestCounter2xx.WithLabels(this.GetDomain()).Inc();
+                this._RequestCounter2xx.WithLabels(domain).Inc();
             }
-            if (400 <= request.ResponseStatusCode && request.ResponseStatusCode < 500)
+            else if (300 <= request.ResponseStatusCode && request.ResponseStatusCode < 400)
             {
-                this._RequestCounter4xx.WithLabels(this.GetDomain()).Inc();
+                this._RequestCounter3xx.WithLabels(domain).Inc();
             }
-            if (500 <= request.ResponseStatusCode && request.ResponseStatusCode < 600)
+            else if (400 <= request.ResponseStatusCode && request.ResponseStatusCode < 500)
             {
-                this._RequestCounter5xx.WithLabels(this.GetDomain()).Inc();
+                this._RequestCounter4xx.WithLabels(domain).Inc();
+            }
+            else if (500 <= request.ResponseStatusCode && request.ResponseStatusCode < 600)
+            {
+                this._RequestCounter5xx.WithLabels(domain).Inc();
             }
             else
             {
-                this._RequestCounterOther.WithLabels(this.GetDomain()).Inc();
+                this._RequestCounterOther.WithLabels(domain).Inc();
             }
         }
 

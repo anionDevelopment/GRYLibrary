@@ -3,6 +3,7 @@ using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GRYLogger;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 
@@ -53,46 +54,41 @@ namespace GRYLibrary.Core.APIServer.Mid.Ex
             if (exceptionForFormatting is BadRequestException badHttpRequestException)
             {
                 context.Response.StatusCode = badHttpRequestException.HTTPStatusCode;
-                this.Log("Bad request.", context, exceptionForFormatting, (uint)context.Response.StatusCode);
             }
             else if (exceptionForFormatting is InvalidCredentialsException)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                this.Log("Invalid credentials", context, exceptionForFormatting, (uint)context.Response.StatusCode);
             }
             else if (exceptionForFormatting is NotAuthorizedException)
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                this.Log("Not authorized", context, exceptionForFormatting, (uint)context.Response.StatusCode);
             }
             else if (exceptionForFormatting is NotFoundException)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
-                this.Log("Not found", context, exceptionForFormatting, (uint)context.Response.StatusCode);
             }
             else if (exceptionForFormatting is InternalAlgorithmException)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                this.Log("Internal error", context, exceptionForFormatting, (uint)context.Response.StatusCode);
+                this.Log("Internal error", context, exceptionForFormatting, (uint)context.Response.StatusCode, Microsoft.Extensions.Logging.LogLevel.Error);
             }
             else if (exceptionForFormatting is DependencyNotAvailableException)
             {
                 context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                this.Log("Dependency not available", context, exceptionForFormatting, (uint)context.Response.StatusCode);
             }
             else
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                this.Log("Error while processing request", context, exceptionForFormatting, (uint)context.Response.StatusCode);
+                this.Log("Error while processing request", context, exceptionForFormatting, (uint)context.Response.StatusCode, Microsoft.Extensions.Logging.LogLevel.Error);
             }
             (string ContentType, string bodyContent) = this.GetExceptionResponceContent(context.Response.StatusCode, context, exceptionForFormatting);
             context.Response.ContentType = ContentType;
             context.Response.WriteAsync(bodyContent).Wait();
         }
 
-        private void Log(string technicalReason, HttpContext context, Exception exception, uint statuscode)
+        private void Log(string technicalReason, HttpContext context, Exception exception, uint statuscode,LogLevel loglevel)
         {
-            this._Log.Log($"Request {context.Items["RequestId"]} resulted in statuscode {statuscode}. Technical reason: {technicalReason}", exception, Microsoft.Extensions.Logging.LogLevel.Error);
+            this._Log.Log($"Request {context.Items["RequestId"]} resulted in statuscode {statuscode}. Technical reason: {technicalReason}", exception, loglevel);
         }
 
         public virtual (string ContentType, string bodyContent) GetExceptionResponceContent(int httpStatusCode, HttpContext context, Exception exception)

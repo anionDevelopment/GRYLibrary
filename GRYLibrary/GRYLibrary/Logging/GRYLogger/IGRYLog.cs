@@ -13,6 +13,8 @@ namespace GRYLibrary.Core.Logging.GRYLogger
         public void LogProgramOutput(string message, string[] stdOutLines, string[] stdErrLines, LogLevel logevel);
         public IDisposable UseSubNamespace(string loggerName);
         public FixedSizeQueue<LogItem> LastLogEntries { get; }
+        public uint GetAmountOfErrors();
+        public uint GetAmountOfWarnings();
         public void Log(Exception exception);
         public void Log(string message);
         public void Log(string message, LogLevel logLevel);

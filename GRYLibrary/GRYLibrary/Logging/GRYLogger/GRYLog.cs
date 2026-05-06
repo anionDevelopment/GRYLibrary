@@ -22,8 +22,8 @@ namespace GRYLibrary.Core.Logging.GRYLogger
         public string BasePath { get; set; }
         private readonly static object _LockObject = new();
         private readonly bool _Initialized = false;
-        private int _AmountOfErrors = 0;
-        private int _AmountOfWarnings = 0;
+        private uint _AmountOfErrors = 0;
+        private uint _AmountOfWarnings = 0;
         public ITimeService _TimeService = new TimeService();
         internal readonly ConsoleColor _ConsoleDefaultColor;
         public event NewLogItemEventHandler NewLogItem;
@@ -83,9 +83,18 @@ namespace GRYLibrary.Core.Logging.GRYLogger
             return result;
         }
 
-        public static GRYLog Create(string logFile, string? name)
+        public static GRYLog Create(string logFile, string? name, string? basePath)
         {
-            return Create(GRYLogConfiguration.GetCommonConfiguration(logFile, false), name);
+            var result = Create(GRYLogConfiguration.GetCommonConfiguration(logFile, false), name);
+            if (basePath == null)
+            {
+                result.BasePath = Path.GetDirectoryName(logFile);
+            }
+            else
+            {
+                result.BasePath = basePath;
+            }
+            return result;
         }
 
         public static GRYLog Create(IGRYLogConfiguration configuration, string? name, bool useNameAsSubnamespace = false)
@@ -96,6 +105,7 @@ namespace GRYLibrary.Core.Logging.GRYLogger
                 string subnamespace = GRYLibrary.Core.Misc.Utilities.GetValue(name);
                 result.UseSubNamespace(subnamespace);
             }
+            //FIXME result.BasePath must be set or logfile-targets must be disabled.
             return result;
         }
 
@@ -122,12 +132,16 @@ namespace GRYLibrary.Core.Logging.GRYLogger
         public IList<LogItem> ProcessedLogItems { get; set; } = [];
         public Action<LogItem> AddLogEntry { get; set; }
 
-        public int GetAmountOfErrors()
+        public uint AmountOfErrors => throw new NotImplementedException();
+
+        public uint AmountOfWarnings => throw new NotImplementedException();
+
+        public uint GetAmountOfErrors()
         {
             return this._AmountOfErrors;
         }
 
-        public int GetAmountOfWarnings()
+        public uint GetAmountOfWarnings()
         {
             return this._AmountOfWarnings;
         }

@@ -1,7 +1,9 @@
-﻿using GRYLibrary.Core.APIServer.MidT.Auth;
+﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
+using GRYLibrary.Core.APIServer.MidT.Auth;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.Logger;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace GRYLibrary.Core.APIServer.Mid.AuthS
@@ -21,18 +23,30 @@ namespace GRYLibrary.Core.APIServer.Mid.AuthS
 
         public override bool TryGetAuthentication(HttpContext context, out ClaimsPrincipal? principal, out string? accessToken)
         {
-            if (this._CredentialsProvider.ContainsCredentials(context))
+            try
             {
-                accessToken = this._CredentialsProvider.ExtractSecret(context);
-                principal = null;//TODO
-                return true;
+                if (this._CredentialsProvider.ContainsCredentials(context))
+                {
+                    accessToken = this._CredentialsProvider.ExtractSecret(context);
+                    if (_AuthenticationService.AccessTokenIsValid(accessToken))
+                    {
+                        User user = _AuthenticationService.GetUserByAccessToken(accessToken);
+                        principal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim> {
+                            new Claim(ClaimTypes.Name, user.Name),
+                            new Claim(ClaimTypes.NameIdentifier, user.Id),
+                        }, "Basic"));
+                        return true;
+                    }
+                }
             }
-            else
+            catch
             {
-                principal = null;
-                accessToken = null;
-                return false;
+                //ignore errors, just return false
             }
+            principal = null;
+            accessToken = null;
+            return false;
+
         }
     }
 }

@@ -96,10 +96,7 @@ namespace GRYLibrary.Core.APIServer.MidT.Auth
             if (this.TryGetAuthentication(context, out ClaimsPrincipal? principal, out string? accessToken))
             {
                 CommonDBTypes.User user = this._AuthenticationService.GetUserByAccessToken(accessToken);
-                context.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim> {
-                        new Claim(ClaimTypes.Name, user.Name),
-                        new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    }, "Basic"));
+                context.User = principal!;
                 result = true;
                 principal = context.User;
             }

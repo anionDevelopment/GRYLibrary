@@ -1,92 +1,92 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <Authors>Marius Göcke</Authors>
-        <Version>2.0.15</Version>
-        <AssemblyVersion>2.0.15</AssemblyVersion>
-        <FileVersion>2.0.15</FileVersion>
-        <SelfContained>false</SelfContained>
-        <IsPackable>false</IsPackable>
-        <PreserveCompilationContext>false</PreserveCompilationContext>
-        <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-        <Copyright>Copyright © 2025 Marius Göcke</Copyright>
-        <Description>GRYLibrary is a collection with some useful .NET classes and functions which are very easy (re)usable.</Description>
-        <PackageProjectUrl>https://github.com/anionDev/GRYLibrary</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/anionDev/GRYLibrary.git</RepositoryUrl>
-        <RootNamespace>GRYLibrary.Core</RootNamespace>
-        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-        <Nullable>enable</Nullable>
-        <Configurations>Development;QualityCheck;Productive</Configurations>
-        <IsTestProject>false</IsTestProject>
-        <LangVersion>12.0</LangVersion>
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <OutputPath>..\Other\Artifacts\BuildResult_DotNet_win-x64</OutputPath>
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <WarningLevel>4</WarningLevel>
-        <Prefer32Bit>false</Prefer32Bit>
-        <SignAssembly>true</SignAssembly>
-        <AssemblyOriginatorKeyFile>..\..\Other\Resources\PublicKeys\StronglyNamedKey\GRYLibraryPublicKey.snk</AssemblyOriginatorKeyFile>
-        <DelaySign>true</DelaySign>
-        <NoWarn>1701;1702;CA1822;CS1591;CS1573;IDE0045;IDE0046;IDE0054;IDE0058;IDE0074;IDE0090;ASP0014;SYSLIB10;IDE0017;CS8002;CA1859;IDE0034;IDE0063;IDE0290</NoWarn>
-        <WarningsAsErrors>NU1605</WarningsAsErrors>
-        <ErrorLog>..\Other\Resources\CodeAnalysisResult\GRYLibrary.sarif</ErrorLog>
-        <OutputType>Library</OutputType>
-        <DocumentationFile>..\Other\Artifacts\MetaInformation\GRYLibrary.xml</DocumentationFile>
-        <ApplicationIcon>..\Other\Resources\Logo\GRYLibraryIcon.ico</ApplicationIcon>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)'=='Development'">
-        <DebugType>full</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-        <Optimize>false</Optimize>
-        <DefineConstants>TRACE;DEBUG;Development</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)'=='QualityCheck'">
-        <DebugType>portable</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-        <Optimize>false</Optimize>
-        <DefineConstants>TRACE;QualityCheck</DefineConstants>
-        <ErrorReport>none</ErrorReport>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)'=='Productive'">
-        <DebugType>portable</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-        <Optimize>false</Optimize>
-        <DefineConstants>Productive</DefineConstants>
-        <ErrorReport>none</ErrorReport>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="CommandLineParser" Version="2.9.1" />
-        <PackageReference Include="DNTCaptcha.Core" Version="5.3.2" />
-        <PackageReference Include="ExtendedXmlSerializer" Version="3.10.0" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
-        <PackageReference Include="Keycloak.Net.Core" Version="1.0.38" />
-        <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.3.9" />
-        <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.3" />
-        <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.3" />
-        <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-        <PackageReference Include="Npgsql" Version="10.0.1" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
-        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
-        <PackageReference Include="prometheus-net" Version="8.2.1" />
-        <PackageReference Include="System.Collections.Immutable" Version="10.0.3" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.3" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
-        <PackageReference Include="NJsonSchema" Version="11.5.2" />
-        <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
-        <PackageReference Include="System.Reactive" Version="6.1.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.4" />
-        <PackageReference Include="System.Text.Encodings.Web" Version="10.0.3" />
-        <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-        <PackageReference Include="TagLibSharp" Version="2.3.0" />
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Authors>Marius Göcke</Authors>
+    <Version>2.0.16</Version>
+    <AssemblyVersion>2.0.16</AssemblyVersion>
+    <FileVersion>2.0.16</FileVersion>
+    <SelfContained>false</SelfContained>
+    <IsPackable>false</IsPackable>
+    <PreserveCompilationContext>false</PreserveCompilationContext>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <Copyright>Copyright © 2025 Marius Göcke</Copyright>
+    <Description>GRYLibrary is a collection with some useful .NET classes and functions which are very easy (re)usable.</Description>
+    <PackageProjectUrl>https://github.com/anionDev/GRYLibrary</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/anionDev/GRYLibrary.git</RepositoryUrl>
+    <RootNamespace>GRYLibrary.Core</RootNamespace>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <Nullable>enable</Nullable>
+    <Configurations>Development;QualityCheck;Productive</Configurations>
+    <IsTestProject>false</IsTestProject>
+    <LangVersion>12.0</LangVersion>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <OutputPath>..\Other\Artifacts\BuildResult_DotNet_win-x64</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\Other\Resources\PublicKeys\StronglyNamedKey\GRYLibraryPublicKey.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
+    <NoWarn>1701;1702;CA1822;CS1591;CS1573;IDE0045;IDE0046;IDE0054;IDE0058;IDE0074;IDE0090;ASP0014;SYSLIB10;IDE0017;CS8002;CA1859;IDE0034;IDE0063;IDE0290</NoWarn>
+    <WarningsAsErrors>NU1605</WarningsAsErrors>
+    <ErrorLog>..\Other\Resources\CodeAnalysisResult\GRYLibrary.sarif</ErrorLog>
+    <OutputType>Library</OutputType>
+    <DocumentationFile>..\Other\Artifacts\MetaInformation\GRYLibrary.xml</DocumentationFile>
+    <ApplicationIcon>..\Other\Resources\Logo\GRYLibraryIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Development'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <DefineConstants>TRACE;DEBUG;Development</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='QualityCheck'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <DefineConstants>TRACE;QualityCheck</DefineConstants>
+    <ErrorReport>none</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Productive'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <DefineConstants>Productive</DefineConstants>
+    <ErrorReport>none</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="DNTCaptcha.Core" Version="5.3.2" />
+    <PackageReference Include="ExtendedXmlSerializer" Version="3.10.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.9" />
+    <PackageReference Include="Keycloak.Net.Core" Version="1.0.38" />
+    <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.3.9" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+    <PackageReference Include="Npgsql" Version="10.0.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+    <PackageReference Include="prometheus-net" Version="8.2.1" />
+    <PackageReference Include="System.Collections.Immutable" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
+    <PackageReference Include="NJsonSchema" Version="11.5.2" />
+    <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
+    <PackageReference Include="System.Reactive" Version="6.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.4" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="10.0.3" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
+  </ItemGroup>
 </Project>

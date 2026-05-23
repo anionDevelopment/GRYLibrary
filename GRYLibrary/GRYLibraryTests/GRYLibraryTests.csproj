@@ -57,21 +57,17 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\GRYLibrary\GRYLibrary.csproj" />
-    <PackageReference Include="coverlet.collector" Version="8.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="coverlet.msbuild" Version="8.0.0">
+    <PackageReference Include="coverlet.collector" Version="10.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-    <PackageReference Include="Microsoft.CodeCoverage" Version="18.3.0" />
+    <PackageReference Include="Microsoft.CodeCoverage" Version="18.5.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
-    <PackageReference Include="MSTest.TestAdapter" Version="4.1.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="4.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" GeneratePathProperty="true" />
+    <PackageReference Include="MSTest.TestAdapter" Version="4.2.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="4.2.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
@@ -89,4 +85,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Target Name="CopyLoggingAbstractionsForCoverlet" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Include="$(PkgMicrosoft_Extensions_Logging_Abstractions)\lib\net10.0\Microsoft.Extensions.Logging.Abstractions.dll" />
+    </ItemGroup>
+  </Target>
 </Project>

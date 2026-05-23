@@ -6,7 +6,7 @@
 				<Configuration>
 					<Format>cobertura</Format>
 					<Exclude>[CCOT.*]*,[Moq*]*,[MSTest*]*,[prometheus*]*,[Pomelo*]*,[HtmlAgilityPack*]*</Exclude>
-					<ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+					<ExcludeByAttribute>GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
 				</Configuration>
 			</DataCollector>
 		</DataCollectors>

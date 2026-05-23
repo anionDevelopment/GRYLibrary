@@ -115,20 +115,20 @@ namespace GRYLibrary.Core.APIServer.Services.Database
                     }
                     finally
                     {
-                        if (commit)
+                        if (runTransactional)
                         {
-                            log.Log("Commit DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                            transaction.Commit();
+                            if (commit)
+                            {
+                                log.Log("Commit DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
+                                transaction!.Commit();
+                            }
+                            else
+                            {
+                                log.Log("Rollback DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
+                                transaction!.Rollback();
+                            }
+                            transaction!.Dispose();
                         }
-                        else
-                        {
-                            log.Log("Rollback DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                            transaction.Rollback();
-                        }
-                    }
-                    if (runTransactional)
-                    {
-                        GRYLibrary.Core.Misc.Utilities.GetValue(transaction).Dispose();
                     }
                 }
             });

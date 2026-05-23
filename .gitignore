@@ -2,3 +2,4 @@ Other/Resources/CycloneDXCLI
 Other/Resources/PlantUML
 CLAUDE.local.md
 .claude/settings.local.json
+.claude/*.lock

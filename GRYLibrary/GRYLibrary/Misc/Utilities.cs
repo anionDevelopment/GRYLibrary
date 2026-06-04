@@ -2055,11 +2055,11 @@ namespace GRYLibrary.Core.Misc
             path = path.Trim();
             if (Path.IsPathFullyQualified(path))
             {
-                return path;
+                return NormalizePath(path);
             }
             else
             {
-                return Path.GetFullPath(new Uri(Path.Combine(baseDirectory, path)).LocalPath);
+                return NormalizePath(Path.GetFullPath(new Uri(Path.Combine(baseDirectory, path)).LocalPath));
             }
         }
         public static XmlDocument XDocumentToXMLDocument(this XDocument xDocument)

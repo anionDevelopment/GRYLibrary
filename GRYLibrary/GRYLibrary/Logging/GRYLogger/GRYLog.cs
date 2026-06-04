@@ -155,6 +155,7 @@ namespace GRYLibrary.Core.Logging.GRYLogger
         }
         public void LogCurrentSystemStatistics()
         {
+            //TODO refactor or assert the current system is windows
             this.Log($"OS description: {RuntimeInformation.OSDescription}", LogLevel.Information);
             string appDrive = Path.GetPathRoot(System.Reflection.Assembly.GetEntryAssembly().Location);
             string cDrive = "C:\\";

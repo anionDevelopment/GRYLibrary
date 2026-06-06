@@ -145,13 +145,25 @@ namespace GRYLibrary.Core.Misc
 
         public static string NormalizePath(string path)
         {
-            return OperatingSystem.OperatingSystem.GetCurrentOperatingSystem().Accept(new NormalizePathVisitor(path));
+            return NormalizePath(path, OperatingSystem.OperatingSystem.GetCurrentOperatingSystem());
+        }
+
+        /// <summary>
+        /// Normalizes the path-separators in <paramref name="path"/> for the explicitly given <paramref name="operatingSystem"/> instead of the current one.
+        /// Because the target-operating-system is passed in (and not derived from the host), the separator-conversion is deterministic and identical on
+        /// every host, which makes it testable across platforms.
+        /// </summary>
+        public static string NormalizePath(string path, OperatingSystem.OperatingSystem operatingSystem)
+        {
+            return operatingSystem.Accept(new NormalizePathVisitor(path));
         }
 
         private class NormalizePathVisitor : IOperatingSystemVisitor<string>
         {
-            public readonly char WindowsPathSeparatorChar = Path.DirectorySeparatorChar;
-            public readonly char LinuxAndOSXPathSeparatorChar = Path.AltDirectorySeparatorChar;
+            // These must be literal characters and not Path.DirectorySeparatorChar/Path.AltDirectorySeparatorChar: those are platform-dependent and on
+            // Linux/macOS BOTH evaluate to '/', which would turn the separator-replacement below into a no-op (so backslashes in a path would survive).
+            public readonly char WindowsPathSeparatorChar = '\\';
+            public readonly char LinuxAndOSXPathSeparatorChar = '/';
             private readonly string _Path;
 
             public NormalizePathVisitor(string path)

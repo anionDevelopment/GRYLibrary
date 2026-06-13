@@ -263,6 +263,10 @@ namespace GRYLibrary.Core.ExecutePrograms
         private void LogImmediatelyAfterStart(int processId)
         {
             this.LogObject.Log($"Process-Id of started program: " + processId, LogLevel.Debug);
+            if (this.Configuration.Verbosity is Verbosity.Full or Verbosity.Verbose)
+            {
+                this.LogObject.Log("Output-lines:", LogLevel.Debug);
+            }
         }
 
         private void LogException(Exception exception)
@@ -272,7 +276,7 @@ namespace GRYLibrary.Core.ExecutePrograms
 
         private void LogEnd()
         {
-            this.LogObject.Log($"Finished executing program", LogLevel.Debug);
+            this.LogObject.Log($"Finished executing program.", LogLevel.Debug);
             foreach (string line in Utilities.SplitOnNewLineCharacter(this.GetSummaryOfExecutedProgram()))
             {
                 this.LogObject.Log(line, LogLevel.Debug);
@@ -340,7 +344,6 @@ namespace GRYLibrary.Core.ExecutePrograms
                         this.EnqueueError(dataReceivedEventArgs.Data);
                     }
                 };
-                SupervisedThread readLogItemsThread;
                 stopWatch.Start();
                 this._Process.Start();
                 if (this.Configuration.RedirectStandardOutput)
@@ -351,14 +354,14 @@ namespace GRYLibrary.Core.ExecutePrograms
                 {
                     this._Process.BeginErrorReadLine();
                 }
-                readLogItemsThread = SupervisedThread.Create(this.LogOutputImplementation);
-                readLogItemsThread.Name = $"Logger-Thread for '{this.Configuration.Title}' ({nameof(ExternalProgramExecutor)}({this.Configuration.Title}))";
-                readLogItemsThread.LogOverhead = false;
-
-                readLogItemsThread.Start();
-                //}
                 this.ProcessId = this._Process.Id;
                 this._Running = true;
+                Thread readLogItemsThread = new Thread(this.LogOutputImplementation)
+                {
+                    Name = $"Logger-Thread for '{this.Configuration.Title}' ({nameof(ExternalProgramExecutor)}({this.Configuration.Title}))",
+                    IsBackground = true
+                };
+                readLogItemsThread.Start();
                 this.LogImmediatelyAfterStart(this._ProcessId);
             }
             catch (Exception exception)
@@ -442,7 +445,17 @@ namespace GRYLibrary.Core.ExecutePrograms
         {
             if (this.Configuration.TimeoutInMilliseconds.HasValue)
             {
-                if (!process.WaitForExit(this.Configuration.TimeoutInMilliseconds.Value))
+                if (process.WaitForExit(this.Configuration.TimeoutInMilliseconds.Value))
+                {
+                    // Must call WaitForExit() without timeout after the timed overload to ensure async
+                    // OutputDataReceived/ErrorDataReceived callbacks finish before we continue.
+                    // Without this, IOCP thread-pool threads can still be in-flight when the CLR
+                    // profiler (coverlet) tries to freeze all threads for coverage collection → deadlock.
+                    // See: https://learn.microsoft.com/dotnet/api/system.diagnostics.process.waitforexit
+                    process.WaitForExit();
+                    stopwatch.Stop();
+                }
+                else
                 {
                     process.Kill(true);
                     process.WaitForExit();
@@ -452,11 +465,6 @@ namespace GRYLibrary.Core.ExecutePrograms
                         this.LogObject.Log($"Execution was aborted due to a timeout. (The timeout was set to {Utilities.DurationToUserFriendlyString(TimeSpan.FromMilliseconds(this.Configuration.TimeoutInMilliseconds.Value))}).", LogLevel.Debug);
                     }
                     this.ProcessWasAbortedDueToTimeout = true;
-                }
-                else
-                {
-                    process.WaitForExit();
-                    stopwatch.Stop();
                 }
             }
             else

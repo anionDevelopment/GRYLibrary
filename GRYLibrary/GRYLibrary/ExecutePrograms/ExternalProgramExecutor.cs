@@ -354,14 +354,14 @@ namespace GRYLibrary.Core.ExecutePrograms
                 {
                     this._Process.BeginErrorReadLine();
                 }
+                this.ProcessId = this._Process.Id;
+                this._Running = true;
                 Thread readLogItemsThread = new Thread(this.LogOutputImplementation)
                 {
                     Name = $"Logger-Thread for '{this.Configuration.Title}' ({nameof(ExternalProgramExecutor)}({this.Configuration.Title}))",
                     IsBackground = true
                 };
                 readLogItemsThread.Start();
-                this.ProcessId = this._Process.Id;
-                this._Running = true;
                 this.LogImmediatelyAfterStart(this._ProcessId);
             }
             catch (Exception exception)

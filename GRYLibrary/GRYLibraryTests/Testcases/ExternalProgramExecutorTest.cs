@@ -1,7 +1,10 @@
 ﻿using GRYLibrary.Core.ExecutePrograms;
+using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.CustomDisposables;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace GRYLibrary.Tests.Testcases
 {
@@ -19,6 +22,7 @@ namespace GRYLibrary.Tests.Testcases
             Assert.AreEqual(testStdOut, externalProgramExecutor.AllStdOutLines[0]);
             Assert.AreEqual(0, externalProgramExecutor.AllStdErrLines.Length);
         }
+
         [TestMethod]
         public void TestCopyFileWithSpaceInFilename()
         {
@@ -38,6 +42,7 @@ namespace GRYLibrary.Tests.Testcases
             //assert
             Assert.IsTrue(File.Exists(file2));
         }
+
         [TestMethod]
         public void TestCopyFileUseUmlautsAndOtherCharacterFromOtherLanguages()
         {
@@ -56,6 +61,63 @@ namespace GRYLibrary.Tests.Testcases
 
             //assert
             Assert.IsTrue(File.Exists(file2));
+        }
+
+        [TestMethod]
+        public void TestVerboseExecutionProducesExpectedStdOutLogSequence()
+        {
+            //arrange
+            using TemporaryDirectory temporaryDirectory = new();
+            GRYLog logObject = GRYLog.Create();
+            logObject.Configuration.Initliaze();
+            logObject.Configuration.StoreProcessedLogItemsInternally = true;
+            ExternalProgramExecutor externalProgramExecutor = new(new ExternalProgramExecutorConfiguration()
+            {
+                Program = "echo2",
+                Argument = "x",
+                WorkingDirectory = temporaryDirectory.TemporaryDirectoryPath,
+                Verbosity = Verbosity.Verbose,
+            })
+            {
+                LogObject = logObject
+            };
+
+            //act
+            externalProgramExecutor.Run();
+
+            //assert
+            Assert.AreEqual(0, externalProgramExecutor.ExitCode);
+            // The program-path and the working-directory get resolved to their full paths and the process-id is only known after the start.
+            // Therefore the expected output gets built from the actually resolved values so that this test stays machine-independent.
+            string resolvedProgram = externalProgramExecutor.Configuration.Program;
+            string resolvedWorkingDirectory = externalProgramExecutor.Configuration.WorkingDirectory;
+            int processId = externalProgramExecutor.ProcessId;
+            string commandLine = $"{resolvedWorkingDirectory}>{resolvedProgram} x";
+
+            List<string> actualLines = logObject.ProcessedLogItems.Select(logItem => logItem.PlainMessage).ToList();
+            string[] expectedLines =
+            [
+                $"Program to execute with full path: {resolvedProgram}",
+                "Program will be executed synchronously",
+                "Start executing program",
+                $"Program which will be executed: {commandLine}",
+                $"Process-Id of started program: {processId}",
+                $"Output-lines:",
+                "x",
+                "Finished executing program.",
+                "ExternalProgramExecutor-summary:",
+                "Title: ",
+                $"Executed program: {commandLine}",
+                $"Process-Id: {processId}",
+                "Exit-code: 0",
+            ];
+            Assert.AreEqual(expectedLines.Length + 1, actualLines.Count);
+            for (int i = 0; i < expectedLines.Length; i++)
+            {
+                Assert.AreEqual(expectedLines[i], actualLines[i]);
+            }
+            // The last line contains the (non-deterministic) execution-duration.
+            Assert.IsTrue(actualLines[^1].StartsWith("Execution-duration: "));
         }
     }
 }

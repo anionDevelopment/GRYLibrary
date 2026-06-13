@@ -263,6 +263,10 @@ namespace GRYLibrary.Core.ExecutePrograms
         private void LogImmediatelyAfterStart(int processId)
         {
             this.LogObject.Log($"Process-Id of started program: " + processId, LogLevel.Debug);
+            if (this.Configuration.Verbosity is Verbosity.Full or Verbosity.Verbose)
+            {
+                this.LogObject.Log("Output-lines:", LogLevel.Debug);
+            }
         }
 
         private void LogException(Exception exception)
@@ -272,7 +276,7 @@ namespace GRYLibrary.Core.ExecutePrograms
 
         private void LogEnd()
         {
-            this.LogObject.Log($"Finished executing program", LogLevel.Debug);
+            this.LogObject.Log($"Finished executing program.", LogLevel.Debug);
             foreach (string line in Utilities.SplitOnNewLineCharacter(this.GetSummaryOfExecutedProgram()))
             {
                 this.LogObject.Log(line, LogLevel.Debug);
@@ -356,7 +360,6 @@ namespace GRYLibrary.Core.ExecutePrograms
                 readLogItemsThread.LogOverhead = false;
 
                 readLogItemsThread.Start();
-                //}
                 this.ProcessId = this._Process.Id;
                 this._Running = true;
                 this.LogImmediatelyAfterStart(this._ProcessId);

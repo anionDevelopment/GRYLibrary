@@ -442,7 +442,11 @@ namespace GRYLibrary.Core.ExecutePrograms
         {
             if (this.Configuration.TimeoutInMilliseconds.HasValue)
             {
-                if (!process.WaitForExit(this.Configuration.TimeoutInMilliseconds.Value))
+                if (process.WaitForExit(this.Configuration.TimeoutInMilliseconds.Value))
+                {
+                    //else block is unnecessary because if the process ends in time then we can just continue and do not have to care about the timeout
+                }
+                else
                 {
                     process.Kill(true);
                     process.WaitForExit();
@@ -452,11 +456,6 @@ namespace GRYLibrary.Core.ExecutePrograms
                         this.LogObject.Log($"Execution was aborted due to a timeout. (The timeout was set to {Utilities.DurationToUserFriendlyString(TimeSpan.FromMilliseconds(this.Configuration.TimeoutInMilliseconds.Value))}).", LogLevel.Debug);
                     }
                     this.ProcessWasAbortedDueToTimeout = true;
-                }
-                else
-                {
-                    process.WaitForExit();
-                    stopwatch.Stop();
                 }
             }
             else

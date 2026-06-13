@@ -453,6 +453,11 @@ namespace GRYLibrary.Core.ExecutePrograms
                     }
                     this.ProcessWasAbortedDueToTimeout = true;
                 }
+                else
+                {
+                    process.WaitForExit();
+                    stopwatch.Stop();
+                }
             }
             else
             {

@@ -344,7 +344,6 @@ namespace GRYLibrary.Core.ExecutePrograms
                         this.EnqueueError(dataReceivedEventArgs.Data);
                     }
                 };
-                SupervisedThread readLogItemsThread;
                 stopWatch.Start();
                 this._Process.Start();
                 if (this.Configuration.RedirectStandardOutput)
@@ -355,13 +354,14 @@ namespace GRYLibrary.Core.ExecutePrograms
                 {
                     this._Process.BeginErrorReadLine();
                 }
-                readLogItemsThread = SupervisedThread.Create(this.LogOutputImplementation);
-                readLogItemsThread.Name = $"Logger-Thread for '{this.Configuration.Title}' ({nameof(ExternalProgramExecutor)}({this.Configuration.Title}))";
-                readLogItemsThread.LogOverhead = false;
-
-                readLogItemsThread.Start();
                 this.ProcessId = this._Process.Id;
                 this._Running = true;
+                Thread readLogItemsThread = new Thread(this.LogOutputImplementation)
+                {
+                    Name = $"Logger-Thread for '{this.Configuration.Title}' ({nameof(ExternalProgramExecutor)}({this.Configuration.Title}))",
+                    IsBackground = true
+                };
+                readLogItemsThread.Start();
                 this.LogImmediatelyAfterStart(this._ProcessId);
             }
             catch (Exception exception)
@@ -447,7 +447,13 @@ namespace GRYLibrary.Core.ExecutePrograms
             {
                 if (process.WaitForExit(this.Configuration.TimeoutInMilliseconds.Value))
                 {
-                    //else block is unnecessary because if the process ends in time then we can just continue and do not have to care about the timeout
+                    // Must call WaitForExit() without timeout after the timed overload to ensure async
+                    // OutputDataReceived/ErrorDataReceived callbacks finish before we continue.
+                    // Without this, IOCP thread-pool threads can still be in-flight when the CLR
+                    // profiler (coverlet) tries to freeze all threads for coverage collection → deadlock.
+                    // See: https://learn.microsoft.com/dotnet/api/system.diagnostics.process.waitforexit
+                    process.WaitForExit();
+                    stopwatch.Stop();
                 }
                 else
                 {

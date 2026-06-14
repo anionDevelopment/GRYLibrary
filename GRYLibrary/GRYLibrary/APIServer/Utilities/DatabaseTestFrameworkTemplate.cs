@@ -32,16 +32,18 @@ namespace GRYLibrary.Core.APIServer.Utilities
             this._TaskNameStop = taskNameStop;
             this._ResetDatabaseScript = resetDatabaseScript;
             this._Log = log;
+            this._TestDatabaseFolder = testDatabaseFolder;
+            this.IsConnected = false;
+            bool containerStarted = false;
             try
             {
-                this.IsConnected = false;
-                this._TestDatabaseFolder = testDatabaseFolder;
                 string argument = this._TaskNameStart;
                 string volumesFolder = Path.Combine(this._TestDatabaseFolder, "Volumes", "Data");
-                using ExternalProgramExecutor externalProgramExecutor = new ExternalProgramExecutor("task", argument, repositoryFolder);
+                using (ExternalProgramExecutor externalProgramExecutor = new ExternalProgramExecutor("task", argument, repositoryFolder))
                 {
                     externalProgramExecutor.Run();
                     GUtilities.AssertCondition(externalProgramExecutor.ExitCode == 0, $"Error while starting test-database using command \"{externalProgramExecutor.CMD}\" due to exitcode {externalProgramExecutor.ExitCode}. StdOut: {string.Join(Environment.NewLine, externalProgramExecutor.AllStdOutLines)}; StdErr: {string.Join(Environment.NewLine, externalProgramExecutor.AllStdErrLines)}");
+                    containerStarted = true;
                     GUtilities.AssertCondition(GUtilities.RunWithTimeout(() =>
                     {
                         foreach (string containerNameToWaitToBeHealthy in containerNamesToWaitToBeHealthy)
@@ -80,7 +82,30 @@ namespace GRYLibrary.Core.APIServer.Utilities
             }
             catch
             {
+                // Constructor failed mid-init. Make a best-effort attempt to roll back so the next
+                // test does not inherit a half-started container / leftover network state.
+                if (containerStarted)
+                {
+                    this.TryStopTestContainersBestEffort();
+                }
+                try { this._GenericDatabaseInteractor?.Dispose(); } catch { /* best-effort cleanup */ }
+                this._Disposed = true;
                 throw;
+            }
+        }
+
+        private void TryStopTestContainersBestEffort()
+        {
+            try
+            {
+                using ExternalProgramExecutor stopExecutor = new ExternalProgramExecutor("task", this._TaskNameStop, this._TestDatabaseFolder);
+                stopExecutor.Configuration.WaitingState = new RunSynchronously();
+                stopExecutor.Run();
+            }
+            catch
+            {
+                // Best-effort: the database might never have actually started, the task may not exist, etc.
+                // The next constructor attempt will surface a real error if state is still broken.
             }
         }
 
@@ -91,32 +116,42 @@ namespace GRYLibrary.Core.APIServer.Utilities
         }
         protected virtual void Dispose(bool disposing)
         {
+            if (this._Disposed)
+            {
+                return;
+            }
             try
             {
-                if (!this._Disposed)
+                if (disposing)
                 {
-                    if (disposing)
+                    if (this.Connection != null)
                     {
-                        if (this.Connection != null)
+                        if (this.IsConnected)
                         {
-                            if (this.IsConnected)
-                            {
-                                this.Connection.Close();
-                            }
-                            this.Connection.Dispose();
+                            try { this.Connection.Close(); } catch { /* best-effort */ }
                         }
+                        try { this.Connection.Dispose(); } catch { /* best-effort */ }
+                    }
+                    try
+                    {
                         using ExternalProgramExecutor externalProgramExecutor = new ExternalProgramExecutor("task", this._TaskNameStop, this._TestDatabaseFolder);
                         externalProgramExecutor.Configuration.WaitingState = new RunSynchronously();
                         externalProgramExecutor.Run();
                         GUtilities.AssertCondition(externalProgramExecutor.ExitCode == 0, $"Error while stopping test-database using command \"{externalProgramExecutor.CMD}\" due to exitcode {externalProgramExecutor.ExitCode}. StdOut: {string.Join(Environment.NewLine, externalProgramExecutor.AllStdOutLines)}; StdErr: {string.Join(Environment.NewLine, externalProgramExecutor.AllStdErrLines)}");
                     }
-                    this._GenericDatabaseInteractor.Dispose();
-                    this._Disposed = true;
+                    catch
+                    {
+                        // Stopping the container failed (e.g. docker hang, task missing). Don't propagate
+                        // out of Dispose — it would crash the test host and mask any real test failure.
+                        // The next test's constructor will surface a leftover-container error if the state
+                        // is actually broken.
+                    }
                 }
+                try { this._GenericDatabaseInteractor?.Dispose(); } catch { /* best-effort */ }
             }
-            catch
+            finally
             {
-                throw;
+                this._Disposed = true;
             }
         }
 

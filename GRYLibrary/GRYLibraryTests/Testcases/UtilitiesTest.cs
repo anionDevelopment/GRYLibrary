@@ -41,6 +41,18 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        public void NormalizePathConvertsSeparatorsForTheGivenOperatingSystem()
+        {
+            // The target-operating-system is passed explicitly (not derived from the host), so this test performs exactly the same operation and expects
+            // exactly the same result on Windows and on Linux. It also guards against the regression where backslashes were not converted to '/' for Linux.
+            string mixed = "foo\\bar/baz";
+
+            Assert.AreEqual("foo/bar/baz", GUtilities.NormalizePath(mixed, GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Linux.Instance));
+            Assert.AreEqual("foo/bar/baz", GUtilities.NormalizePath(mixed, GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.OSX.Instance));
+            Assert.AreEqual("foo\\bar\\baz", GUtilities.NormalizePath(mixed, GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows.Instance));
+        }
+
+        [TestMethod]
         public void UtilitiesTestEnsureFileExists()
         {
             string testFile = "file";

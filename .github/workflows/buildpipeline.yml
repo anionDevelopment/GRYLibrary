@@ -1,15 +1,17 @@
 name: buildpipeline
 on:
-  push:
-    branches:
-      - main
-      - other/next-release
   workflow_dispatch:
+    inputs:
+      TargetEnvironmentType:
+        description: "Target environment (Development, QualityCheck or Productive)"
+        required: false
+        default: QualityCheck
+        type: string
 jobs:
-  run-script:
+  build-pipeline:
     runs-on: [self-hosted, scriptcollection]
     container:
-      image: aniondev/scbuilder:v1.0.0
+      image: aniondev/scbuilder:v1.2.2
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
     steps:
@@ -18,14 +20,16 @@ jobs:
         with:
           fetch-depth: 0
       - name: Prepare build-pipeline
-        run: scpreparebuildpipelineforgitlab
+        run: scpreparebuildpipelineforgithub -v 4
       - name: Build codeunits
-        run: scbuildcodeunits -v 4
+        env:
+          TARGET_ENV: ${{ github.event.inputs.TargetEnvironmentType }}
+        run: pip3 install scriptcollection --upgrade && scbuildcodeunits -v 4 --assertnonewchanges --targetenvironment $TARGET_ENV
       - name: Upload artifacts
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts
+          name: GRYLibrary-Artifacts
           path: |
             GRYLibrary/Other/Artifacts
           if-no-files-found: error

@@ -3337,7 +3337,17 @@ namespace GRYLibrary.Core.Misc
             {
                 return TestRun.Instance;
             }
-            return RunProgram.Instance;
+            // RealRun is opt-in (production needs explicit "--RealRun true"); anything else
+            // falls back to TestRun. This keeps integration-test harnesses from accidentally
+            // booting the HTTPS-with-cert production path.
+            for (int i = 0; i < commandlineArguments.Length - 1; i++)
+            {
+                if (commandlineArguments[i] == "--RealRun" && string.Equals(commandlineArguments[i + 1], "true", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return RunProgram.Instance;
+                }
+            }
+            return TestRun.Instance;
         }
 
         public static string DecimalToString(decimal amount)

@@ -9,7 +9,6 @@ namespace GRYLibrary.Core.AOA
 {
     public class GenericToString
     {
-        public PropertyEqualsCalculator PropertyEqualsCalculator { get; set; } = new PropertyEqualsCalculator();
         public Func<PropertyInfo, bool> PropertySelector { get; set; } = (PropertyInfo propertyInfo) => propertyInfo.CanWrite && propertyInfo.GetMethod.IsPublic;
         public Func<FieldInfo, bool> FieldSelector { get; set; } = (FieldInfo propertyInfo) => false;
         public static GenericToString Instance { get; } = new GenericToString();
@@ -51,7 +50,10 @@ namespace GRYLibrary.Core.AOA
             }
             try
             {
-                int id = this.PropertyEqualsCalculator.GetHashCode(@object);
+                // Assign a per-invocation, per-object id so that the output is deterministic and
+                // independent of any process-wide state. Using the object's hash-code here would make
+                // the id depend on how many other types were processed earlier in the process.
+                int id = visitedObjects.Count + 1;
                 visitedObjects.Add(@object, id);
 
                 if (EnumerableTools.ObjectIsEnumerable(@object))

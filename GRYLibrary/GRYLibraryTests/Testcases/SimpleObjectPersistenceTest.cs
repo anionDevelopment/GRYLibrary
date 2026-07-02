@@ -52,7 +52,9 @@ namespace GRYLibrary.Tests.Testcases
     <TestAttribute1 TestString1=""x"" />
   </TestAttribute>
 </SimpleObjectPersistenceTest-SerializeTestClass>";
-                Assert.AreEqual(expectedXMLValue, content);
+                // The serializer writes with Environment.NewLine; the expected literal is always stored with
+                // LF, so the file-content is normalized to LF to keep the comparison OS-independent.
+                Assert.AreEqual(expectedXMLValue, content.Replace("\r\n", "\n"));
             }
             finally
             {

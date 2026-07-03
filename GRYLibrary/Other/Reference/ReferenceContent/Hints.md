@@ -23,3 +23,9 @@ The following tools from the [tools-list](https://github.com/anionDev/ScriptColl
 ## IDE
 
 The recommended IDE for this codeunit is [Visual Studio](https://visualstudio.com/).
+
+## Running the tests on developer-machines
+
+On Windows the command `echo` is a built-in command of `cmd` and not a standalone executable. Therefore it can not be resolved and executed like a regular program. For this reason the testcases which need to execute an echo-like program (for example `ExternalProgramExecutorTest.TestVerboseExecutionProducesExpectedStdOutLogSequence`) expect a program named `echo2` to be available in the `PATH` on Windows-developer-machines. `echo2` is expected to write its first argument to the standard-output (just like the unix-`echo` does).
+
+On Linux and macOS the regular `echo`-executable is used instead, so no additional program is required there.

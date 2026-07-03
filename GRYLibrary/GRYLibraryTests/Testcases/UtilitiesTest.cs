@@ -752,13 +752,22 @@ namespace GRYLibrary.Tests.Testcases
         [TestMethod]
         public void TestIsAbsolutePath()
         {
-            //TODO run this testcases with all available operating-system-types
-            Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:\"));
-            Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:\Y\"));
-            Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:\Y\Z"));
-            Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:\Y\Z.mp3"));
-            Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:/Y/Z"));
-            Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:/Y/Z.mp3"));
+            // Windows-drive-letter-paths (like "X:\") are only absolute on Windows.
+            // On Linux and macOS an absolute path must start with '/', so these paths are not absolute there.
+            if (System.OperatingSystem.IsWindows())
+            {
+                Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:\"));
+                Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:\Y\"));
+                Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:\Y\Z"));
+                Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:\Y\Z.mp3"));
+                Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:/Y/Z"));
+                Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:/Y/Z.mp3"));
+            }
+            else
+            {
+                Assert.IsFalse(GUtilities.IsAbsoluteLocalFilePath(@"X:/Y/Z"));
+                Assert.IsFalse(GUtilities.IsAbsoluteLocalFilePath(@"X:/Y/Z.mp3"));
+            }
             Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"/X"));
             Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"/X/Y.mp3"));
 

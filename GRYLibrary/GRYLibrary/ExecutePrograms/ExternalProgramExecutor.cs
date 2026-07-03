@@ -356,13 +356,13 @@ namespace GRYLibrary.Core.ExecutePrograms
                 }
                 this.ProcessId = this._Process.Id;
                 this._Running = true;
+                this.LogImmediatelyAfterStart(this._ProcessId);
                 Thread readLogItemsThread = new Thread(this.LogOutputImplementation)
                 {
                     Name = $"Logger-Thread for '{this.Configuration.Title}' ({nameof(ExternalProgramExecutor)}({this.Configuration.Title}))",
                     IsBackground = true
                 };
                 readLogItemsThread.Start();
-                this.LogImmediatelyAfterStart(this._ProcessId);
             }
             catch (Exception exception)
             {

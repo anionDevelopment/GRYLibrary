@@ -2271,7 +2271,8 @@ namespace GRYLibrary.Core.Misc
             using StringWriterWithEncoding stringWriter = new(encoding);
             using XmlWriter xmlWriter = XmlWriter.Create(stringWriter, xmlWriterSettings);
             xmlDocument.Save(xmlWriter);
-            return stringWriter.ToString();
+            // Specification: line-endings are always LF. Carriage-return-characters get removed so that the output is platform-independent.
+            return stringWriter.ToString().Replace("\r", string.Empty);
         }
         public static bool IsSelfSIgned(X509Certificate certificate)
         {

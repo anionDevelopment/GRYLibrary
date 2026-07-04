@@ -29,9 +29,10 @@ namespace GRYLibrary.Tests.Testcases
             string testSource = Path.Combine(testDataFolder, "TestTransformationSource.xml");
             string testTarget = Path.Combine(testDataFolder, "TestTransformationTarget.xml");
             string testXSLT = Path.Combine(testDataFolder, "TestXSLT1.xslt");
-            string xmlSource = File.ReadAllText(testSource, this._FileEncoding);
-            string xmlTarget = File.ReadAllText(testTarget, this._FileEncoding);
-            string xslt = File.ReadAllText(testXSLT, this._FileEncoding);
+            // Specification: line-endings are always LF. Carriage-return-characters get removed so that the comparison is independent of how the test-data-file was checked out.
+            string xmlSource = File.ReadAllText(testSource, this._FileEncoding).Replace("\r", string.Empty);
+            string xmlTarget = File.ReadAllText(testTarget, this._FileEncoding).Replace("\r", string.Empty);
+            string xslt = File.ReadAllText(testXSLT, this._FileEncoding).Replace("\r", string.Empty);
             Assert.AreEqual(xmlTarget, Core.Misc.Utilities.XmlToString(Core.Misc.Utilities.ApplyXSLTToXML(xmlSource, xslt), this._FileEncoding));
         }
     }

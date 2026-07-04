@@ -378,7 +378,7 @@ namespace GRYLibrary.Core.Logging.GRYLogger
             }
             else
             {
-                string percentValue = Math.Round(enumerator / (double)denominator * 100, 2).ToString();
+                string percentValue = Utilities.DecimalToString(Math.Round((decimal)enumerator / denominator * 100, 2));
                 int denominatorLength = (int)Math.Floor(Math.Log10(denominator) + 1);
                 string message = $"Processed {enumerator.ToString().PadLeft(denominatorLength, '0')}/{denominator} items ({percentValue}%)";
                 this.Log(message);

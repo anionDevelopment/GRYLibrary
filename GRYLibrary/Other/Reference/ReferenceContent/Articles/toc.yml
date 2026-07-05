@@ -4,5 +4,7 @@
   href: GRYLog.md
 - name: Introduction
   href: Introduction.md
+- name: OIDC
+  href: OIDC.md
 - name: SimpleGenericXMLSerializer
   href: SimpleGenericXMLSerializer.md

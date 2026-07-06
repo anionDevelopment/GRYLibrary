@@ -196,7 +196,17 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
 
         public void RemoveAccessToken(string accessToken)
         {
-            throw new System.NotImplementedException();
+            // Remove the token with the given value from whichever user's token-set holds it.
+            // Used by Logout / LogoutEverywhere; iterating the stored sets (not a copy) is safe
+            // because the callers enumerate a copy of the token collection.
+            foreach (ISet<AccessToken> tokens in this._AccessTokens.Values)
+            {
+                AccessToken? match = tokens.FirstOrDefault(t => t.Value == accessToken);
+                if (match != null)
+                {
+                    tokens.Remove(match);
+                }
+            }
         }
 
         public ISet<AccessToken> GetAllAccessTokenOfUser(string userId)

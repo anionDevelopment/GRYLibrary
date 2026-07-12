@@ -73,6 +73,10 @@ capability into full account takeover.
 - Provide a per-route "do not capture body" list that is honoured before the body is read, and default
   authentication endpoints into it.
 
+**Resolution:** Accepted as by-design and will not be changed. Logging the full request- and response-body
+(including the plaintext login-body) is the intended behaviour of the request-logging middleware. The
+mitigating assumption is that access to the log-files is restricted to trusted operators. No change.
+
 ## F2 — Unsalted single-round SHA-256 password hashing (High)
 
 ### Description
@@ -112,6 +116,9 @@ Use a memory-hard / stretched password KDF — Argon2id (preferred), scrypt, bcr
 PBKDF2 with a high iteration count — with a unique per-user random salt and a versioned hash format so
 parameters can be upgraded over time.
 
+**Resolution:** Tracked as an open point (see `OpenIssues.md`). Not fixed yet because it spans the persistent
+authentication-services of every backend and requires a data-model-change and a database-migration.
+
 ## F3 — Synchronous-over-asynchronous pipeline enables thread-pool and memory exhaustion (Medium-High)
 
 ### Description
@@ -149,6 +156,9 @@ degrade or stall the service without any authentication.
 - Do not buffer whole responses in memory; if request/response logging is needed, cap the captured size
   strictly and stream the remainder straight through.
 
+**Resolution:** Tracked as an open point together with F5 (see `OpenIssues.md`). Not fixed yet because it is
+an architectural change that affects every middleware in the framework and in the backends.
+
 ## F4 — Security middlewares (WAF, obfuscation) are silent no-ops (Medium)
 
 ### Description
@@ -181,6 +191,13 @@ and error-detail obfuscation are active, while in reality neither provides any p
 - If obfuscation of error responses is required, perform it before the response starts (for example by
   buffering only error responses, or by setting the status/body inside the exception-handling
   middleware).
+
+**Resolution:** Fixed. The `ObfuscationMiddleware` now normalizes the response-status-code in the productive
+environment (every 2xx becomes 200, every 4xx/5xx becomes 400) and does nothing else; the rewrite is
+registered as an `OnStarting`-callback so it reliably takes effect before the response is sent. The
+`WebApplicationFirewallMiddleware` is now an abstract middleware which provides the block-and-log mechanism
+(`Invoke`, `CheckRequest`, `GetRequestBody`, `WebApplicationFirewallResult`); the concrete firewall-rules must
+be provided by the integrator in a concrete subclass.
 
 ## F5 — User enumeration, non-constant-time login and no default throttling (Medium)
 
@@ -219,6 +236,10 @@ Attackers can enumerate valid user names and mount unthrottled online password-g
 - Register a rate-limiter on authentication endpoints by default, and add account lockout/backoff after
   repeated failures.
 
+**Resolution:** Tracked as an open point together with F3 (see `OpenIssues.md`). Not fixed yet because the
+login-logic lives in the persistent authentication-service of every backend and a default rate-limiter has to
+be coordinated with them.
+
 ## F6 — OpenAPI specification exposed without authentication in production (Low)
 
 ### Description
@@ -237,6 +258,10 @@ often acceptable for public APIs, but for internal services it needlessly widens
 
 For non-public deployments, require authentication for the specification route, or disable
 specification hosting in production.
+
+**Resolution:** Accepted as by-design and will not be changed. Whether the OpenAPI-specification is hosted in
+a non-development environment and allow-listed for unauthenticated access is a deliberate per-backend
+configuration choice; the framework only provides the option. No change.
 
 ## F7 — Unanchored regular expressions in authentication and logging allow-lists (Low)
 
@@ -266,6 +291,12 @@ Latent risk of an authentication or logging bypass introduced by a seemingly har
 - Validate allow-list entries at start-up and prefer exact-match sets over regular expressions where
   possible.
 
+**Resolution:** Documented. The concrete allow-list patterns are configured per backend, not in this library.
+The library ships no default patterns for these allow-lists (`AuthenticationConfiguration.RoutesWhereUnauthenticatedAccessIsAllowed`
+and `DRequestLoggingConfiguration.NotLoggedRoutes` both default to an empty set), so there is no affected
+default value to change here. Anchoring/validating the patterns in the matching-code remains a possible future
+hardening step.
+
 ## F8 — Partial API-key value written to the log (Low)
 
 ### Description
@@ -285,6 +316,11 @@ logs and reduces the effective entropy an attacker must guess if logs leak.
 
 Do not log any portion of key material. Log a non-reversible identifier (for example a hash prefix) if a
 correlation handle is needed.
+
+**Resolution:** Accepted and documented. Logging the first five characters of the API-key is intentional for
+troubleshooting. It is confirmed to be written only to debug-logs: `APIKeyValidatorMiddleware.IsAuthorized`
+logs the prefix at `LogLevel.Trace`, which is the most verbose (debug-only) level and does not appear in
+normal production logs. No change.
 
 ## Positive observations
 

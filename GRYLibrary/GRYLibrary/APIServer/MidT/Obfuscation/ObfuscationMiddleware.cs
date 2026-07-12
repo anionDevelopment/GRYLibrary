@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.ConcreteEnvironments;
+using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.Settings;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 namespace GRYLibrary.Core.APIServer.MidT.Obfuscation
 {
     /// <summary>
-    /// Represents a middleware which removes some not required information of responses for security purposes.
+    /// Represents a middleware which normalizes the response-status-code in the <see cref="Productive"/>-environment
+    /// to avoid leaking information through fine-grained status-codes:
+    /// every 2xx-response is reported as 200 and every 4xx- or 5xx-response is reported as 400.
+    /// No other information (headers, body, other status-code-ranges) is changed.
     /// </summary>
     public abstract class ObfuscationMiddleware : AbstractMiddleware
     {
@@ -21,33 +24,22 @@ namespace GRYLibrary.Core.APIServer.MidT.Obfuscation
         {
             if (this._AppConstants.Environment is Productive)
             {
-                bool clearResponseBody;
-                int responseStatusCode;
-                if (context.Response.StatusCode == 401)
+                // The final status-code is not known yet at this point and the response may be buffered by an
+                // inner middleware, so the normalization is registered as an OnStarting-callback which runs
+                // right before the response is actually sent.
+                context.Response.OnStarting(() =>
                 {
-                    clearResponseBody = true;
-                    responseStatusCode = context.Response.StatusCode;
-                }
-                else if (context.Response.StatusCode == 403)
-                {
-                    clearResponseBody = true;
-                    responseStatusCode = context.Response.StatusCode;
-                }
-                else if (context.Response.StatusCode % 100 == 2)
-                {
-                    responseStatusCode = 200;
-                    clearResponseBody = false;
-                }
-                else
-                {
-                    clearResponseBody = true;
-                    responseStatusCode = StatusCodes.Status400BadRequest;
-                }
-                context.Response.StatusCode = responseStatusCode; //TODO check why this does not work properly
-                if (clearResponseBody)
-                {
-                    //TODO
-                }
+                    int statusCodeCategory = context.Response.StatusCode / 100;
+                    if (statusCodeCategory == 2)
+                    {
+                        context.Response.StatusCode = StatusCodes.Status200OK;
+                    }
+                    else if (statusCodeCategory == 4 || statusCodeCategory == 5)
+                    {
+                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    }
+                    return Task.CompletedTask;
+                });
             }
             return this._Next(context);
         }

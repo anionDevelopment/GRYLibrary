@@ -71,9 +71,12 @@ namespace GRYLibrary.Tests.Testcases
             GRYLog logObject = GRYLog.Create();
             logObject.Configuration.Initliaze();
             logObject.Configuration.StoreProcessedLogItemsInternally = true;
+            // On Windows "echo" is a built-in cmd-command and not an executable, so the test relies on "echo2" (a program which is expected to be available on developer-machines; see Hints.md).
+            // On Linux and macOS the regular "echo"-executable is used.
+            string echoProgram = System.OperatingSystem.IsWindows() ? "echo2" : "echo";
             ExternalProgramExecutor externalProgramExecutor = new(new ExternalProgramExecutorConfiguration()
             {
-                Program = "echo2",
+                Program = echoProgram,
                 Argument = "x",
                 WorkingDirectory = temporaryDirectory.TemporaryDirectoryPath,
                 Verbosity = Verbosity.Verbose,

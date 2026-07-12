@@ -26,6 +26,12 @@ namespace GRYLibrary.Core.APIServer.Services.CredC
                     Path = "/",
                     HttpOnly = true,
                     Secure = true,
+                    // SameSite=Strict is the CSRF mitigation for the authentication cookie: the
+                    // browser will not attach it to any cross-site request, so a forged POST from a
+                    // third-party page cannot ride the victim's session. These are server-rendered
+                    // apps whose auth cookie never legitimately needs to travel on a cross-site
+                    // top-level navigation, so Strict has no functional downside here.
+                    SameSite = SameSiteMode.Strict,
                 }
             );
         }

@@ -77,3 +77,29 @@ What should happen:
 Why it is still open: the login-logic lives in the persistent authentication-service of every backend, and
 providing a sensible default rate-limiter plus wiring it into the pipeline by default is a framework-change
 that has to be coordinated with the backends.
+
+## Fixed test-port for the in-process test-server (no dynamic free port)
+
+When the server is started in test-mode (the `--TestRun` execution-mode), it always binds a fixed port
+(`HTTP.DefaultPort`, currently 80). A dynamically-chosen free port for the in-process test-server is
+currently **not supported**.
+
+The practical consequence for the backends is that two integration-tests which each start an in-process
+server must never run at the same time — they would both try to bind the same fixed port and fail. As long
+as no free-port selection is available, the backends work around this by serializing all such tests with a
+single shared, process-wide lock (a static semaphore acquired in `TestInitialize` and released in
+`TestCleanup` by every integration-test-class that starts a server). A port that is still occupied while
+that lock is held therefore belongs to something outside the test-run (a leftover server or a second
+test-run in another process), and the test-framework fails fast with that diagnosis instead of cascading.
+
+What should happen:
+
+- Let the test-mode bind a free ephemeral port (bind to port 0 and read back the actually-assigned port),
+  and expose that port to the test-framework so it can build the base-url from it.
+- With a unique port per server-instance the shared serialization-lock would no longer be required, and even
+  parallel test-runs (in separate processes) would stop colliding.
+
+Why it is still open: the port is baked into the test-mode of the server-framework (`TestServer` /
+`GetExecutionMode` bind `HTTP.DefaultPort`), and every backend's test-framework derives its base-url from
+that same constant, so introducing a dynamic port is a framework-change that has to be coordinated with the
+backends.

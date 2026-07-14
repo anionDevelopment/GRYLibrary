@@ -7,7 +7,7 @@ namespace GRYLibrary.Core.APIServer.Services.CredC
     public interface ICookieService : ICredentialsProvider
     {
         public abstract bool TryGetCookieValue(HttpContext context, out string cookie);
-        (string key, string value, CookieOptions options) CreateCookie(string username, string value, DateTimeOffset expiredMoment);
-        (string key, string value, CookieOptions options) GetAccessTokenExpiredCookie(string name);
+        (string key, string value, CookieOptions options) CreateCookie(HttpContext context, string username, string value, DateTimeOffset expiredMoment);
+        (string key, string value, CookieOptions options) GetAccessTokenExpiredCookie(HttpContext context, string name);
     }
 }

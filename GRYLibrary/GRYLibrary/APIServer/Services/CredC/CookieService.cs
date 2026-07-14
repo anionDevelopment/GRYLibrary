@@ -26,14 +26,14 @@ namespace GRYLibrary.Core.APIServer.Services.CredC
             return context.Request.Cookies.TryGetValue(CookieTools.CookieName, out cookie);
         }
 
-        public (string key, string value, CookieOptions options) CreateCookie(string username, string value, DateTimeOffset expiredMoment)
+        public (string key, string value, CookieOptions options) CreateCookie(HttpContext context, string username, string value, DateTimeOffset expiredMoment)
         {
-            return CookieTools.GetAccessTokenCookie(username, value, expiredMoment);
+            return CookieTools.GetAccessTokenCookie(context, username, value, expiredMoment);
         }
 
-        public (string key, string value, CookieOptions options) GetAccessTokenExpiredCookie(string name)
+        public (string key, string value, CookieOptions options) GetAccessTokenExpiredCookie(HttpContext context, string name)
         {
-            return CookieTools.GetAccessTokenExpiredCookie(name);
+            return CookieTools.GetAccessTokenExpiredCookie(context, name);
         }
     }
 }

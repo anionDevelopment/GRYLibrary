@@ -3,7 +3,7 @@ from ScriptCollection.TFCPS.DotNet.TFCPS_CodeUnitSpecific_DotNet import TFCPS_Co
 def generate_reference():
     
     tf:TFCPS_CodeUnitSpecific_DotNet_Functions=TFCPS_CodeUnitSpecific_DotNet_CLI.parse(__file__)
-    tf.generate_reference()
+    tf.generate_reference(True)
 
 
 if __name__ == "__main__":

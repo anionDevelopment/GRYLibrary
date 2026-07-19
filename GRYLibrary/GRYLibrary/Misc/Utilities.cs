@@ -1279,9 +1279,15 @@ namespace GRYLibrary.Core.Misc
                 }
             }
         }
+        /// <summary>
+        /// Upper bound for waiting on a condition when the caller did not specify a timeout. A wait
+        /// which does not succeed within this duration indicates a defect (e.g. a service which does
+        /// not terminate), so it must fail with a TimeoutException instead of blocking indefinitely.
+        /// </summary>
+        public static readonly TimeSpan DefaultConditionTimeout = TimeSpan.FromHours(1);
         public static void WaitUntilConditionIsTrue(Func<bool> condition, string actionName)
         {
-            WaitUntilConditionIsTrue(condition, TimeSpan.FromDays(14), actionName);
+            WaitUntilConditionIsTrue(condition, DefaultConditionTimeout, actionName);
         }
         public static void WaitUntilConditionIsTrue(Func<bool> condition, TimeSpan timeout, string actionName)
         {
@@ -1289,7 +1295,7 @@ namespace GRYLibrary.Core.Misc
         }
         public static async Task WaitUntilConditionIsTrueAsync(Func<bool> condition, string actionName)
         {
-            await WaitUntilConditionIsTrueAsync(condition, TimeSpan.FromDays(14), actionName);
+            await WaitUntilConditionIsTrueAsync(condition, DefaultConditionTimeout, actionName);
         }
         public static async Task WaitUntilConditionIsTrueAsync(Func<bool> condition, TimeSpan timeout, string actionName)
         {
@@ -1297,7 +1303,7 @@ namespace GRYLibrary.Core.Misc
         }
         public static void WaitUntilConditionIsTrue(Func<(bool, Exception?)> condition, string actionName)
         {
-            WaitUntilConditionIsTrue(condition, TimeSpan.FromDays(14), actionName);
+            WaitUntilConditionIsTrue(condition, DefaultConditionTimeout, actionName);
         }
         public static void WaitUntilConditionIsTrue(Func<(bool, Exception?)> condition, TimeSpan timeout, string actionName)
         {
@@ -1305,7 +1311,7 @@ namespace GRYLibrary.Core.Misc
         }
         public static async Task WaitUntilConditionIsTrueAsync(Func<(bool, Exception?)> condition, string actionName)
         {
-            await WaitUntilConditionIsTrueAsync(condition, TimeSpan.FromDays(14), actionName);
+            await WaitUntilConditionIsTrueAsync(condition, DefaultConditionTimeout, actionName);
         }
         public static async Task WaitUntilConditionIsTrueAsync(Func<(bool, Exception?)> condition, TimeSpan timeout, string actionName)
         {

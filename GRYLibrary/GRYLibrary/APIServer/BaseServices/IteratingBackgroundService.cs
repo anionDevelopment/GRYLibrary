@@ -52,9 +52,12 @@ namespace GRYLibrary.Core.APIServer.BaseServices
                     return;
                 }
 
-                this.Running = true;
                 if (this.ShouldBeExecuted())
                 {
+                    // Running must only be set when the iterating task is really started, because that
+                    // task is the only place which resets it. Otherwise Stop() would wait forever for a
+                    // service which never runs (e.g. when the executionmode is not RunProgram).
+                    this.Running = true;
                     this._Logger.Log($"Background-service {this.GetType().Name} will be started.", LogLevel.Information);
                     Task task = Task.Run(() =>
                     {

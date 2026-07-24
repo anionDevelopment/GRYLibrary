@@ -240,7 +240,7 @@ namespace GRYLibrary.Core.Misc
         }
         public static PercentValue operator /(PercentValue left, double right)
         {
-            return new PercentValue(left.Value * (decimal)right);
+            return new PercentValue(left.Value / (decimal)right);
         }
         public static PercentValue operator +(double left, PercentValue right)
         {
@@ -256,7 +256,7 @@ namespace GRYLibrary.Core.Misc
         }
         public static PercentValue operator /(double left, PercentValue right)
         {
-            return new PercentValue((decimal)left * right.Value);
+            return new PercentValue((decimal)left / right.Value);
         }
         public static PercentValue operator +(PercentValue left, decimal right)
         {

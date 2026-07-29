@@ -79,7 +79,7 @@ namespace GRYLibrary.Core.Graph
         {
             foreach (DirectedEdge edge in vertex.GetConnectedEdges())
             {
-                if (edge.Target.Equals(edge))
+                if (edge.Target.Equals(vertex))
                 {
                     return true;
                 }

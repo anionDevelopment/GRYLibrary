@@ -28,7 +28,8 @@ namespace GRYLibrary.Core.APIServer.Services.Res
                 else
                 {
                     byte[] content = new byte[resFilestream.Length];
-                    resFilestream.Read(content, 0, content.Length);
+                    //ReadExactly instead of Read because Read is allowed to return less bytes than requested.
+                    resFilestream.ReadExactly(content);
                     value = content;
                     this._Cache[resourceName] = value;
                 }

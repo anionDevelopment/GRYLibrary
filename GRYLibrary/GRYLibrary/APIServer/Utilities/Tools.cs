@@ -200,7 +200,7 @@ namespace GRYLibrary.Core.APIServer.Utilities
             byte[] passwordHashAlgorithmIdentifierBytes = GUtilities.PadLeft(new UTF8Encoding(false).GetBytes(passwordHashAlgorithmIdentifier), 10);
             foreach (HashAlgorithm algorithm in _HashAlgorithms)
             {
-                if (algorithm.GetIdentifier() == passwordHashAlgorithmIdentifierBytes)
+                if (GUtilities.ByteArrayEquals(algorithm.GetIdentifier(), passwordHashAlgorithmIdentifierBytes))
                 {
                     return algorithm;
                 }
@@ -348,7 +348,7 @@ namespace GRYLibrary.Core.APIServer.Utilities
             }
             else
             {
-                throw new InternalAlgorithmException($"Undknown healthstatus: {(int)result.result}");
+                throw new InternalAlgorithmException($"Unknown healthstatus: {(int)result.result}");
             }
             return healthCheckResult;
         }

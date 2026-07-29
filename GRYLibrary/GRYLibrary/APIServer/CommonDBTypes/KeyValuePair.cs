@@ -35,7 +35,8 @@ namespace GRYLibrary.Core.APIServer.CommonDBTypes
 
         public static decimal GetDecimal(DbSet<KeyValuePair> kvps, string name)
         {
-            return GetValue(kvps, name, decimal.Parse);
+            //The value gets serialized culture-invariant in SetDecimal, so it must also get parsed culture-invariant.
+            return GetValue(kvps, name, value => decimal.Parse(value, CultureInfo.InvariantCulture));
         }
 
         public static void SetDecimal(DbSet<KeyValuePair> kvps, string name, decimal value)

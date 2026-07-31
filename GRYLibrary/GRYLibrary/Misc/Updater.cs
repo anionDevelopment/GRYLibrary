@@ -55,7 +55,7 @@ namespace GRYLibrary.Core.Misc
                 if (location != this._CurrentLocation)
                 {
                     Version versionOfLocation = this.GetVersionOfLocation(location);
-                    if (latestVersion.Equals(location))
+                    if (!latestVersion.Equals(versionOfLocation))
                     {
                         this.UpdateLocation(location);
                     }

@@ -77,7 +77,7 @@ namespace GRYLibrary.Core.Misc.Strings
 
         public string ToHTMLString()
         {
-            return GUtilities.HTMLUnescape(this._Value);
+            return GUtilities.HTMLEscape(this._Value);
         }
 
         public static bool operator ==(MultiLineString left, MultiLineString right)

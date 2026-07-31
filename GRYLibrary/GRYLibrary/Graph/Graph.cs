@@ -168,7 +168,7 @@ namespace GRYLibrary.Core.Graph
             {
                 visited.Add(vertex, false);
             }
-            this.DepthFirstSearch((v, l) => visited[v] = true, false);
+            this.DepthFirstSearch((v, l) => visited[v] = true, startVertex, false);
             return !visited.ContainsValue(false);
         }
 

@@ -25,7 +25,7 @@ namespace GRYLibrary.Core.Playlists.ConcretePlaylistHandler
 
         public override void DeleteItemsFromPlaylist(string playlistFile, IEnumerable<string> itemsToDelete)
         {
-            this.GetHandlerForFile(playlistFile).AddItemsToPlaylist(playlistFile, this.Replace(itemsToDelete));
+            this.GetHandlerForFile(playlistFile).DeleteItemsFromPlaylist(playlistFile, this.Replace(itemsToDelete));
         }
 
         public override (ISet<string> included, ISet<string> excluded) GetItemsAndExcludedItems(string playlistFile)
@@ -115,7 +115,7 @@ namespace GRYLibrary.Core.Playlists.ConcretePlaylistHandler
             {
                 if (Utilities.IsRelativeLocalFilePath(item))
                 {
-                    item = workingDirectory.ResolveToFullPath();
+                    item = item.ResolveToFullPath(workingDirectory);
                 }
                 item = item.Replace('\\', '/');
             }

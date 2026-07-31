@@ -135,7 +135,7 @@ namespace GRYLibrary.Core.APIServer.MaintenanceRoutes
             try
             {
                 using MemoryStream ms = new MemoryStream();
-                Prometheus.Metrics.DefaultRegistry.CollectAndExportAsTextAsync(ms);
+                Prometheus.Metrics.DefaultRegistry.CollectAndExportAsTextAsync(ms).Wait();
                 ms.Position = 0;
                 using StreamReader sr = new StreamReader(ms);
                 string allmetrics = sr.ReadToEndAsync().WaitAndGetResult();

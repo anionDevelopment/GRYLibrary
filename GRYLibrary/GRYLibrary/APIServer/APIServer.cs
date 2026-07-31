@@ -439,7 +439,7 @@ namespace GRYLibrary.Core.APIServer
                             string pfxFilePath = https.TLSCertificateInformation.CertificatePFXFile.GetPath(this._Configuration.InitializationInformation.ApplicationConstants.GetCertificateFolder());
                             string passwordFilePath = https.TLSCertificateInformation.CertificatePasswordFile.GetPath(this._Configuration.InitializationInformation.ApplicationConstants.GetCertificateFolder());
                             string password = File.ReadAllText(passwordFilePath, new UTF8Encoding(false));
-                            X509Certificate2 certificate = certificate = new X509Certificate2(pfxFilePath, password);
+                            X509Certificate2 certificate = new X509Certificate2(pfxFilePath, password);
                             if (this._Configuration.InitializationInformation.ApplicationConstants.Environment is Productive && GUtilities.IsSelfSIgned(certificate))
                             {
                                 logger.Log($"The used certificate '{pfxFilePath}' is self-signed. Using self-signed certificates is not recommended in a productive environment.", LogLevel.Warning);
@@ -706,7 +706,7 @@ namespace GRYLibrary.Core.APIServer
         private IServerLog GetApplicationLogger(IPersistedAPIServerConfiguration<PersistedApplicationSpecificConfiguration> persistedApplicationSpecificConfiguration, bool initialVerboseValue, bool enforceVerbose, string logFolder)
         {
             ServerLog result = new ServerLog(persistedApplicationSpecificConfiguration.ApplicationLogConfiguration, logFolder);
-            if (enforceVerbose)
+            if (initialVerboseValue || enforceVerbose)
             {
                 result.Logger.Configuration.AddLogLevel(LogLevel.Debug);
             }

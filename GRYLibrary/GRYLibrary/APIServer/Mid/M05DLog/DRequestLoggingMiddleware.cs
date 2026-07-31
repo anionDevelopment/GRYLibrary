@@ -176,7 +176,12 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
             }
             try
             {
-                return ("UTF8-encoded-content", encoding.GetString(content), content);
+                //A decoder-fallback which throws is required here: the default-fallback silently replaces
+                //undecodable bytes by the replacement-character, so binary content would be logged as
+                //mangled text and the hex-fallback below would never be reached.
+                Encoding encodingWhichThrowsOnUndecodableContent = (Encoding)encoding.Clone();
+                encodingWhichThrowsOnUndecodableContent.DecoderFallback = DecoderFallback.ExceptionFallback;
+                return ("UTF8-encoded-content", encodingWhichThrowsOnUndecodableContent.GetString(content), content);
             }
             catch
             {

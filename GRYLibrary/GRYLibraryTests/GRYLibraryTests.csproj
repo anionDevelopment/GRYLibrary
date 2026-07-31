@@ -11,8 +11,8 @@
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <Copyright>Copyright © 2026 Marius Göcke</Copyright>
     <Description>GRYLibraryTests is the test-project for GRYLibrary.</Description>
-    <PackageProjectUrl>https://github.com/anionDev/GRYLibrary</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/anionDev/GRYLibrary.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/anionDevelopment/GRYLibrary</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/anionDevelopment/GRYLibrary.git</RepositoryUrl>
     <RootNamespace>GRYLibrary.Tests</RootNamespace>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <Nullable>enable</Nullable>

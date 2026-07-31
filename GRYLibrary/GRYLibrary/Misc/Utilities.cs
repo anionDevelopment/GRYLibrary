@@ -3575,28 +3575,54 @@ namespace GRYLibrary.Core.Misc
 
         public static bool ContainerIsHealthy(string containerNameToWaitToBeHealthy)
         {
+            return GetContainerHealthState(containerNameToWaitToBeHealthy) == ContainerHealthState.Healthy;
+        }
+
+        /// <summary>
+        /// Queries the health-state of the container with the name <paramref name="containerName"/>.
+        /// </summary>
+        /// <remarks>
+        /// Docker only adds a "State.Health"-property to its inspect-result if a health-check is defined (either by the
+        /// image or by the container-definition). A container without a health-check is therefore never "healthy" and
+        /// must be distinguishable from a container whose health-check currently fails: otherwise waiting for such a
+        /// container to become healthy would block until the caller's timeout is reached without any usable diagnosis.
+        /// </remarks>
+        public static ContainerHealthState GetContainerHealthState(string containerName)
+        {
             try
             {
-                using ExternalProgramExecutor externalProgramExecutor2 = new ExternalProgramExecutor("docker", $"inspect  {containerNameToWaitToBeHealthy}");
-                externalProgramExecutor2.Run();
-                string output = String.Join(string.Empty, externalProgramExecutor2.AllStdOutLines);
+                using ExternalProgramExecutor externalProgramExecutor = new ExternalProgramExecutor("docker", $"inspect {containerName}");
+                externalProgramExecutor.Run();
+                if (externalProgramExecutor.ExitCode != 0)
+                {
+                    return ContainerHealthState.NotAvailable;
+                }
+                string output = String.Join(string.Empty, externalProgramExecutor.AllStdOutLines);
                 using JsonDocument doc = JsonDocument.Parse(output);
+                if (doc.RootElement.GetArrayLength() == 0)
+                {
+                    return ContainerHealthState.NotAvailable;
+                }
                 JsonElement root = doc.RootElement[0];
-                if (root.TryGetProperty("State", out JsonElement state) &&
-                    state.TryGetProperty("Health", out JsonElement health) &&
-                    health.TryGetProperty("Status", out JsonElement status))
+                if (!root.TryGetProperty("State", out JsonElement state))
                 {
-                    string? healthy = status.GetString();
-                    return healthy == "healthy";
+                    return ContainerHealthState.NotAvailable;
                 }
-                else
+                if (!state.TryGetProperty("Health", out JsonElement health) || !health.TryGetProperty("Status", out JsonElement status))
                 {
-                    return false;
+                    return ContainerHealthState.NoHealthCheckDefined;
                 }
+                return status.GetString() switch
+                {
+                    "healthy" => ContainerHealthState.Healthy,
+                    "starting" => ContainerHealthState.Starting,
+                    "unhealthy" => ContainerHealthState.Unhealthy,
+                    _ => ContainerHealthState.NotAvailable,
+                };
             }
             catch
             {
-                return false;
+                return ContainerHealthState.NotAvailable;
             }
         }
         public static void RunEspoc(string processesFile, string? logFile)//TODO extract to grylib

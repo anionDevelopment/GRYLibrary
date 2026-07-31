@@ -49,7 +49,7 @@ namespace GRYLibrary.Core.APIServer.Utilities
             }
             else
             {
-                return "?" + string.Join(",", this.Query.Select(kvp => kvp.Key + "=" + kvp.Value));
+                return "?" + string.Join("&", this.Query.Select(kvp => kvp.Key + "=" + kvp.Value));
             }
         }
     }

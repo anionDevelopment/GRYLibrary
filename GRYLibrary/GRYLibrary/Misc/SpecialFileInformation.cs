@@ -21,7 +21,7 @@ namespace GRYLibrary.Core.Misc
         {
             if (FileIsExecutable(file))
             {
-                using ExternalProgramExecutor result = new(file, string.Empty);
+                ExternalProgramExecutor result = new(file, string.Empty);
                 result.Run();
                 return result;
             }

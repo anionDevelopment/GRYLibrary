@@ -17,7 +17,8 @@ namespace GRYLibrary.Core.APIServer.Services.Database
         {
         }
 #pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
-        private static readonly Regex PasswordHideRegex = new Regex("(PWD|Pwd)=([^;]+)(;|$)");
+        //"Password" must be covered too because that is the keyword which is actually used in the connection-strings of this database-type.
+        private static readonly Regex PasswordHideRegex = new Regex("(Password|PWD)=([^;]+)(;|$)", RegexOptions.IgnoreCase);
 #pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
         public override DbCommand CreateCommand(string sql)
         {

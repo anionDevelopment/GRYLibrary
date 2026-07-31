@@ -317,7 +317,7 @@ namespace GRYLibrary.Core.Misc
         public static IEnumerable<PropertyInfo> GetPropertiesWhichHaveGetterAndSetter(Type type)
         {
             List<PropertyInfo> result = [];
-            foreach (PropertyInfo property in type.GetType().GetProperties())
+            foreach (PropertyInfo property in type.GetProperties())
             {
                 if (property.CanWrite && property.CanRead)
                 {
@@ -1020,7 +1020,7 @@ namespace GRYLibrary.Core.Misc
                 foreach (string path in paths.Split(':'))
                 {
                     string combined = Path.Combine(path, this._Programname);
-                    if (File.Exists(combined) && SpecialFileInformation.FileIsExecutable(program))
+                    if (File.Exists(combined) && SpecialFileInformation.FileIsExecutable(combined))
                     {
                         program = combined;
                         break;
@@ -1551,7 +1551,7 @@ namespace GRYLibrary.Core.Misc
         {
             if (basePath == null && relativePath == null)
             {
-                Path.GetFullPath(".");
+                return Path.GetFullPath(".");
             }
             if (relativePath == null)
             {
@@ -1603,7 +1603,7 @@ namespace GRYLibrary.Core.Misc
         }
         public static bool DirectoryDoesNotContainFolder(string path)
         {
-            return Directory.GetFiles(path).Length > 0;
+            return Directory.GetDirectories(path).Length == 0;
         }
 
         public static void ClearFile(string file)
@@ -1628,7 +1628,7 @@ namespace GRYLibrary.Core.Misc
         }
         public static string EnsurePathStartsWithBackslash(this string path)
         {
-            if (path.StartsWith(Slash.ToString()))
+            if (path.StartsWith(Backslash.ToString()))
             {
                 return path;
             }
@@ -1652,7 +1652,7 @@ namespace GRYLibrary.Core.Misc
         {
             if (path.StartsWith(Backslash.ToString()))
             {
-                return path.TrimStart(Slash);
+                return path.TrimStart(Backslash);
             }
             else
             {
@@ -1881,10 +1881,13 @@ namespace GRYLibrary.Core.Misc
             {
                 contentAdjusted.Insert(0, headLines);
             }
-            EscapeForCSV(headLines);
-            foreach (string[] line in content)
+            if (headLines != null)
             {
                 EscapeForCSV(headLines);
+            }
+            foreach (string[] line in content)
+            {
+                EscapeForCSV(line);
             }
             // TODO insert padding
             File.WriteAllLines(file, contentAdjusted.Select(item => string.Join(separator, item)), encoding);
@@ -1977,8 +1980,8 @@ namespace GRYLibrary.Core.Misc
         /// Executes <paramref name="action"/>. When <paramref name="action"/> longer takes than <paramref name="timeout"/> then <paramref name="action"/> will be aborted.
         /// </summary>
         /// <returns>
-        /// Returns true if and only if the action was terminated in the given timespan.
-        /// So this function returns true if and only if the action was not completed within the given <paramref name="timeout"/>.
+        /// Returns true if and only if the action was terminated within the given <paramref name="timeout"/>.
+        /// So this function returns false if and only if the action was not completed within the given <paramref name="timeout"/>.
         /// </returns>
 
         public static bool RunWithTimeout(this Action action, TimeSpan timeout, Action<Exception>? errorHandler = default)
@@ -2005,7 +2008,10 @@ namespace GRYLibrary.Core.Misc
 
         public static void WaitUntilPortIsAvailable(string address, ushort port, TimeSpan timeout)
         {
-            RunWithTimeout(() => WaitUntilPortIsAvailable(address, port), timeout);
+            if (!RunWithTimeout(() => WaitUntilPortIsAvailable(address, port), timeout))
+            {
+                throw new TimeoutException($"Port {port} of {address} did not become available within the timeout of {DurationToUserFriendlyString(timeout)}.");
+            }
         }
 
         public static void WaitUntilPortIsAvailable(string address, ushort port)
@@ -2227,6 +2233,7 @@ namespace GRYLibrary.Core.Misc
             using XmlWriter xmlWriter = XmlWriter.Create(memoryStream, settings);
             XmlDocument document = new();
             document.LoadXml(xmlString);
+            document.Save(xmlWriter);
             xmlWriter.Flush();
             memoryStream.Flush();
             memoryStream.Position = 0;
@@ -2492,18 +2499,18 @@ namespace GRYLibrary.Core.Misc
             return PadHelper(array, length, fillItem, false);
         }
 
-        private static T?[] PadHelper<T>(T[] array, int length, T? fillItem, bool PadLeft)
+        private static T?[] PadHelper<T>(T[] array, int length, T? fillItem, bool padLeft)
         {
-            T[] result = array;
-            while (array.Length <= length)
+            T?[] result = [.. array];
+            while (result.Length < length)
             {
-                if (PadLeft)
+                if (padLeft)
                 {
-                    Concat([Equals(default(T), fillItem!) ? default(T) : fillItem], result);
+                    result = Concat([fillItem], result);
                 }
                 else
                 {
-                    Concat(result, [fillItem]);
+                    result = Concat(result, [fillItem]);
                 }
             }
             return result;
@@ -2533,10 +2540,10 @@ namespace GRYLibrary.Core.Misc
             }
             if (endianness == Endianness.LittleEndian)
             {
-                return (((uint)value[4]) << 24)
-                     + (((uint)value[3]) << 16)
-                     + (((uint)value[2]) << 08)
-                     + (((uint)value[1]) << 00);
+                return (((uint)value[3]) << 24)
+                     + (((uint)value[2]) << 16)
+                     + (((uint)value[1]) << 08)
+                     + (((uint)value[0]) << 00);
             }
             throw new ArgumentException($"Unknown or unsupported value given for parameter {nameof(endianness)}");
         }
@@ -2556,18 +2563,18 @@ namespace GRYLibrary.Core.Misc
             }
             if (endianness == Endianness.MixedEndian)
             {
-                result[0] = (byte)((value & 0x00ff0000) >> 24);
-                result[1] = (byte)((value & 0xff000000) >> 16);
-                result[2] = (byte)((value & 0x000000ff) >> 08);
-                result[3] = (byte)((value & 0x0000ff00) >> 00);
+                result[0] = (byte)((value & 0x00ff0000) >> 16);
+                result[1] = (byte)((value & 0xff000000) >> 24);
+                result[2] = (byte)((value & 0x000000ff) >> 00);
+                result[3] = (byte)((value & 0x0000ff00) >> 08);
                 return result;
             }
             if (endianness == Endianness.LittleEndian)
             {
-                result[0] = (byte)((value & 0x000000ff) >> 24);
-                result[1] = (byte)((value & 0x0000ff00) >> 16);
-                result[2] = (byte)((value & 0x00ff0000) >> 08);
-                result[3] = (byte)((value & 0xff000000) >> 00);
+                result[0] = (byte)((value & 0x000000ff) >> 00);
+                result[1] = (byte)((value & 0x0000ff00) >> 08);
+                result[2] = (byte)((value & 0x00ff0000) >> 16);
+                result[3] = (byte)((value & 0xff000000) >> 24);
                 return result;
             }
             throw new ArgumentException($"Unknown or unsupported value given for parameter {nameof(endianness)}");
@@ -2636,26 +2643,26 @@ namespace GRYLibrary.Core.Misc
             }
             if (endianness == Endianness.MixedEndian)
             {
-                result[0] = (byte)((value & 0x00ff000000000000) >> 56);
-                result[1] = (byte)((value & 0xff00000000000000) >> 48);
-                result[2] = (byte)((value & 0x000000ff00000000) >> 40);
-                result[3] = (byte)((value & 0x0000ff0000000000) >> 32);
-                result[4] = (byte)((value & 0x0000000000ff0000) >> 24);
-                result[5] = (byte)((value & 0x00000000ff000000) >> 16);
-                result[6] = (byte)((value & 0x00000000000000ff) >> 08);
-                result[7] = (byte)((value & 0x000000000000ff00) >> 00);
+                result[0] = (byte)((value & 0x00ff000000000000) >> 48);
+                result[1] = (byte)((value & 0xff00000000000000) >> 56);
+                result[2] = (byte)((value & 0x000000ff00000000) >> 32);
+                result[3] = (byte)((value & 0x0000ff0000000000) >> 40);
+                result[4] = (byte)((value & 0x0000000000ff0000) >> 16);
+                result[5] = (byte)((value & 0x00000000ff000000) >> 24);
+                result[6] = (byte)((value & 0x00000000000000ff) >> 00);
+                result[7] = (byte)((value & 0x000000000000ff00) >> 08);
                 return result;
             }
             if (endianness == Endianness.LittleEndian)
             {
-                result[0] = (byte)((value & 0x00000000000000ff) >> 56);
-                result[1] = (byte)((value & 0x000000000000ff00) >> 48);
-                result[2] = (byte)((value & 0x0000000000ff0000) >> 40);
-                result[3] = (byte)((value & 0x00000000ff000000) >> 32);
-                result[4] = (byte)((value & 0x000000ff00000000) >> 24);
-                result[5] = (byte)((value & 0x0000ff0000000000) >> 16);
-                result[6] = (byte)((value & 0x00ff000000000000) >> 08);
-                result[7] = (byte)((value & 0xff00000000000000) >> 00);
+                result[0] = (byte)((value & 0x00000000000000ff) >> 00);
+                result[1] = (byte)((value & 0x000000000000ff00) >> 08);
+                result[2] = (byte)((value & 0x0000000000ff0000) >> 16);
+                result[3] = (byte)((value & 0x00000000ff000000) >> 24);
+                result[4] = (byte)((value & 0x000000ff00000000) >> 32);
+                result[5] = (byte)((value & 0x0000ff0000000000) >> 40);
+                result[6] = (byte)((value & 0x00ff000000000000) >> 48);
+                result[7] = (byte)((value & 0xff00000000000000) >> 56);
                 return result;
             }
             throw new ArgumentException($"Unknown or unsupported value given for parameter {nameof(endianness)}");
@@ -3483,7 +3490,11 @@ namespace GRYLibrary.Core.Misc
             return choices[_Random.Next(choices.Count())];
         }
 
-        public static string HTMLUnescape(string @value)
+        /// <returns>
+        /// Returns <paramref name="value"/> escaped so that it can be embedded in a HTML-document without being interpreted as markup.
+        /// Line-breaks are converted to br-elements.
+        /// </returns>
+        public static string HTMLEscape(string @value)
         {
             string result = WebUtility.HtmlEncode(@value);
             result = result.Replace("\n", "<br />");

@@ -11,8 +11,8 @@
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <Copyright>Copyright © 2026 Marius Göcke</Copyright>
     <Description>GRYLibrary is a collection with some useful .NET classes and functions which are very easy (re)usable.</Description>
-    <PackageProjectUrl>https://github.com/anionDev/GRYLibrary</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/anionDev/GRYLibrary.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/anionDevelopment/GRYLibrary</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/anionDevelopment/GRYLibrary.git</RepositoryUrl>
     <RootNamespace>GRYLibrary.Core</RootNamespace>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <Nullable>enable</Nullable>

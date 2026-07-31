@@ -44,13 +44,19 @@ namespace GRYLibrary.Core.APIServer.Utilities
                     externalProgramExecutor.Run();
                     GUtilities.AssertCondition(externalProgramExecutor.ExitCode == 0, $"Error while starting test-database using command \"{externalProgramExecutor.CMD}\" due to exitcode {externalProgramExecutor.ExitCode}. StdOut: {string.Join(Environment.NewLine, externalProgramExecutor.AllStdOutLines)}; StdErr: {string.Join(Environment.NewLine, externalProgramExecutor.AllStdErrLines)}");
                     containerStarted = true;
+                    // The health-state has to get polled until the timeout is reached: an exception which is thrown
+                    // inside of the action of RunWithTimeout gets swallowed (no error-handler is passed), so a
+                    // single assertion inside of the action would let an unhealthy container pass as healthy.
                     GUtilities.AssertCondition(GUtilities.RunWithTimeout(() =>
                     {
                         foreach (string containerNameToWaitToBeHealthy in containerNamesToWaitToBeHealthy)
                         {
-                            GUtilities.AssertCondition(GUtilities.ContainerIsHealthy(containerNameToWaitToBeHealthy), $"Container {containerNameToWaitToBeHealthy} did not become healthy within the expected time.");
+                            while (!GUtilities.ContainerIsHealthy(containerNameToWaitToBeHealthy))
+                            {
+                                Thread.Sleep(TimeSpan.FromSeconds(1));
+                            }
                         }
-                    }, connectionTimeout));
+                    }, connectionTimeout), $"Not all of the containers {{{string.Join(", ", containerNamesToWaitToBeHealthy)}}} did become healthy within the expected time.");
                 }
                 this._GenericDatabaseInteractor = DBUtilities.ToGenericDatabaseInteractor(configuration, log);
                 Exception? lastException = null;

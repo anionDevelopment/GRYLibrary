@@ -35,7 +35,7 @@ namespace GRYLibrary.Core.APIServer.Mid.M01APIK
                 context.Items["APIKey"] = apiKey;
                 if (apiKey.Length < 10)
                 {
-                    return false;
+                    result = false;
                 }
                 else
                 {
@@ -46,7 +46,9 @@ namespace GRYLibrary.Core.APIServer.Mid.M01APIK
             {
                 result = false;
             }
-            this._Log.Log($"Provided API-Key \"{apiKey.Substring(0, 5)}...\" is" + (result ? string.Empty : " not") + " valid.", Microsoft.Extensions.Logging.LogLevel.Trace);
+            //The api-key is null when no api-key was provided, so it must not get accessed unconditionally.
+            string apiKeyForLog = provided ? $"\"{(5 <= apiKey.Length ? apiKey[..5] : apiKey)}...\"" : "(none)";
+            this._Log.Log($"Provided API-Key {apiKeyForLog} is" + (result ? string.Empty : " not") + " valid.", Microsoft.Extensions.Logging.LogLevel.Trace);
             return result;
         }
     }

@@ -139,14 +139,16 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
 
         public void DeleteRoleByName(string roleName)
         {
+            //The role-dictionary and the role-related helper-methods are keyed by the role-id, so the id has to get resolved first.
+            Role role = this.GetRoleByName(roleName);
             foreach (UserType user in this._Users.Values)
             {
-                if (this.UserHasRole(user.Id, roleName))
+                if (this.UserHasRole(user.Id, role.Id))
                 {
-                    this.RemoveRoleFromUser(user.Id, roleName);
+                    this.RemoveRoleFromUser(user.Id, role.Id);
                 }
             }
-            this._Roles.Remove(roleName);
+            this._Roles.Remove(role.Id);
         }
 
         public void AddRoleToUser(string userId, string roleId)

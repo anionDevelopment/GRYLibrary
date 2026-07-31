@@ -127,7 +127,6 @@ namespace GRYLibrary.Core.Misc
             }
             this.major = major;
             this.minor = minor;
-            this.major = major;
         }
         /// <summary>
         /// Creates a new <see cref="Version"/> instance.
@@ -292,6 +291,10 @@ namespace GRYLibrary.Core.Misc
         /// <returns></returns>
         public static bool operator ==(Version v1, Version v2)
         {
+            if (v1 is null)
+            {
+                return v2 is null;
+            }
             return v1.Equals(v2);
         }
         /// <summary>
@@ -322,7 +325,7 @@ namespace GRYLibrary.Core.Misc
         /// <returns></returns>
         public static bool operator !=(Version v1, Version v2)
         {
-            return v1 != v2;
+            return !(v1 == v2);
         }
         /// <summary>
         /// Operator &lt;s the specified v1.

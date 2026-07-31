@@ -45,7 +45,6 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
             {
                 return this.ThrowInvalidCredentialsException();
             }
-            this._TransientAuthenticationServicePersistence.GetUserByName(userName);
             UserType user = this.GetUserByNameTyped(userName);
             if (this.Hash(password) != user.PasswordHash)
             {
@@ -74,6 +73,7 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
             if (this._TransientAuthenticationServicePersistence.AccessTokenExists(accessToken, out UserType user))
             {
                 user.AccessToken = [.. user.AccessToken.Where(at => at.Value != accessToken)];
+                this._TransientAuthenticationServicePersistence.RemoveAccessToken(accessToken);
             }
             else
             {
@@ -83,6 +83,10 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
         public virtual void LogoutEverywhere(string userId)
         {
             UserType user = this._TransientAuthenticationServicePersistence.GetUserById(userId);
+            foreach (string accessTokenValue in user.AccessToken.Select(accessToken => accessToken.Value).ToList())
+            {
+                this._TransientAuthenticationServicePersistence.RemoveAccessToken(accessTokenValue);
+            }
             user.RefreshToken.Clear();
             user.AccessToken.Clear();
         }

@@ -99,7 +99,10 @@ namespace GRYLibrary.Core.Misc
         }
         public override int GetHashCode()
         {
-            return HashCode.Combine(this._Data);
+            //The hash-code must be calculated based on the content because Equals also compares the content and not the reference.
+            HashCode hashCode = new();
+            hashCode.AddBytes(this._Data);
+            return hashCode.ToHashCode();
         }
 
         public bool StartsWith(ByteArray value)

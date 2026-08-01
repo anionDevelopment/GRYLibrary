@@ -4,7 +4,7 @@ using System.Globalization;
 namespace GRYLibrary.Core.Misc
 {
     /// <summary>
-    /// Represents a datetime without milliseconds.
+    /// Represents a time of a day (without any date-information) without milliseconds.
     /// </summary>
     public struct GRYTime : IEquatable<GRYTime>, IComparable<GRYTime>, IComparable
     {
@@ -73,7 +73,15 @@ namespace GRYLibrary.Core.Misc
 
         public readonly int CompareTo(object obj)
         {
-            return this.ToTime().CompareTo(obj);
+            if (obj == null)
+            {
+                return 1;
+            }
+            if (obj is GRYTime other)
+            {
+                return this.CompareTo(other);
+            }
+            throw new ArgumentException($"Object must be of type {nameof(GRYTime)}.", nameof(obj));
         }
 
         public static bool operator ==(GRYTime left, GRYTime right)

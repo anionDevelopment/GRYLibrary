@@ -4,7 +4,7 @@ using System.Globalization;
 namespace GRYLibrary.Core.Misc
 {
     /// <summary>
-    /// Represents a datetime without milliseconds.
+    /// Represents a date (without any time-information) in the gregorian calendar.
     /// </summary>
     public struct GRYDate : IEquatable<GRYDate>, IComparable<GRYDate>, IComparable
     {
@@ -73,7 +73,15 @@ namespace GRYLibrary.Core.Misc
 
         public readonly int CompareTo(object obj)
         {
-            return this.ToDate().CompareTo(obj);
+            if (obj == null)
+            {
+                return 1;
+            }
+            if (obj is GRYDate other)
+            {
+                return this.CompareTo(other);
+            }
+            throw new ArgumentException($"Object must be of type {nameof(GRYDate)}.", nameof(obj));
         }
 
         public readonly GRYDate AddDays(int amountOfDays)

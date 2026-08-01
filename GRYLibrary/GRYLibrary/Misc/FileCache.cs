@@ -60,7 +60,7 @@ namespace GRYLibrary.Core.Misc
             {
                 lines.Add($"{kvp.Key.SerializeToString()};{kvp.Value.SerializeToString()}");
             }
-            File.WriteAllLines(this.CacheFile, lines);
+            File.WriteAllLines(this.CacheFile, lines, this.Encoding);
         }
         public IComparer<KeyValuePair<TKey, TValue>> Sorter { get; set; }
     }

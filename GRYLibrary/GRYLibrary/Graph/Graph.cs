@@ -128,29 +128,80 @@ namespace GRYLibrary.Core.Graph
             }
             return false;
         }
+        /// <returns>Returns true if and only if this graph contains at least one cycle.</returns>
         public bool ContainsOneOrMoreCycles()
         {
-            foreach (Vertex vertex in this.Vertices)
+            return this.Accept(new ContainsOneOrMoreCyclesVisitor());
+        }
+        private sealed class ContainsOneOrMoreCyclesVisitor : IGraphVisitor<bool>
+        {
+            public bool Handle(DirectedGraph graph)
             {
-                bool containsCycle = false;
-                this.DepthFirstSearch((currentVertex, edges) =>
+                foreach (Vertex vertex in graph.Vertices)
                 {
-                    foreach (Vertex successor in currentVertex.GetSuccessorVertices())
+                    bool containsCycle = false;
+                    graph.DepthFirstSearch((currentVertex, edges) =>
                     {
-                        if (successor.Equals(vertex))
+                        foreach (Vertex successor in graph.GetDirectSuccessors(currentVertex))
                         {
-                            containsCycle = true;
-                            return false;
+                            if (successor.Equals(vertex))
+                            {
+                                containsCycle = true;
+                                return false;
+                            }
                         }
+                        return true;
+                    }, vertex);
+                    if (containsCycle)
+                    {
+                        return true;
                     }
-                    return true;
-                }, vertex);
-                if (containsCycle)
+                }
+                return false;
+            }
+
+            /// <remarks>
+            /// An undirected edge can be walked in both directions. Therefore walking back over the edge which was used to reach a vertex is not a cycle
+            /// and that edge must be excluded. (Otherwise even a graph which only consists of one single edge would be treated as cyclic.)
+            /// So a cycle exists if and only if a vertex can be reached over two different ways.
+            /// </remarks>
+            public bool Handle(UndirectedGraph graph)
+            {
+                if (graph.ContainsOneOrMoreSelfLoops())
                 {
                     return true;
                 }
+                HashSet<Vertex> visitedVertices = [];
+                foreach (Vertex startVertex in graph.Vertices)
+                {
+                    if (visitedVertices.Contains(startVertex))
+                    {
+                        continue;//this vertex was already handled as part of another connected component
+                    }
+                    Stack<Tuple<Vertex, Edge>> verticesToVisit = new();
+                    verticesToVisit.Push(new Tuple<Vertex, Edge>(startVertex, null));
+                    while (verticesToVisit.Count > 0)
+                    {
+                        Tuple<Vertex, Edge> current = verticesToVisit.Pop();
+                        if (!visitedVertices.Add(current.Item1))
+                        {
+                            return true;
+                        }
+                        foreach (Edge connectedEdge in current.Item1.GetConnectedEdges())
+                        {
+                            if (connectedEdge.Equals(current.Item2))
+                            {
+                                continue;
+                            }
+                            foreach (Vertex neighbor in connectedEdge.GetOtherConnectedVerticesVisitor(current.Item1))
+                            {
+                                verticesToVisit.Push(new Tuple<Vertex, Edge>(neighbor, connectedEdge));
+                            }
+                        }
+                    }
+                }
+                return false;
             }
-            return false;
         }
         public bool IsConnected()
         {
@@ -199,20 +250,72 @@ namespace GRYLibrary.Core.Graph
             return [.. this.Vertices.OrderBy(vertex => vertex.Name)];
         }
 
-        /// <remarks>This operations does not work yet due to missing implementation of <see cref="GetAllCyclesThroughASpecificVertex"/>.</remarks>
+        /// <returns>Returns all elementary cycles of this graph.</returns>
+        /// <remarks>
+        /// A cycle is elementary if it does not contain any vertex more than once. Cycles which only differ in the vertex they start at
+        /// are the same cycle and are therefore only contained once in the result.
+        /// </remarks>
         public ISet<Cycle> GetAllCycles()
         {
-            ISet<Cycle> result = new HashSet<Cycle>();
+            IDictionary<string, Cycle> cyclesByContainedEdges = new Dictionary<string, Cycle>();
             foreach (Vertex vertex in this.Vertices)
             {
-                result.UnionWith(this.GetAllCyclesThroughASpecificVertex(vertex));
+                foreach (Cycle cycle in this.GetAllCyclesThroughASpecificVertex(vertex))
+                {
+                    cyclesByContainedEdges[GetKeyForContainedEdges(cycle)] = cycle;
+                }
             }
-            return result;
+            return new HashSet<Cycle>(cyclesByContainedEdges.Values);
         }
-        /// <remarks>This operations is not implemented yet.</remarks>
+
+        /// <returns>Returns all elementary cycles of this graph which contain <paramref name="vertex"/>.</returns>
+        /// <remarks>
+        /// A cycle is elementary if it does not contain any vertex more than once. The cycles are searched using backtracking:
+        /// every path which starts at <paramref name="vertex"/> and which does not use any vertex or edge twice is followed until it
+        /// either leads back to <paramref name="vertex"/> (then it is a cycle) or until it can not be continued anymore.
+        /// </remarks>
         public ISet<Cycle> GetAllCyclesThroughASpecificVertex(Vertex vertex)
         {
-            throw new NotImplementedException();//todo implement using Backtracking
+            if (!this.Vertices.Contains(vertex))
+            {
+                throw new Exceptions.InternalAlgorithmException($"Vertex '{vertex}' is not contained in this graph.");
+            }
+            IDictionary<string, Cycle> cyclesByContainedEdges = new Dictionary<string, Cycle>();
+            this.SearchCyclesByBacktracking(vertex, vertex, [], new HashSet<Vertex>() { vertex }, cyclesByContainedEdges);
+            return new HashSet<Cycle>(cyclesByContainedEdges.Values);
+        }
+
+        private void SearchCyclesByBacktracking(Vertex startVertex, Vertex currentVertex, IList<Edge> currentPath, ISet<Vertex> verticesOfCurrentPath, IDictionary<string, Cycle> foundCycles)
+        {
+            foreach (Edge edge in this.GetDirectSuccessorEdges(currentVertex))
+            {
+                if (currentPath.Contains(edge))
+                {
+                    continue;//an edge must not be used twice within the same cycle
+                }
+                foreach (Vertex successor in edge.GetOtherConnectedVerticesVisitor(currentVertex))
+                {
+                    List<Edge> pathToSuccessor = [.. currentPath, edge];
+                    if (successor.Equals(startVertex))
+                    {
+                        Cycle cycle = new Cycle(pathToSuccessor);
+                        // Cycles which consist of the same edges are the same cycle. This is relevant for undirected graphs where every
+                        // cycle can be walked in two directions and therefore would be found twice.
+                        foundCycles[GetKeyForContainedEdges(cycle)] = cycle;
+                    }
+                    else if (!verticesOfCurrentPath.Contains(successor))
+                    {
+                        verticesOfCurrentPath.Add(successor);
+                        this.SearchCyclesByBacktracking(startVertex, successor, pathToSuccessor, verticesOfCurrentPath, foundCycles);
+                        verticesOfCurrentPath.Remove(successor);
+                    }
+                }
+            }
+        }
+
+        private static string GetKeyForContainedEdges(Cycle cycle)
+        {
+            return string.Join(";", cycle.Edges.Select(edge => edge.Name).OrderBy(name => name, StringComparer.Ordinal));
         }
 
         /// <remarks>This operations is not implemented yet.</remarks>
@@ -404,7 +507,7 @@ namespace GRYLibrary.Core.Graph
                 return false;
             }
         }
-        /// <remarks>This operations does not work yet due to missing implementation of <see cref="GetAllCyclesThroughASpecificVertex"/>.</remarks>
+        /// <returns>Returns true if and only if this graph contains a cycle which contains every vertex of this graph exactly once.</returns>
         public bool HasHamiltonianCycle(out Cycle result)
         {
             foreach (Cycle cycle in this.GetAllCycles())

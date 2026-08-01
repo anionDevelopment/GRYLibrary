@@ -37,7 +37,7 @@ namespace GRYLibrary.Core.AOA.EqualsHelper.CustomComparer
             int result = 0;
             foreach (object enumerableEntry in enumerable)
             {
-                if (this._PropertyEqualsCalculator.Equals(item))
+                if (this._PropertyEqualsCalculator.Equals(enumerableEntry, item))
                 {
                     result += 1;
                 }

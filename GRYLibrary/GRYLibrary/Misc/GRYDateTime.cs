@@ -108,7 +108,15 @@ namespace GRYLibrary.Core.Misc
 
         public readonly int CompareTo(object obj)
         {
-            return this.ToDateTime().CompareTo(obj);
+            if (obj == null)
+            {
+                return 1;
+            }
+            if (obj is GRYDateTime other)
+            {
+                return this.CompareTo(other);
+            }
+            throw new ArgumentException($"Object must be of type {nameof(GRYDateTime)}.", nameof(obj));
         }
 
         public readonly GRYDateTime ToFullHour()

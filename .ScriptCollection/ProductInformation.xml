@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<ns0:productinformation xmlns:ns0="https://projects.aniondev.de/PublicProjects/Common/ProjectTemplates/-/tree/main/Conventions/RepositoryStructure/CommonProjectStructure">
-  <ns0:producttitle>GRYLibrary</ns0:producttitle>
-  <ns0:remoteaddress>https://github.com/anionDevelopment/GRYLibrary</ns0:remoteaddress>
-  <ns0:requiredenvironmentvariables />
-</ns0:productinformation>
+<productinformation xmlns="https://projects.aniondev.de/PublicProjects/Common/ProjectTemplates/-/tree/main/Conventions/RepositoryStructure/CommonProjectStructure">
+  <producttitle>GRYLibrary</producttitle>
+  <remoteaddress>https://github.com/anionDevelopment/GRYLibrary</remoteaddress>
+  <requiredenvironmentvariables />
+</productinformation>

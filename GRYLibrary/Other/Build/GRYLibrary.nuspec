@@ -1,29 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
-    <metadata minClientVersion="2.12">
-        <id>GRYLibrary</id>
-        <version>2.0.26</version>
-        <title>GRYLibrary</title>
-        <authors>Marius Göcke</authors>
-        <owners>Marius Göcke</owners>
-        <requireLicenseAcceptance>true</requireLicenseAcceptance>
-        <copyright>Copyright © 2026 by Marius Göcke</copyright>
-        <description>GRYLibrary is a collection with some useful .NET classes and functions which are very easy (re)usable.</description>
-        <summary>GRYLibrary is a collection with some useful .NET classes and functions which are very easy (re)usable.</summary>
-        <license type="file">lib/net10.0/GRYLibrary.License.txt</license>
-        <dependencies>
-            <group targetFramework="net10.0" />
-        </dependencies>
-        <projectUrl>https://github.com/anionDev/GRYLibrary</projectUrl>
-        <repository type="git" url="https://github.com/anionDev/GRYLibrary.git" branch="main" commit="$commitid$" />
-        <icon>Images\GRYLibraryIcon.png</icon>
-        <readme>Documentation\ReadMe.md</readme>
-    </metadata>
-    <files>
-        <file src="../Artifacts/BuildResult_DotNet_win-x64/GRYLibrary.dll" target="lib/net10.0" />
-        <file src="../Artifacts/BuildResult_DotNet_win-x64/GRYLibrary.License.txt" target="lib/net10.0" />
-        <file src="../Artifacts/BuildResult_DotNet_win-x64/GRYLibrary.deps.json" target="lib/net10.0" />
-        <file src="../Resources/Logo/GRYLibraryIcon.png" target="Images\" />
-        <file src="..\..\ReadMe.md" target="Documentation\" />
-    </files>
+  <metadata minClientVersion="2.12">
+    <id>GRYLibrary</id>
+    <version>2.1.0</version>
+    <title>GRYLibrary</title>
+    <authors>Marius Göcke</authors>
+    <owners>Marius Göcke</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <copyright>Copyright © 2026 by Marius Göcke</copyright>
+    <description>GRYLibrary is a collection with some useful .NET classes and functions which are very easy (re)usable.</description>
+    <summary>GRYLibrary is a collection with some useful .NET classes and functions which are very easy (re)usable.</summary>
+    <license type="file">lib/net10.0/GRYLibrary.License.txt</license>
+    <dependencies>
+      <group targetFramework="net10.0" />
+    </dependencies>
+    <projectUrl>https://github.com/anionDev/GRYLibrary</projectUrl>
+    <repository type="git" url="https://github.com/anionDev/GRYLibrary.git" branch="main" commit="$commitid$" />
+    <icon>Images\GRYLibraryIcon.png</icon>
+    <readme>Documentation\ReadMe.md</readme>
+  </metadata>
+  <files>
+    <file src="../Artifacts/BuildResult_DotNet_win-x64/GRYLibrary.dll" target="lib/net10.0" />
+    <file src="../Artifacts/BuildResult_DotNet_win-x64/GRYLibrary.License.txt" target="lib/net10.0" />
+    <file src="../Artifacts/BuildResult_DotNet_win-x64/GRYLibrary.deps.json" target="lib/net10.0" />
+    <file src="../Resources/Logo/GRYLibraryIcon.png" target="Images\" />
+    <file src="..\..\ReadMe.md" target="Documentation\" />
+  </files>
 </package>

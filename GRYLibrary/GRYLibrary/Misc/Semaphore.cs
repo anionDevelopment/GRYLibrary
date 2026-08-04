@@ -1,5 +1,5 @@
-﻿using GRYLibrary.Core.Exceptions;
-using GUtilities = GRYLibrary.Core.Misc.Utilities;
+﻿using System.Threading;
+using GRYLibrary.Core.Exceptions;
 
 namespace GRYLibrary.Core.Misc
 {
@@ -10,11 +10,18 @@ namespace GRYLibrary.Core.Misc
         /// <summary>
         /// Waits until the semaphore is open again
         /// </summary>
+        /// <remarks>
+        /// The waiting is done using <see cref="Monitor.Wait(object)"/> because that releases the monitor while waiting.
+        /// Busy-waiting inside the lock-block would block <see cref="Unlock"/> (which needs the same monitor) and therefore deadlock.
+        /// </remarks>
         public void Lock()
         {
             lock (this._LockObject)
             {
-                GUtilities.WaitUntilConditionIsTrue(() => this._Semaphore, "Wait-until-semaphore-opens");
+                while (!this._Semaphore)
+                {
+                    Monitor.Wait(this._LockObject);
+                }
                 this._Semaphore = false;
             }
         }
@@ -37,7 +44,7 @@ namespace GRYLibrary.Core.Misc
                 else
                 {
                     this._Semaphore = true;
-
+                    Monitor.Pulse(this._LockObject);
                 }
             }
         }

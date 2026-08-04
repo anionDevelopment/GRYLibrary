@@ -85,7 +85,7 @@ namespace GRYLibrary.Core.Graph
             {
                 Edge edge1 = edges[i];
                 Edge edge2 = edges[(i + 1) % edges.Count];
-                if (!AtLeastOneOutputOfEdge1LeadsToInputOfEdge1(edge1, edge2))
+                if (!AtLeastOneOutputOfEdge1LeadsToInputOfEdge2(edge1, edge2))
                 {
                     return false;
                 }
@@ -93,7 +93,7 @@ namespace GRYLibrary.Core.Graph
             return true;
         }
 
-        private static bool AtLeastOneOutputOfEdge1LeadsToInputOfEdge1(Edge edge1, Edge edge2)
+        private static bool AtLeastOneOutputOfEdge1LeadsToInputOfEdge2(Edge edge1, Edge edge2)
         {
             return edge1.GetOutputs().Intersect(edge2.GetInputs()).Count() > 0;
         }

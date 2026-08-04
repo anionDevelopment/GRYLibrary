@@ -41,7 +41,7 @@ namespace GRYLibrary.Core.Misc
                 }
                 else
                 {
-                    result.Add(item, 0);
+                    result.Add(item, 1);
                 }
             }
             return new HashSet<WriteableTuple<T, ulong>>(result.Select(kvp => new WriteableTuple<T, ulong>(kvp.Key, kvp.Value)));

@@ -36,7 +36,9 @@ namespace GRYLibrary.Core.Crypto
 
             message = [.. message, .. new byte[] { 128 }];
 
-            int K_amountOfBitsToAppend = 512 - ((L_messageLengthInBits + 8 + 64) % 512);
+            // The amount of zero-bits to append must be the smallest non-negative value which makes the total length a multiple of 512.
+            // The outer modulo is required because otherwise an already aligned message would get an additional (and therefore wrong) block of 512 zero-bits.
+            int K_amountOfBitsToAppend = (512 - ((L_messageLengthInBits + 8 + 64) % 512)) % 512;
             Utilities.AssertCondition(K_amountOfBitsToAppend % 8 == 0);
             int K_amountOfBytesToAppend = K_amountOfBitsToAppend / 8;
             message = [.. message, .. new byte[K_amountOfBytesToAppend]];

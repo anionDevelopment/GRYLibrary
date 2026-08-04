@@ -3,6 +3,8 @@ using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.ExecutePrograms;
 using GRYLibrary.Core.ExecutePrograms.WaitingStates;
 using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Misc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -47,16 +49,34 @@ namespace GRYLibrary.Core.APIServer.Utilities
                     // The health-state has to get polled until the timeout is reached: an exception which is thrown
                     // inside of the action of RunWithTimeout gets swallowed (no error-handler is passed), so a
                     // single assertion inside of the action would let an unhealthy container pass as healthy.
+                    //
+                    // Docker only reports a health-state for containers whose image or container-definition declares a
+                    // health-check. For a container without one there is nothing to observe, so polling it can never
+                    // succeed and would inevitably run into the timeout. Such a container therefore gets skipped here
+                    // (with a warning) instead of blocking: the readiness of the database is guaranteed anyway by the
+                    // connection-loop below, which is the authoritative check.
+                    ISet<string> containersWithHealthCheck = new HashSet<string>();
+                    foreach (string containerName in containerNamesToWaitToBeHealthy)
+                    {
+                        if (GUtilities.GetContainerHealthState(containerName) == ContainerHealthState.NoHealthCheckDefined)
+                        {
+                            log.Log($"The container \"{containerName}\" does not declare a health-check, so its health-state can not get awaited. Add a health-check to the definition of this container (for example in its docker-compose-file) to enable this check.", LogLevel.Warning);
+                        }
+                        else
+                        {
+                            containersWithHealthCheck.Add(containerName);
+                        }
+                    }
                     GUtilities.AssertCondition(GUtilities.RunWithTimeout(() =>
                     {
-                        foreach (string containerNameToWaitToBeHealthy in containerNamesToWaitToBeHealthy)
+                        foreach (string containerNameToWaitToBeHealthy in containersWithHealthCheck)
                         {
                             while (!GUtilities.ContainerIsHealthy(containerNameToWaitToBeHealthy))
                             {
                                 Thread.Sleep(TimeSpan.FromSeconds(1));
                             }
                         }
-                    }, connectionTimeout), $"Not all of the containers {{{string.Join(", ", containerNamesToWaitToBeHealthy)}}} did become healthy within the expected time.");
+                    }, connectionTimeout), $"Not all of the containers {{{string.Join(", ", containersWithHealthCheck)}}} did become healthy within the expected time.");
                 }
                 this._GenericDatabaseInteractor = DBUtilities.ToGenericDatabaseInteractor(configuration, log);
                 Exception? lastException = null;

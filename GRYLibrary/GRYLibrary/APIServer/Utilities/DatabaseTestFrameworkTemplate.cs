@@ -196,6 +196,15 @@ namespace GRYLibrary.Core.APIServer.Utilities
                 {
                     throw;
                 }
+                // The reset script may drop the schema/database the connection is currently attached to
+                // (MariaDB's reset-script does "DROP DATABASE ...; CREATE DATABASE ..."). The connection
+                // itself stays open in that case - just without a selected database - so every further
+                // query on it fails with "No database selected", and the connection's self-healing
+                // background thread (GenericDatabaseInteractor.StartTryToConnectScheduler) never notices,
+                // because the connection's ConnectionState is still Open. Closing it here makes that
+                // background thread reconnect, which re-applies "Database=..." from the connection string.
+                connection.Close();
+                this._GenericDatabaseInteractor.WaitUntilAvailable(TimeSpan.FromSeconds(30));
             }
         }
         public void Dispose() // Implement IDisposable

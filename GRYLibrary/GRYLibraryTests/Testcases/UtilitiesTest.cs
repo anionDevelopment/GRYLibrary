@@ -185,7 +185,57 @@ namespace GRYLibrary.Tests.Testcases
             Assert.AreNotEqual(input, result.ToString());
         }
 
-        [Ignore]
+        /// <remarks>
+        /// A guid whose highest hex-digit is greater than or equal to 8 must be treated as unsigned value.
+        /// </remarks>
+        [TestMethod]
+        public void IncrementGuidWithGuidWhoseHighestBitIsSet()
+        {
+            Assert.AreEqual("ffe3eb8e-39dc-469c-a9cd-ea740e90d339", GUtilities.IncrementGuid(Guid.Parse("ffe3eb8e-39dc-469c-a9cd-ea740e90d338")).ToString());
+            Assert.AreEqual("80000000-0000-0000-0000-000000000000", GUtilities.IncrementGuid(Guid.Parse("7fffffff-ffff-ffff-ffff-ffffffffffff")).ToString());
+        }
+
+        /// <remarks>
+        /// Incrementing the highest possible guid results in the lowest possible guid.
+        /// </remarks>
+        [TestMethod]
+        public void IncrementGuidWithOverflow()
+        {
+            Assert.AreEqual("00000000-0000-0000-0000-000000000000", GUtilities.IncrementGuid(Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff")).ToString());
+        }
+
+        [TestMethod]
+        public void ContainsSublistDoesOnlyMatchCompleteItems()
+        {
+            // arrange
+            IList<int> list = [112, 3];
+
+            // act & assert
+            Assert.IsTrue(list.ContainsSublist([112], item => item.ToString()));
+            Assert.IsTrue(list.ContainsSublist([112, 3], item => item.ToString()));
+            Assert.IsTrue(list.ContainsSublist([3], item => item.ToString()));
+            Assert.IsTrue(list.ContainsSublist([], item => item.ToString()));
+            //"12" is only a part of the string-representation of the item 112, so it is not contained as item
+            Assert.IsFalse(list.ContainsSublist([12], item => item.ToString()));
+            Assert.IsFalse(list.ContainsSublist([1], item => item.ToString()));
+            Assert.IsFalse(list.ContainsSublist([3, 112], item => item.ToString()));
+        }
+
+        [TestMethod]
+        public void ToCaseInsensitiveSetRemovesItemsWhichOnlyDifferInTheirCasing()
+        {
+            // arrange
+            ISet<string> input = new HashSet<string>() { "Value", "value", "VALUE", "other" };
+
+            // act
+            ISet<string> result = input.ToCaseInsensitiveSet();
+
+            // assert
+            Assert.AreEqual(2, result.Count);
+            Assert.IsTrue(result.Contains("vAlUe"));
+            Assert.IsTrue(result.Contains("OTHER"));
+        }
+
         [TestMethod]
         public void GenericSerializerTest1()
         {
@@ -490,7 +540,6 @@ namespace GRYLibrary.Tests.Testcases
             Assert.IsTrue(GUtilities.IsAssignableFrom(new SimpleDataStructure1(), typeof(IXmlSerializable)));
         }
 
-        [Ignore]
         [TestMethod]
         public void ReferenceEqualsWithCommonValuesTest()
         {
@@ -723,7 +772,6 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
-        [Ignore]
         public void CastTest()
         {
             System.Collections.Generic.KeyValuePair<object, object> testObject = new System.Collections.Generic.KeyValuePair<object, object>(1, 2);

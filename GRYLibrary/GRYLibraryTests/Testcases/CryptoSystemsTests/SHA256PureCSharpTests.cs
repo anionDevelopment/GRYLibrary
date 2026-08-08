@@ -18,6 +18,19 @@ namespace GRYLibrary.Tests.Testcases.CryptoSystemsTests
             AssertPureSHA256ValueIsEqualsToDotNetImplementation(SpecialCharacterTestString);
         }
 
+        /// <remarks>
+        /// A message whose length is 55 bytes (or 55+64*n bytes) is exactly as long that no additional zero-bits have to be appended while padding.
+        /// This is the edge-case of the padding-calculation and therefore tested explicitly.
+        /// </remarks>
+        [TestMethod]
+        public void SHA256PureTestsWithInputWhichDoesNotRequireAdditionalPadding()
+        {
+            AssertPureSHA256ValueIsEqualsToDotNetImplementation(new string('a', 55));
+            AssertPureSHA256ValueIsEqualsToDotNetImplementation(new string('a', 119));
+            AssertPureSHA256ValueIsEqualsToDotNetImplementation(new string('a', 54));
+            AssertPureSHA256ValueIsEqualsToDotNetImplementation(new string('a', 56));
+        }
+
         [TestMethod]
         public void RightRotateTests()
         {

@@ -212,8 +212,10 @@ namespace GRYLibrary.Core.Misc
             {
                 return true;
             }
-            string listAsString = string.Join(separator, list.Select(item => serializableFunction(item)));
-            string subListAsString = string.Join(separator, subList.Select(item => serializableFunction(item)));
+            // The separators around the strings are required so that the comparison can only match at item-boundaries.
+            // Without them a sub-list like [12] would be found in a list like [112,3] ("112-3" contains "12") which would be wrong.
+            string listAsString = separator + string.Join(separator, list.Select(item => serializableFunction(item))) + separator;
+            string subListAsString = separator + string.Join(separator, subList.Select(item => serializableFunction(item))) + separator;
             return listAsString.Contains(subListAsString);
         }
         public static IList<T> NTimes<T>(this IEnumerable<T> input, uint n)
@@ -629,8 +631,22 @@ namespace GRYLibrary.Core.Misc
 
         public static Guid IncrementGuid(Guid id, BigInteger valueToIncrement)
         {
-            BigInteger value = BigInteger.Parse(id.ToString("N"), NumberStyles.HexNumber);
-            return Guid.Parse((value + valueToIncrement).ToString("X").PadLeft(32, '0'));
+            // The leading "0" is required because BigInteger.Parse with NumberStyles.HexNumber interprets a value whose
+            // highest hex-digit is >= 8 as a negative number, which would result in a wrong value for such guids.
+            BigInteger value = BigInteger.Parse("0" + id.ToString("N"), NumberStyles.HexNumber);
+            BigInteger amountOfPossibleGuids = BigInteger.One << 128;
+            BigInteger incrementedValue = (value + valueToIncrement) % amountOfPossibleGuids;
+            if (incrementedValue.Sign < 0)
+            {
+                incrementedValue += amountOfPossibleGuids;
+            }
+            // BigInteger.ToString("X") adds a leading "0" for positive values whose highest hex-digit is >= 8, so the result can have 33 characters.
+            string incrementedValueAsHexString = incrementedValue.ToString("X");
+            if (32 < incrementedValueAsHexString.Length)
+            {
+                incrementedValueAsHexString = incrementedValueAsHexString[^32..];
+            }
+            return Guid.Parse(incrementedValueAsHexString.PadLeft(32, '0'));
         }
 
         public static IEnumerable<IEnumerable<T>> JaggedArrayToEnumerableOfEnumerable<T>(T[][] items)
@@ -829,7 +845,7 @@ namespace GRYLibrary.Core.Misc
         /// So "5" is allowed as hour for example.
         /// </remarks>
         /// <example>
-        /// "4/3/2017 7:4:53 PM" is a valid string (representing the date "2017-03-04T19:4:53" in ISO8601-format).
+        /// "4/3/2017 7:4:53 PM" is a valid string (representing the date "2017-04-03T19:04:53" in ISO8601-format, because the month is stated before the day).
         /// </example>
         public static DateTime ParseDateAmericanFormat(string input)
         {
@@ -1331,10 +1347,15 @@ namespace GRYLibrary.Core.Misc
                 throw new TimeoutException($"Action {actionName} resulted not in true within the timeout of {GRYLibrary.Core.Misc.Utilities.DurationToUserFriendlyString(timeout)}.", lastException);
             }
         }
+        /// <returns>
+        /// Returns a set which contains the items of <paramref name="input"/> but which treats items which only differ in their casing as one single item.
+        /// </returns>
+        /// <remarks>
+        /// If <paramref name="input"/> contains several items which only differ in their casing then it is not defined which of them is contained in the result.
+        /// </remarks>
         public static ISet<string> ToCaseInsensitiveSet(this ISet<string> input)
         {
-            ISet<WriteableTuple<string, string>> tupleList = new HashSet<WriteableTuple<string, string>>(input.Select((item) => new WriteableTuple<string, string>(item, item.ToLower())));
-            return new HashSet<string>(tupleList.Select((item) => item.Item1));
+            return new HashSet<string>(input, StringComparer.OrdinalIgnoreCase);
         }
         public static dynamic ToDynamic(this object value)
         {
@@ -1376,11 +1397,104 @@ namespace GRYLibrary.Core.Misc
                     // return customConversion.Convert(@object,typeOfObject);
                 }
             }
+            if (targetType.IsAssignableFrom(typeOfObject))
+            {
+                return @object;
+            }
+            if (TryCastGenericTypeWithItems(@object, typeOfObject, targetType, customConversions, out object castedGenericObject))
+            {
+                return castedGenericObject;
+            }
+            if (TryCastConvertible(@object, targetType, out object convertedObject))
+            {
+                return convertedObject;
+            }
             MethodInfo method = typeof(Utilities).GetMethod(nameof(CastHelper), BindingFlags.NonPublic | BindingFlags.Static);
             method = method.MakeGenericMethod([targetType]);
             return method.Invoke(null, [@object]);
 
         }
+
+        /// <summary>
+        /// Casts types like <see cref="System.Collections.Generic.KeyValuePair{TKey, TValue}"/> or <see cref="Tuple{T1, T2}"/> by casting their items separately.
+        /// </summary>
+        /// <remarks>
+        /// Generic types are not covariant, so for example a <c>KeyValuePair&lt;object,object&gt;</c> can not be casted to a <c>KeyValuePair&lt;int,int&gt;</c> directly.
+        /// The only way to convert such a value is to convert its items and to create a new instance of the target-type.
+        /// </remarks>
+        private static bool TryCastGenericTypeWithItems(object @object, Type typeOfObject, Type targetType, IList<object> customConversions, out object result)
+        {
+            result = null;
+            if (!typeOfObject.IsGenericType || !targetType.IsGenericType)
+            {
+                return false;
+            }
+            if (!TypeComparerIgnoringGenerics.Equals(typeOfObject, targetType))
+            {
+                return false;
+            }
+            string[] namesOfItemProperties;
+            if (EnumerableTools.TypeIsKeyValuePair(targetType))
+            {
+                namesOfItemProperties = ["Key", "Value"];
+            }
+            else if (EnumerableTools.TypeIsTuple(targetType))
+            {
+                namesOfItemProperties = ["Item1", "Item2"];
+            }
+            else
+            {
+                return false;
+            }
+            Type[] typesOfItemsOfTargetType = targetType.GetGenericArguments();
+            if (typesOfItemsOfTargetType.Length != namesOfItemProperties.Length)
+            {
+                return false;
+            }
+            object[] castedItems = new object[namesOfItemProperties.Length];
+            for (int i = 0; i < namesOfItemProperties.Length; i++)
+            {
+                PropertyInfo itemProperty = typeOfObject.GetProperty(namesOfItemProperties[i]);
+                if (itemProperty == null)
+                {
+                    return false;
+                }
+                object item = itemProperty.GetValue(@object);
+                castedItems[i] = item == null ? null : Cast(item, typesOfItemsOfTargetType[i], customConversions);
+            }
+            result = Activator.CreateInstance(targetType, castedItems);
+            return true;
+        }
+
+        /// <remarks>
+        /// A boxed value can only be unboxed to its exact type, so for example a boxed <see cref="int"/> can not be casted to a <see cref="long"/> directly.
+        /// <see cref="Convert.ChangeType(object, Type)"/> is required for such conversions.
+        /// </remarks>
+        private static bool TryCastConvertible(object @object, Type targetType, out object result)
+        {
+            result = null;
+            Type typeWithoutNullable = Nullable.GetUnderlyingType(targetType) ?? targetType;
+            if (typeWithoutNullable.IsEnum && @object is IConvertible)
+            {
+                result = Enum.ToObject(typeWithoutNullable, @object);
+                return true;
+            }
+            if (@object is not IConvertible || !typeof(IConvertible).IsAssignableFrom(typeWithoutNullable))
+            {
+                return false;
+            }
+            try
+            {
+                result = Convert.ChangeType(@object, typeWithoutNullable, CultureInfo.InvariantCulture);
+                return true;
+            }
+            catch (Exception exception) when (exception is InvalidCastException or FormatException or OverflowException)
+            {
+                result = null;
+                return false;
+            }
+        }
+
         private static T CastHelper<T>(object @object)
         {
             return (T)(dynamic)@object;
@@ -3546,9 +3660,11 @@ namespace GRYLibrary.Core.Misc
                 return result;
             return result + random.Next(16).ToString("X");
         }
+        /// <returns>Returns exactly one of the hex-digits which are letters, so one of "A", "B", "C", "D", "E" or "F".</returns>
         public static string GetRandomAlphaHexCharacter(IRandomnessProvider random)
         {
-            int number = random.Next(7);
+            const int amountOfAlphaHexDigits = 6;//"A", "B", "C", "D", "E" and "F"
+            int number = random.Next(amountOfAlphaHexDigits);
             string result = (10 + number).ToString("X1");
             return result;
         }

@@ -116,17 +116,23 @@ namespace GRYLibrary.Core.Graph
             return result;
         }
 
+        /// <returns>
+        /// Returns a <see cref="DirectedGraph"/> which has one vertex per row of <paramref name="adjacencyMatrix"/> and one edge for every entry of
+        /// <paramref name="adjacencyMatrix"/> which is not 0 (a value of 0 means that there is no connection between the two vertices).
+        /// </returns>
         public static DirectedGraph CreateByAdjacencyMatrix(double[,] adjacencyMatrix)
         {
             DirectedGraph graph = new();
             Tuple<IList<DirectedEdge>, IList<Vertex>> items = ParseAdjacencyMatrix(adjacencyMatrix);
             foreach (Vertex item in items.Item2)
             {
-                graph._Vertices.Add(item);
+                graph.AddVertex(item);
             }
             foreach (DirectedEdge item in items.Item1)
             {
-                graph._DirectedEdges.Add(item);
+                // AddEdge (and not _DirectedEdges.Add) is used so that the edges are also registered at their vertices.
+                // Otherwise operations like GetDirectSuccessors would not find any connection in the resulting graph.
+                graph.AddEdge(item);
             }
             return graph;
         }
@@ -147,6 +153,10 @@ namespace GRYLibrary.Core.Graph
             {
                 for (int j = 0; j < adjacencyMatrix.GetLength(1); j++)
                 {
+                    if (adjacencyMatrix[i, j] == 0)
+                    {
+                        continue;//a weight of 0 means that there is no edge between these two vertices
+                    }
                     DirectedEdge newEdge = new(vertices[i], vertices[j], nameof(Edge) + "_" + (i + 1).ToString() + "_" + (j + 1).ToString())
                     {
                         Weight = adjacencyMatrix[i, j]

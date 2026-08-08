@@ -39,7 +39,7 @@ namespace GRYLibrary.Core.Streams
             }
             public override bool Equals(object obj)
             {
-                if ((StreamPipe)obj is StreamPipe typedObject)
+                if (obj is StreamPipe typedObject)
                 {
                     return typedObject.Source.Equals(this.Source) && typedObject.Target.Equals(this.Target);
                 }

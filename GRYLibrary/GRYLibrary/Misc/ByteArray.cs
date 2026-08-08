@@ -86,6 +86,10 @@ namespace GRYLibrary.Core.Misc
         }
         public static bool operator ==(ByteArray first, ByteArray second)
         {
+            if (first is null)
+            {
+                return second is null;
+            }
             return first.Equals(second);
         }
         public static bool operator !=(ByteArray first, ByteArray second)

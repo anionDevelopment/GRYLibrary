@@ -1,4 +1,5 @@
 ﻿using GRYLibrary.Core.Graph;
+using GRYLibrary.Core.Graph.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -58,36 +59,31 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.IsFalse(Cycle.RepresentsCycle(cycleItems));
 
         }
+        [TestMethod]
         public void TestErrorsOfCycleConstructorsDueToEmptyEdgesList()
         {
-            Assert.Throws<Exception>(() => new List<DirectedEdge>(Array.Empty<DirectedEdge>()));
+            Assert.Throws<InvalidGraphStructureException>(() => new Cycle(Array.Empty<Edge>()));
         }
+        [TestMethod]
         public void TestErrorsOfCycleConstructorsDueToUncyclicEdges()
         {
             Vertex v1 = new(nameof(v1));
             Vertex v2 = new(nameof(v2));
             Vertex v3 = new(nameof(v3));
-            Vertex v4 = new(nameof(v4));
-            Vertex v5 = new(nameof(v5));
             DirectedEdge edge1 = new(v1, v2, "e1");
             DirectedEdge edge2 = new(v2, v3, "e2");
-            DirectedEdge edge3 = new(v3, v1, "e3");
-            Assert.Throws<Exception>(() => new List<DirectedEdge>(new DirectedEdge[] { edge1, edge2 }));
+            Assert.Throws<InvalidGraphStructureException>(() => new Cycle(new Edge[] { edge1, edge2 }));
         }
+        [TestMethod]
         public void TestErrorsOfCycleConstructorsDueToDuplicatedEdges()
         {
             Vertex v1 = new(nameof(v1));
             Vertex v2 = new(nameof(v2));
             Vertex v3 = new(nameof(v3));
-            Vertex v4 = new(nameof(v4));
-            Vertex v5 = new(nameof(v5));
             DirectedEdge edge1 = new(v1, v2, "e1");
             DirectedEdge edge2 = new(v2, v3, "e2");
             DirectedEdge edge3 = new(v3, v1, "e3");
-            DirectedEdge edge4 = new(v1, v4, "e1");
-            DirectedEdge edge5 = new(v4, v5, "e2");
-            DirectedEdge edge6 = new(v5, v1, "e3");
-            Assert.Throws<Exception>(() => new List<DirectedEdge>(new DirectedEdge[] { edge1, edge2, edge3, edge4, edge5, edge6, }));
+            Assert.Throws<InvalidGraphStructureException>(() => new Cycle(new Edge[] { edge1, edge2, edge3, edge1, edge2, edge3 }));
         }
     }
 }

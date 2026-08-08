@@ -29,6 +29,7 @@ namespace GRYLibrary.Core.Misc
         public T GenerateNewId()
         {
             this.LastId = this._GenerateNewId(this.LastId);
+            this._GeneratedIds.Add(this.LastId);
             return this.LastId;
         }
         public ISet<T> GeneratedIds()
@@ -49,24 +50,27 @@ namespace GRYLibrary.Core.Misc
     public static class IdGenerator
     {
         /// <summary>
-        /// Represents an id-generator which generates increasing ids beginning with 0.
+        /// Represents an id-generator which generates increasing ids beginning with 1.
         /// </summary>
+        /// <remarks>The value 0 is the state before the first id was generated and is therefore never returned as id.</remarks>
         public static IdGenerator<int> GetDefaultIntIdGenerator()
         {
             return new IdGenerator<int>((int lastGeneratedId) => lastGeneratedId + 1, () => 0);
         }
 
         /// <summary>
-        /// Represents an id-generator which generates increasing ids beginning with 0.
+        /// Represents an id-generator which generates increasing ids beginning with 1.
         /// </summary>
+        /// <remarks>The value 0 is the state before the first id was generated and is therefore never returned as id.</remarks>
         public static IdGenerator<ulong> GetDefaultLongIdGenerator()
         {
             return new IdGenerator<ulong>((ulong lastGeneratedId) => lastGeneratedId + 1, () => 0);
         }
 
         /// <summary>
-        /// Represents an id-generator which generates increasing ids beginning with 0.
+        /// Represents an id-generator which generates increasing ids beginning with 1.
         /// </summary>
+        /// <remarks>The value 0 is the state before the first id was generated and is therefore never returned as id.</remarks>
         public static IdGenerator<BigInteger> GetDefaultBigIntegerIdGenerator()
         {
             return new IdGenerator<BigInteger>((BigInteger lastGeneratedId) => lastGeneratedId + 1, () => 0);

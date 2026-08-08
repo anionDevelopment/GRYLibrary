@@ -59,7 +59,6 @@ namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Serializer
             Assert.IsTrue(Core.Misc.Utilities.IsValidXML(serialized));
             TestUtilities.AssertEqual(expectedObject, actualObject);
         }
-        [Ignore]
         [TestMethod]
         public void SerializeComplexTestObject2()
         {
@@ -262,7 +261,6 @@ namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Serializer
             Assert.IsTrue(Generic.GenericEquals(expectedObject, actualObject), Core.Misc.Utilities.GetAssertionFailMessage(expectedObject, actualObject));
             Assert.AreEqual(Generic.GenericGetHashCode(expectedObject), Generic.GenericGetHashCode(actualObject));
         }
-        [Ignore]
         [TestMethod]
         public void SerializeTypeWithCommonInterfaces1()
         {
@@ -274,14 +272,14 @@ namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Serializer
                 Set = new HashSet<int>() { 2, 4, 3 },
                 Dictionary = new Dictionary<int, int>() { { 2, 20 }, { 4, 40 }, { 3, 30 } }
             };
-            MemoryStream stream = new();
-            XmlWriter xmlWriter = XmlWriter.Create(stream, new XmlWriterSettings() { Encoding = new UTF8Encoding(false) });
-            XmlReader xmlReader = XmlReader.Create(stream);
+            StringWriter stringWriter = new();
+            XmlWriter xmlWriter = XmlWriter.Create(stringWriter);
 
             // act
             expectedObject.WriteXml(xmlWriter);
+            string serializedObject = stringWriter.ToString();
             TypeWithCommonInterfaces actualObject = new();
-            actualObject.ReadXml(xmlReader);
+            actualObject.ReadXml(XmlReader.Create(new StringReader(serializedObject)));
 
             // assert
             Assert.AreEqual(expectedObject, actualObject);

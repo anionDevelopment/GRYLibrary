@@ -86,6 +86,24 @@ namespace GRYLibrary.Core.APIServer.Mid.Ex
             context.Response.WriteAsync(bodyContent).Wait();
         }
 
+        /// <inheritdoc/>
+        protected override void HandleNotFound(HttpContext context)
+        {
+            (string ContentType, string bodyContent) = this.GetNotFoundResponseContent(context);
+            if (string.IsNullOrEmpty(bodyContent))
+            {
+                // The application does not offer an own page for this, so the response stays as it is.
+                return;
+            }
+            // The content-length of the response is already set to zero at this moment, because the pipeline
+            // answered without a body. It has to be reset before the body is written, since otherwise the
+            // announced length does not match the length which is really sent, which makes the client discard
+            // the response (firefox for example reports "NS_ERROR_NET_EMPTY_RESPONSE").
+            context.Response.ContentLength = null;
+            context.Response.ContentType = ContentType;
+            context.Response.WriteAsync(bodyContent).Wait();
+        }
+
         private void Log(string technicalReason, HttpContext context, Exception exception, uint statuscode,LogLevel loglevel)
         {
             this._Log.Log($"Request {context.Items["RequestId"]} resulted in statuscode {statuscode}. Technical reason: {technicalReason}", exception, loglevel);

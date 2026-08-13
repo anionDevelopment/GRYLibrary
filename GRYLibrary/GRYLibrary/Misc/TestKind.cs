@@ -48,7 +48,7 @@
         EndToEndTest = 8,
 
         /// <summary>
-        /// Test that only generates build-artifacts.
+        /// Test that (re)generates something.
         /// </summary>
         GenerationTest = 9,
 

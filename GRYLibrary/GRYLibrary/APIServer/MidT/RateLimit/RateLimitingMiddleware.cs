@@ -1,4 +1,5 @@
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Verbs;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,19 +27,29 @@ namespace GRYLibrary.Core.APIServer.MidT.RateLimit
     {
         private readonly IRateLimitingConfiguration _Configuration;
         private readonly ITimeService _TimeService;
+        private readonly IAPIServerCommandlineParameter _CommandlineParameter;
         private readonly object _Lock = new object();
         private readonly Dictionary<string, FixedWindowCounter> _Counters = new Dictionary<string, FixedWindowCounter>();
         // Bound the bucket dictionary: prune stale windows once it grows past this size.
         private const int PruneThreshold = 10000;
 
-        protected RateLimitingMiddleware(RequestDelegate next, IRateLimitingConfiguration configuration, ITimeService timeService) : base(next)
+        protected RateLimitingMiddleware(RequestDelegate next, IRateLimitingConfiguration configuration, ITimeService timeService, IAPIServerCommandlineParameter commandlineParameter) : base(next)
         {
             this._Configuration = configuration;
             this._TimeService = timeService;
+            this._CommandlineParameter = commandlineParameter;
         }
 
         public override Task Invoke(HttpContext context)
         {
+            // The limit only applies to a real run. A test- or analysis-run drives the application without the
+            // pauses a human makes between two requests, so it would reach the limit within seconds and would
+            // then be testing the rate-limiting instead of what it wants to check. The limits themselves are
+            // chosen for the productive operation and must not be weakened for that reason.
+            if (!this._CommandlineParameter.RealRun)
+            {
+                return this._Next(context);
+            }
             (string key, int limit) = this.ClassifyRequest(context);
             // limit <= 0 means "disabled" for that client-class.
             if (limit > 0 && this.RegisterRequestAndCheckExceeded(key, limit))

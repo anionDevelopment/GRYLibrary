@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using Microsoft.Extensions.Logging;
 using System;

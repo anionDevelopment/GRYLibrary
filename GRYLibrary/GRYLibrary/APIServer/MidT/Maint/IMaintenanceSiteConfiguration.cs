@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.MidT.Maint
+namespace GRYLibrary.Core.APIServer.MidT.Maint
 {
     public interface IMaintenanceSiteConfiguration : IMiddlewareConfiguration
     {

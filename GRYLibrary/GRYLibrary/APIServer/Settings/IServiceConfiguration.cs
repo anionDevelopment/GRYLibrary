@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Logging.GRYLogger;
 
 namespace GRYLibrary.Core.APIServer.Settings
 {

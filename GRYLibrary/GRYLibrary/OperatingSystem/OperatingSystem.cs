@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems;
+using GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems;
 using System.IO;
 using System.Runtime.InteropServices;
 

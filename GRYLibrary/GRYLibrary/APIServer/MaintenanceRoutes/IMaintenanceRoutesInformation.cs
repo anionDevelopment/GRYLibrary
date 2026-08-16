@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.MaintenanceRoutes
+namespace GRYLibrary.Core.APIServer.MaintenanceRoutes
 {
     /// <summary>
     /// Represents the configuration for <see cref="MaintenanceRoutesController"/>.

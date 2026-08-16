@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.AOA;
+using GRYLibrary.Core.AOA;
 using GRYLibrary.Core.Crypto;
 using GRYLibrary.Core.OperatingSystem;
 using GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems;

@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.Aut.Prov;
+using GRYLibrary.Core.APIServer.Services.Aut.Prov;
 using System.Collections.Generic;
 
 namespace GRYLibrary.Core.APIServer.MidT.Auth

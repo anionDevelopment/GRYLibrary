@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.Misc
+namespace GRYLibrary.Core.Misc
 {
     /// <remarks>
     /// required for cli-usage, see https://github.com/commandlineparser/commandline/issues/702#issuecomment-881143338

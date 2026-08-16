@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.MidT.WAF
+namespace GRYLibrary.Core.APIServer.MidT.WAF
 {
     public interface ISupportWebApplicationFirewallMiddleware : ISupportedMiddleware
     {

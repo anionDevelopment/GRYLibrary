@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Utilities;
+using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
 using GRYLibrary.Core.APIServer.Verbs;
 

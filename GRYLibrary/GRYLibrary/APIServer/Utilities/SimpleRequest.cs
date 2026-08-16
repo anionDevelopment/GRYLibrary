@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.Utilities
+namespace GRYLibrary.Core.APIServer.Utilities
 {
     public class SimpleRequest
     {

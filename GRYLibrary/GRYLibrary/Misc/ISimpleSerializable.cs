@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.Misc
+namespace GRYLibrary.Core.Misc
 {
     public interface ISimpleSerializable
     {

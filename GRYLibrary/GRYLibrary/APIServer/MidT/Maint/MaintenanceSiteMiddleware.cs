@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.Init;
+using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Utilities.InitializationStates;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;

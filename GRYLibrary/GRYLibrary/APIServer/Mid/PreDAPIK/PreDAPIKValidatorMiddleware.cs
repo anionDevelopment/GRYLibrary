@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Mid.M01APIK;
+using GRYLibrary.Core.APIServer.Mid.M01APIK;
 using GRYLibrary.Core.Logging.GRYLogger;
 using Microsoft.AspNetCore.Http;
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using User = GRYLibrary.Core.APIServer.CommonDBTypes.User;
 

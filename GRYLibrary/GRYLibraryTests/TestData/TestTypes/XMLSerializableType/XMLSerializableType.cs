@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.AOA;
+using GRYLibrary.Core.AOA;
 using GRYLibrary.Tests.TestData.TestTypes.CyclicDataStructure;
 using GRYLibrary.Tests.TestData.TestTypes.GenericType;
 using GRYLibrary.Tests.TestData.TestTypes.SimpleDataStructure;

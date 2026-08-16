@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Globalization;
 using System.Threading.Tasks;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;

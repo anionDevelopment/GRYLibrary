@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.MaintenanceRoutes
+namespace GRYLibrary.Core.APIServer.MaintenanceRoutes
 {
     public abstract class AbstractHostMaintenanceInformation
     {

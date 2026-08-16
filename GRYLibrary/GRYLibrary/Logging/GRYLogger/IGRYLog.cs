@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Logging.GeneralPurposeLogger;
+using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Misc;
 using Microsoft.Extensions.Logging;
 using System;

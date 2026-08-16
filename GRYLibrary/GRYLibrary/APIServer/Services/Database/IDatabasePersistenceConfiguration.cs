@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.Services.Database
+namespace GRYLibrary.Core.APIServer.Services.Database
 {
     public interface IDatabasePersistenceConfiguration
     {

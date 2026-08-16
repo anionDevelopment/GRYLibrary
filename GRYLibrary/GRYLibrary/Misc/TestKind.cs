@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.Misc
+namespace GRYLibrary.Core.Misc
 {
     public enum TestKind
     {
@@ -13,29 +13,29 @@
         IntegrationTest = 1,
 
         /// <summary>
-        /// Tests that are always skipped when committing but can be useful to do or debug a certain task/function.
+        /// Tests that are not doing anything when committing but can be useful to do or debug a certain task/function.
         /// </summary>
         DebugHelperTest = 2,
 
         /// <summary>
-        /// Tests that a specific bug does not happen anymore.
-        /// </summary>
-        RegressionTest = 3,
-
-        /// <summary>
         /// Tests that other required systems/services used by the function under test are still available and work like specified so that the function under test is able to be working correctly.
         /// </summary>
-        SystemTest = 4,
+        SystemTest = 3,
 
         /// <summary>
         /// Tests that will be done by reflection to assert a certain property for all types or all methods or all attributes in a certain scope.
         /// </summary>
-        ReflectionTest = 5,
+        ReflectionTest = 4,
 
         /// <summary>
-        /// Tests that are always skipped when committing but can be useful to demonstrate a certain thing/function.
+        /// Verifies that recent changes did not break anything.
         /// </summary>
-        DemonstrationTest = 6,
+        RegressionTest = 5,
+
+        /// <summary>
+        /// Verifies that recent changes did not change the UI.
+        /// </summary>
+        VisualRegressionTest = 6,
 
         /// <summary>
         /// Tests that verifies a certain performance for a certain operation. Testcases of this kind often require appropriate hardware.
@@ -48,12 +48,12 @@
         EndToEndTest = 8,
 
         /// <summary>
-        /// Test that only generates build-artifacts.
+        /// Test that (re)generates something.
         /// </summary>
         GenerationTest = 9,
 
         /// <summary>
-        /// Smoke testing refers to various classes of tests of systems, usually intended to determine whether they are ready for more robust testing.
+        /// Verifies that a certain function is working correctly in a minimal environment with minimal dependencies.
         /// </summary>
         SmokeTest = 10,
     }

@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.ExecutionModes
+namespace GRYLibrary.Core.APIServer.ExecutionModes
 {
     public abstract class ExecutionMode
     {

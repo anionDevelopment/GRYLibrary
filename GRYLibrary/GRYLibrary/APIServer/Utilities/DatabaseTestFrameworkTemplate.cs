@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.Database;
+using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.ExecutePrograms;
 using GRYLibrary.Core.ExecutePrograms.WaitingStates;

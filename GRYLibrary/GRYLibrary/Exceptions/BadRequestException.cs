@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Mid.M05DLog;
+using GRYLibrary.Core.APIServer.Mid.M05DLog;
 using GRYLibrary.Core.APIServer.Utilities;
 using Microsoft.AspNetCore.Http;
 using System.Text;

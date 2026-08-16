@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.Misc.MetaConfiguration.ConfigurationFormats
+namespace GRYLibrary.Core.Misc.MetaConfiguration.ConfigurationFormats
 {
     public class XML : IConfigurationFormat
     {

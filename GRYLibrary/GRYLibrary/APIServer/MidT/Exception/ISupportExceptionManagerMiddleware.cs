@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.MidT.Exception
+namespace GRYLibrary.Core.APIServer.MidT.Exception
 {
     public interface ISupportExceptionManagerMiddleware : ISupportedMiddleware
     {

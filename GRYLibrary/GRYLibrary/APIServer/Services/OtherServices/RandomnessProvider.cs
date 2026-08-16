@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
 using System;
 
 namespace GRYLibrary.Core.APIServer.Services.OtherServices

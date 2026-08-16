@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.ConcreteEnvironments;
+using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using System;
 using System.IO;
 

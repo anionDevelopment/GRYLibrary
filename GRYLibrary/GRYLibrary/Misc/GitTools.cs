@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.ExecutePrograms;
+using GRYLibrary.Core.ExecutePrograms;
 using GRYLibrary.Core.ExecutePrograms.WaitingStates;
 using GRYLibrary.Core.Logging.GRYLogger;
 using System;

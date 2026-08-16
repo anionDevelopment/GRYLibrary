@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.ExecutePrograms;
+using GRYLibrary.Core.ExecutePrograms;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.CustomDisposables;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

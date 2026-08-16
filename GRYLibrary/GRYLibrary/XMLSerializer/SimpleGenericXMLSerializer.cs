@@ -1,4 +1,4 @@
-﻿using ExtendedXmlSerializer.Configuration;
+using ExtendedXmlSerializer.Configuration;
 using ExtendedXmlSerializer;
 using System.IO;
 using System.Xml;

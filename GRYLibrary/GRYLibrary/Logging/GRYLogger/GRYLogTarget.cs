@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.AOA;
+using GRYLibrary.Core.AOA;
 using GRYLibrary.Core.Logging.GRYLogger.ConcreteLogTargets;
 using Microsoft.Extensions.Logging;
 using System;

@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Logging.GRYLogger;
 using System;
 using System.Collections.Generic;
 using System.Threading;

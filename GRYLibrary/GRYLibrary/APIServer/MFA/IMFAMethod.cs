@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.MFA
+namespace GRYLibrary.Core.APIServer.MFA
 {
     public interface IMFAMethod
     {

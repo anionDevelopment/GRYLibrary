@@ -1,4 +1,4 @@
-﻿
+
 namespace GRYLibrary.Core.Misc
 {
     public class GitCommandResult

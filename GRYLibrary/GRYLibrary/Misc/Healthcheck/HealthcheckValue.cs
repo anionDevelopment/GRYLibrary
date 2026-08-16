@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.Misc.Healthcheck
+namespace GRYLibrary.Core.Misc.Healthcheck
 {
     public enum HealthcheckValue
     {

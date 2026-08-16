@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.MidT.General;
+using GRYLibrary.Core.APIServer.MidT.General;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using Microsoft.AspNetCore.Http;
 using System;

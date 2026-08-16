@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems
+namespace GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems
 {
     public class OSX : OperatingSystem
     {

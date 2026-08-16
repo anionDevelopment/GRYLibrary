@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.CommonRoutes
+namespace GRYLibrary.Core.APIServer.CommonRoutes
 {
     public class CommonRoutesInformation : ICommonRoutesInformation
     {

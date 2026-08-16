@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc.MetaConfiguration.ConfigurationFormats;
+using GRYLibrary.Core.Misc.MetaConfiguration.ConfigurationFormats;
 
 namespace GRYLibrary.Core.Misc.MetaConfiguration
 {

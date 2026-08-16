@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Utilities;
+using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.APIServer.Verbs;
 
 namespace GRYLibrary.Core.APIServer.Services.Init

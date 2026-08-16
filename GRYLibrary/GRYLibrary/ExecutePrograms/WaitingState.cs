@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.ExecutePrograms.WaitingStates;
+using GRYLibrary.Core.ExecutePrograms.WaitingStates;
 
 namespace GRYLibrary.Core.ExecutePrograms
 {

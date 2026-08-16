@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
 
 namespace GRYLibrary.Core.Misc

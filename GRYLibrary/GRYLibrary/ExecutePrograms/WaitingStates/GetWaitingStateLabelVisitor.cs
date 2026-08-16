@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.ExecutePrograms.WaitingStates
+namespace GRYLibrary.Core.ExecutePrograms.WaitingStates
 {
     public class GetWaitingStateLabelVisitor : IWaitingStateVisitor<string>
     {

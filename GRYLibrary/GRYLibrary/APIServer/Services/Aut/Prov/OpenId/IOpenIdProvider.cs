@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.Services.Aut.Prov.OpenId
+namespace GRYLibrary.Core.APIServer.Services.Aut.Prov.OpenId
 {
     public interface IOpenIdProvider : IAuthenticationProvider
     {

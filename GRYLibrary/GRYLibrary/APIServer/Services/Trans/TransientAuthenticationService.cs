@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.CommonDBTypes;
+using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.Crypto;
 using GRYLibrary.Core.Exceptions;

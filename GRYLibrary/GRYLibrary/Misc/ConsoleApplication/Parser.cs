@@ -1,4 +1,4 @@
-﻿using CommandLine.Text;
+using CommandLine.Text;
 using CommandLine;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using System;

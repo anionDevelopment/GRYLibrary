@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc.Migration;
+using GRYLibrary.Core.Misc.Migration;
 using System.Collections.Generic;
 
 namespace GRYLibrary.Core.APIServer.Services.Database

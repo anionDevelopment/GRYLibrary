@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Logging.GRYLogger.ConcreteLogTargets;
 using GRYLibrary.Core.Misc.FilePath;
 

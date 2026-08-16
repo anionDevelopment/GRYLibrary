@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.MidT.Captcha;
+using GRYLibrary.Core.APIServer.MidT.Captcha;
 using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.Captcha;
 using Microsoft.AspNetCore.Http;

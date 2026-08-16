@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.MidT.Aut;
+using GRYLibrary.Core.APIServer.MidT.Aut;
 using GRYLibrary.Core.Logging.GRYLogger;
 using Microsoft.AspNetCore.Http;
 

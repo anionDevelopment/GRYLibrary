@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.GDPR;
+using GRYLibrary.Core.APIServer.Services.GDPR;
 using System;
 using System.Collections.Generic;
 

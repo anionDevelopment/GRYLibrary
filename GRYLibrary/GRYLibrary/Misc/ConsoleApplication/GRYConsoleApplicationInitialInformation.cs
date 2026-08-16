@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.ConcreteEnvironments;
+using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.ExecutionModes;
 
 namespace GRYLibrary.Core.Misc.ConsoleApplication

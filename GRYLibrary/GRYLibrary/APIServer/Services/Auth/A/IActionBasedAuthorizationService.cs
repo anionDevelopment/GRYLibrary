@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
 
 namespace GRYLibrary.Core.APIServer.Services.Auth.A
 {

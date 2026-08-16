@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Exceptions;
+using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Graph.Exceptions;
 using GRYLibrary.Core.Misc;
 using System;

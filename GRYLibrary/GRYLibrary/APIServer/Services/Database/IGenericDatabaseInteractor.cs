@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.Migration;
 using System;

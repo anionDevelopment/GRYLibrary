@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.Exceptions
+namespace GRYLibrary.Core.Exceptions
 {
     public class BadUserContentException : UserFormattedException
     {

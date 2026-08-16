@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.Misc.Captcha
+namespace GRYLibrary.Core.Misc.Captcha
 {
     public interface ICaptchaManager
     {

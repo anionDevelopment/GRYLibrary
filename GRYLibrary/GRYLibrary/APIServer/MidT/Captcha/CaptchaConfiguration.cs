@@ -1,4 +1,4 @@
-﻿using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 
 namespace GRYLibrary.Core.APIServer.MidT.Captcha

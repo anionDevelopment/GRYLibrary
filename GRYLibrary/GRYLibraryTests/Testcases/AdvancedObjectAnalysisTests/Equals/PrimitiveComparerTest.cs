@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.AOA;
+using GRYLibrary.Core.AOA;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Equals

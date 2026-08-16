@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.ExecutePrograms;
+using GRYLibrary.Core.ExecutePrograms;
 using System;
 
 namespace GRYLibrary.Core.Exceptions

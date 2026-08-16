@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.Misc.ConsoleApplication
+namespace GRYLibrary.Core.Misc.ConsoleApplication
 {
     public interface ICommandlineParameter
     {

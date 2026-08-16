@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.AOA.SerializeHelper.SimplifiedObjects;
+using GRYLibrary.Core.AOA.SerializeHelper.SimplifiedObjects;
 using System;
 using System.Xml.Serialization;
 

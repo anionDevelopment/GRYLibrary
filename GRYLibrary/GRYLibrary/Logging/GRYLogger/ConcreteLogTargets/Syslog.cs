@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.ExecutePrograms;
+using GRYLibrary.Core.ExecutePrograms;
 using GRYLibrary.Core.Misc;
 using System;
 using System.Collections.Generic;

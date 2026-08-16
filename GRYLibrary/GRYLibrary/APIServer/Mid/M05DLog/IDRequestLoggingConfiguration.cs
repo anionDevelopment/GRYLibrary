@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.MidT.RLog;
+using GRYLibrary.Core.APIServer.MidT.RLog;
 using GRYLibrary.Core.Logging.GRYLogger;
 using System.Collections.Generic;
 

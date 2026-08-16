@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.Services.CredC
+namespace GRYLibrary.Core.APIServer.Services.CredC
 {
     public class CookieServiceConfiguration : ICookieServiceConfiguration
     {

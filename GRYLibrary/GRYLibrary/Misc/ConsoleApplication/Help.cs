@@ -1,4 +1,4 @@
-﻿using CommandLine;
+using CommandLine;
 using System.Linq;
 
 namespace GRYLibrary.Core.Misc.ConsoleApplication

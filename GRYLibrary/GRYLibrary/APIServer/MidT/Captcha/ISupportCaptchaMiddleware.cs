@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.MidT.Captcha
+namespace GRYLibrary.Core.APIServer.MidT.Captcha
 {
     public interface ISupportCaptchaMiddleware : ISupportedMiddleware
     {

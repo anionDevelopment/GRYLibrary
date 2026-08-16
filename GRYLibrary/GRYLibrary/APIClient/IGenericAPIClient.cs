@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services;
+using GRYLibrary.Core.APIServer.Services;
 using System.Threading.Tasks;
 
 namespace GRYLibrary.Core.APIClient

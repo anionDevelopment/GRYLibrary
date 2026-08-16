@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.AOA;
+using GRYLibrary.Core.AOA;
 using GRYLibrary.Core.AOA.SerializeHelper;
 using System;
 using System.Collections.Generic;

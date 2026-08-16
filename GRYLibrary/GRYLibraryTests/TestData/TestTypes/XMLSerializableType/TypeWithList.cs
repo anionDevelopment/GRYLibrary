@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.AOA;
+using GRYLibrary.Core.AOA;
 using System.Collections;
 using System.Xml;
 using System.Xml.Schema;

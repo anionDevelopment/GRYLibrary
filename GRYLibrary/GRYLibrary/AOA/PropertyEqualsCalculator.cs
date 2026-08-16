@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.AOA.EqualsHelper;
+using GRYLibrary.Core.AOA.EqualsHelper;
 using GRYLibrary.Core.Misc;
 using System;
 

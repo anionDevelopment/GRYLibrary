@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using GUtilies = GRYLibrary.Core.Misc.Utilities;
 using System.Diagnostics;

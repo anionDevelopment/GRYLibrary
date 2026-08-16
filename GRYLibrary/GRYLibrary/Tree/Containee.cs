@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.Tree
+namespace GRYLibrary.Core.Tree
 {
     public class Containee<ContainedItemType> : TreeItem<ContainedItemType>
     {

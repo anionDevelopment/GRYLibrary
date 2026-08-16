@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.AOA;
+using GRYLibrary.Core.AOA;
 using GRYLibrary.Tests.TestData.TestTypes.ComplexDataStructure.PaymentMethods;
 using System;
 

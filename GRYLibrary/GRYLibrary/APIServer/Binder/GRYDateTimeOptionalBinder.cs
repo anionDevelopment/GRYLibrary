@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using GUtilities = GRYLibrary.Core.Misc.Utilities;
 using System.Threading.Tasks;

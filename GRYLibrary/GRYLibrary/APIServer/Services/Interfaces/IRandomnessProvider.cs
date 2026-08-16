@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.Services.Interfaces
+namespace GRYLibrary.Core.APIServer.Services.Interfaces
 {
     /// <summary>
     /// Represents a randomness provider.

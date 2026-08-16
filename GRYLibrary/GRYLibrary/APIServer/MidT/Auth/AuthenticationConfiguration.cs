@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.Aut.Prov;
+using GRYLibrary.Core.APIServer.Services.Aut.Prov;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 

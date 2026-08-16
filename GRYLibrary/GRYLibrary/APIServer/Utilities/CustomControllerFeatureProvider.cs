@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.CommonRoutes;
+using GRYLibrary.Core.APIServer.CommonRoutes;
 using GRYLibrary.Core.APIServer.MaintenanceRoutes;
 using GRYLibrary.Core.APIServer.Settings;
 using GRYLibrary.Core.APIServer.Settings.Regulations.GDPR;

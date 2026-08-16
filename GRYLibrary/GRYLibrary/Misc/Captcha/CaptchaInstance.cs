@@ -1,4 +1,4 @@
-﻿using DNTCaptcha.Core;
+using DNTCaptcha.Core;
 using Microsoft.Extensions.Options;
 using SkiaSharp;
 using System;

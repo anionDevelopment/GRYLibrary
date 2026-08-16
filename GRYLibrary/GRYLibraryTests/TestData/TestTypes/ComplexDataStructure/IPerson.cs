@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace GRYLibrary.Tests.TestData.TestTypes.ComplexDataStructure
 {

@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Logging.GRYLogger;
 using System;
 
 namespace GRYLibrary.Core.Misc

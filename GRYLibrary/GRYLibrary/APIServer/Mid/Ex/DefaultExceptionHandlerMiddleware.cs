@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.MidT.Exception;
+using GRYLibrary.Core.APIServer.MidT.Exception;
 using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.Exceptions;
 using GRYLibrary.Core.Logging.GRYLogger;

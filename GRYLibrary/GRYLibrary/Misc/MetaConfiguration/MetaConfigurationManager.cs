@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc.MetaConfiguration.ConfigurationFormats;
+using GRYLibrary.Core.Misc.MetaConfiguration.ConfigurationFormats;
 using System.Collections.Generic;
 using System;
 

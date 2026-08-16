@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.Misc.Event
+namespace GRYLibrary.Core.Misc.Event
 {
     public interface IObserver<SenderType, EventArgumentType>
     {

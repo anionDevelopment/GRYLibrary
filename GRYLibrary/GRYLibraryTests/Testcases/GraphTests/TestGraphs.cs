@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Graph;
+using GRYLibrary.Core.Graph;
 
 namespace GRYLibrary.Tests.Testcases.GraphTests
 {

@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.Logger;
+using GRYLibrary.Core.APIServer.Services.Logger;
 using GRYLibrary.Core.Logging.GRYLogger;
 using Npgsql;
 using NpgsqlTypes;

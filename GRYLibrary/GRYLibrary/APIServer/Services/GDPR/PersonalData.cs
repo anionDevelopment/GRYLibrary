@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 
 namespace GRYLibrary.Core.APIServer.Services.GDPR
 {

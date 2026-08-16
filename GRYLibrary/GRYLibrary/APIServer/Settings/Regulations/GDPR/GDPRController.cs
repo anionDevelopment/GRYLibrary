@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.Services.GDPR;
+using GRYLibrary.Core.APIServer.Services.GDPR;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;

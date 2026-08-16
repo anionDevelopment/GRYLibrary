@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.MidT.Auth;
+using GRYLibrary.Core.APIServer.MidT.Auth;
 
 namespace GRYLibrary.Core.APIServer.Mid.AuthS
 {

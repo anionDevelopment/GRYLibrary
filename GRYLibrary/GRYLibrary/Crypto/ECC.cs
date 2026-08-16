@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 using System;
 
 namespace GRYLibrary.Core.Crypto

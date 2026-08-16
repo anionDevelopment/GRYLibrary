@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Logging.GRYLogger;
+using GRYLibrary.Core.Logging.GRYLogger;
 using System.Collections.Generic;
 
 namespace GRYLibrary.Core.APIServer.Services.Logger

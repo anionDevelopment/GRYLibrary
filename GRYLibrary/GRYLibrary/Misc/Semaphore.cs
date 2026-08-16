@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using GRYLibrary.Core.Exceptions;
 
 namespace GRYLibrary.Core.Misc

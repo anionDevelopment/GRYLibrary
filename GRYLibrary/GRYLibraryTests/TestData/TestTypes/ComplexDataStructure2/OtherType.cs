@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Tests.TestData.TestTypes.ComplexDataStructure2
+namespace GRYLibrary.Tests.TestData.TestTypes.ComplexDataStructure2
 {
     public class OtherType : ModelType
     {

@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.ConcreteEnvironments
+namespace GRYLibrary.Core.APIServer.ConcreteEnvironments
 {
     public class Development : GRYEnvironment
     {

@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
+using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.APIServer.MFA;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;

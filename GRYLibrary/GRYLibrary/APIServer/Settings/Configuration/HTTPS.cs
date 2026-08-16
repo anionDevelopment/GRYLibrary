@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.Settings.Configuration
+namespace GRYLibrary.Core.APIServer.Settings.Configuration
 {
     public class HTTPS : Protocol
     {

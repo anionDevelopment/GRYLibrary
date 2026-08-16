@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.APIServer.ExecutionModes;
+using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
 

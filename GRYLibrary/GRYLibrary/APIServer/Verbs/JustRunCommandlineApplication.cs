@@ -1,4 +1,4 @@
-﻿using CommandLine;
+using CommandLine;
 using GRYLibrary.Core.Misc.ConsoleApplication;
 
 namespace GRYLibrary.Core.APIServer.Verbs

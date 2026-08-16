@@ -1,4 +1,4 @@
-﻿
+
 namespace GRYLibrary.Core.Tree
 {
     public abstract class TreeItem<ContainedItemType>

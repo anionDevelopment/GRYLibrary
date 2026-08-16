@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.ExecutePrograms.WaitingStates
+namespace GRYLibrary.Core.ExecutePrograms.WaitingStates
 {
     public class RunSynchronously : WaitingState
     {

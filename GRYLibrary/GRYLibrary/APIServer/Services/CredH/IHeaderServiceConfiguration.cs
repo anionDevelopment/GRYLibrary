@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.Services.CredH
+namespace GRYLibrary.Core.APIServer.Services.CredH
 {
     public interface IHeaderServiceConfiguration
     {

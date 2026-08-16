@@ -1,4 +1,4 @@
-﻿namespace GRYLibrary.Core.APIServer.MidT
+namespace GRYLibrary.Core.APIServer.MidT
 {
     public interface ISupportedMiddleware
     {

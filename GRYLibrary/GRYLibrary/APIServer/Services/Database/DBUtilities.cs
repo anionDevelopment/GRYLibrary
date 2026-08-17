@@ -81,58 +81,64 @@ namespace GRYLibrary.Core.APIServer.Services.Database
             AccessDatabase(database, interactor =>
             {
                 log.Log("Run DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                DbConnection connection = interactor.GetGenericDatabaseInteractor().GetConnection();
-                bool commit = true;
-                foreach (Func<DbCommand, T?> function in functions)
+                //The exclusive access is held for the entire transaction, so no other user of the database can interfere with it and the connection can not be
+                //replaced while the transaction is running.
+                interactor.GetGenericDatabaseInteractor().UseConnection(connection => RunTransactionCore(nameOfAction, log, runTransactional, connection, functions, results));
+            });
+            return [.. results];
+        }
+
+        private static void RunTransactionCore<T>(string nameOfAction, IGRYLog log, bool runTransactional, DbConnection connection, Func<DbCommand, T?>[] functions, List<T?> results)
+        {
+            bool commit = true;
+            foreach (Func<DbCommand, T?> function in functions)
+            {
+                DbTransaction? transaction = null;
+                if (runTransactional)
                 {
-                    DbTransaction? transaction = null;
-                    if (runTransactional)
+                    transaction = connection.BeginTransaction();
+                }
+                try
+                {
+                    using (DbCommand cmd = connection.CreateCommand())
                     {
-                        transaction = connection.BeginTransaction();
-                    }
-                    try
-                    {
-                        using (DbCommand cmd = connection.CreateCommand())
-                        {
-                            cmd.CommandType = CommandType.Text;
-                            cmd.CommandTimeout = 300;
-                            if (runTransactional)
-                            {
-                                cmd.Transaction = transaction;
-                            }
-                            try
-                            {
-                                T? result = function(cmd);
-                                results.Add(result);
-                            }
-                            catch (Exception e)
-                            {
-                                commit = false;
-                                log.Log($"Error in database occurred while doing DB-transaction {nameOfAction}.", e);
-                                throw;
-                            }
-                        }
-                    }
-                    finally
-                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandTimeout = 300;
                         if (runTransactional)
                         {
-                            if (commit)
-                            {
-                                log.Log("Commit DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                                transaction!.Commit();
-                            }
-                            else
-                            {
-                                log.Log("Rollback DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                                transaction!.Rollback();
-                            }
-                            transaction!.Dispose();
+                            cmd.Transaction = transaction;
+                        }
+                        try
+                        {
+                            T? result = function(cmd);
+                            results.Add(result);
+                        }
+                        catch (Exception e)
+                        {
+                            commit = false;
+                            log.Log($"Error in database occurred while doing DB-transaction {nameOfAction}.", e);
+                            throw;
                         }
                     }
                 }
-            });
-            return [.. results];
+                finally
+                {
+                    if (runTransactional)
+                    {
+                        if (commit)
+                        {
+                            log.Log("Commit DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
+                            transaction!.Commit();
+                        }
+                        else
+                        {
+                            log.Log("Rollback DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
+                            transaction!.Rollback();
+                        }
+                        transaction!.Dispose();
+                    }
+                }
+            }
         }
     }
 }

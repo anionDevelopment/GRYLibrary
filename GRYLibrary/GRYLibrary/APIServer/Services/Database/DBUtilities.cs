@@ -124,20 +124,52 @@ namespace GRYLibrary.Core.APIServer.Services.Database
                 }
                 finally
                 {
-                    if (runTransactional)
+                    try
                     {
-                        if (commit)
+                        if (runTransactional)
                         {
-                            log.Log("Commit DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                            transaction!.Commit();
+                            CompleteTransaction(nameOfAction, log, transaction!, commit);
                         }
-                        else
-                        {
-                            log.Log("Rollback DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                            transaction!.Rollback();
-                        }
-                        transaction!.Dispose();
                     }
+                    finally
+                    {
+                        transaction?.Dispose();//also required when completing the transaction failed
+                    }
+                }
+            }
+        }
+
+        /// <summary>Completes <paramref name="transaction"/> by committing or rolling it back, depending on <paramref name="commit"/>.</summary>
+        private static void CompleteTransaction(string nameOfAction, IGRYLog log, DbTransaction transaction, bool commit)
+        {
+            if (commit)
+            {
+                log.Log("Commit DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
+                try
+                {
+                    transaction.Commit();
+                }
+                catch (Exception exception)
+                {
+                    //A failed commit is not the same as a failed statement: the database may have applied the transaction anyway and only the answer did not
+                    //reach the application, for example when the connection ran into a timeout while waiting for it. The caller therefore must not assume that
+                    //nothing happened, which is why this is stated explicitly instead of only reporting a connection-error.
+                    log.Log($"Commit of DB-transaction {nameOfAction} failed. It is undetermined whether the database applied this transaction or not.", exception);
+                    throw;
+                }
+            }
+            else
+            {
+                log.Log("Rollback DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
+                try
+                {
+                    transaction.Rollback();
+                }
+                catch (Exception exception)
+                {
+                    //A rollback is only done while the exception which caused it is on its way to the caller. Letting the rollback-exception out would replace
+                    //that exception and therefore hide the actual reason of the failure, so it is only reported here.
+                    log.Log($"Rollback of DB-transaction {nameOfAction} failed.", exception);
                 }
             }
         }

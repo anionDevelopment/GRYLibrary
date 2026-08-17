@@ -90,9 +90,10 @@ namespace GRYLibrary.Core.APIServer.Services.Database
 
         private static void RunTransactionCore<T>(string nameOfAction, IGRYLog log, bool runTransactional, DbConnection connection, Func<DbCommand, T?>[] functions, List<T?> results)
         {
-            bool commit = true;
             foreach (Func<DbCommand, T?> function in functions)
             {
+                //Every function gets its own transaction, so whether it is committed must be decided per function and not once for all of them.
+                bool commit = true;
                 DbTransaction? transaction = null;
                 if (runTransactional)
                 {

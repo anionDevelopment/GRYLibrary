@@ -138,6 +138,10 @@ namespace GRYLibrary.Core.APIServer.Services.Database
                 this.DisposeConnection();
                 DbConnection connection = this.CreateConnection();
                 this.CurrentConnection = connection;
+                //The stored exception describes why a previous connection-attempt failed. Keeping it after a successful connect would attach it to every later
+                //error-report of this interactor and therefore point at a situation which is over (typically the database still starting up while the
+                //application was already running).
+                this.LastConnectionException = null;
                 this.Log.Log("Database connected.");
             }
             catch (Exception exception)
@@ -296,7 +300,7 @@ namespace GRYLibrary.Core.APIServer.Services.Database
                                 GUtilities.NoOperation(); // Just to ensure that we can read from the reader without any exceptions
                             }
                         }
-                        return (true, this.LastConnectionException);
+                        return (true, null);
                     }
                     else
                     {

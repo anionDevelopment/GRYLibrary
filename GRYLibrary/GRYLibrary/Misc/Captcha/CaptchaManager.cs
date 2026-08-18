@@ -86,7 +86,7 @@ namespace GRYLibrary.Core.Misc.Captcha
             }
             else
             {
-                failMessage = "Unknown cpatcha";
+                failMessage = "Unknown captcha";
             }
             accessKey = null;
             return false;

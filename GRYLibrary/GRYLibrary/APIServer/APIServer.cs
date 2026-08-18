@@ -155,8 +155,8 @@ namespace GRYLibrary.Core.APIServer
                 apiServerConfiguration.InitializationInformation.InitialLogger.Log($"Configuration-folder: {apiServerConfiguration.InitializationInformation.ApplicationConstants.ConfigurationFolder}", LogLevel.Debug);
                 apiServerConfiguration.InitializationInformation.InitialLogger.Log($"Data-folder: {apiServerConfiguration.InitializationInformation.ApplicationConstants.GetDataFolder()}", LogLevel.Debug);
                 apiServerConfiguration.InitializationInformation.InitialLogger.Log($"Log-folder: {apiServerConfiguration.InitializationInformation.ApplicationConstants.GetLogFolder()}", LogLevel.Debug);
-                apiServerConfiguration.InitializationInformation.InitialLogger.Log($"Run {nameof(APIServerConfiguration<ApplicationSpecificConstants, PersistedApplicationSpecificConfiguration, CommandlineParameterType>.SetInitialzationInformationAction)}...", LogLevel.Debug);
-                apiServerConfiguration.SetInitialzationInformationAction(apiServerConfiguration.InitializationInformation);
+                apiServerConfiguration.InitializationInformation.InitialLogger.Log($"Run {nameof(APIServerConfiguration<ApplicationSpecificConstants, PersistedApplicationSpecificConfiguration, CommandlineParameterType>.SetInitializationInformationAction)}...", LogLevel.Debug);
+                apiServerConfiguration.SetInitializationInformationAction(apiServerConfiguration.InitializationInformation);
                 #endregion
 
                 #region Load configuration

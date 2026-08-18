@@ -63,7 +63,7 @@ namespace GRYLibrary.Core.APIServer.Services.Database
 
         public DbParameter GetParameter(string parameterName, object value)
         {
-            GUtilities.AssertCondition(value != null, $"value for parameter {parameterName} is null, so a speicfic type for it must be set.");
+            GUtilities.AssertCondition(value != null, $"value for parameter {parameterName} is null, so a specific type for it must be set.");
             return this.GetParameter(parameterName, value, value!.GetType());
         }
 
@@ -115,7 +115,7 @@ namespace GRYLibrary.Core.APIServer.Services.Database
                     catch (Exception exception)
                     {
                         this.LastConnectionException = exception;
-                        Thread.Sleep(TimeSpan.FromSeconds(2));//not connected. wait a few seconds until checking again if the database is avbailable.
+                        Thread.Sleep(TimeSpan.FromSeconds(2));//not connected. wait a few seconds until checking again if the database is available.
                     }
                 }
                 this._ConnectionAccess.Run(this.DisposeConnection);

@@ -1,3 +1,4 @@
+﻿using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Graph;
 using GRYLibrary.Core.Graph.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,6 +12,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
     public class CycleTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestConstructor()
         {
             Vertex v1 = new(nameof(v1));
@@ -31,6 +33,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.IsTrue(cycle.Edges.SequenceEqual(cycleInternalOrder));
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestRepresentsCycle()
         {
             Vertex v1 = new(nameof(v1));
@@ -60,11 +63,13 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
 
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestErrorsOfCycleConstructorsDueToEmptyEdgesList()
         {
             Assert.Throws<InvalidGraphStructureException>(() => new Cycle(Array.Empty<Edge>()));
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestErrorsOfCycleConstructorsDueToUncyclicEdges()
         {
             Vertex v1 = new(nameof(v1));
@@ -75,6 +80,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.Throws<InvalidGraphStructureException>(() => new Cycle(new Edge[] { edge1, edge2 }));
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestErrorsOfCycleConstructorsDueToDuplicatedEdges()
         {
             Vertex v1 = new(nameof(v1));

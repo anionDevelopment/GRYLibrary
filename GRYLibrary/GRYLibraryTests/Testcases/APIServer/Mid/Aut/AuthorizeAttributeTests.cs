@@ -9,7 +9,7 @@ namespace GRYLibrary.Tests.Testcases.APIServer.Mid.Aut
     public class AuthorizeAttributeTests
     {
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void AuthorizeAttributeConstructorTests()
         {
             Assert.IsTrue(new AuthorizeAttribute(null).Groups.SetEquals(new HashSet<string>()));

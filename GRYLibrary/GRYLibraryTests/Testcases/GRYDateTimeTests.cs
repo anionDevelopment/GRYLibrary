@@ -1,4 +1,4 @@
-using GRYLibrary.Core.Misc;
+﻿using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GRYLibrary.Tests.Testcases
@@ -7,6 +7,7 @@ namespace GRYLibrary.Tests.Testcases
     public class GRYDateTimeTests
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestGRYDateTimeFromString()
         {
             // arrange

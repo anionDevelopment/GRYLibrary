@@ -1,3 +1,4 @@
+﻿using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ namespace GRYLibrary.Tests.Testcases
     public class ConcurrentTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestConcurrentFunctions1()
         {
             ISet<Tuple<int, int>> testFunctionDetails = new HashSet<Tuple<int, int>>();

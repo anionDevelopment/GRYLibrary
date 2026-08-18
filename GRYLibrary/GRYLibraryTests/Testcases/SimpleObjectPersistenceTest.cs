@@ -1,4 +1,4 @@
-using GRYLibrary.Core.Misc;
+﻿using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +10,7 @@ namespace GRYLibrary.Tests.Testcases
     public class SimpleObjectPersistenceTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void SimpleObjectPersistenceTestTest1()
         {
             string file = "file.xml";

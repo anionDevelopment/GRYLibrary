@@ -1,4 +1,4 @@
-using GRYLibrary.Core.Misc;
+﻿using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Playlists.ConcretePlaylistHandler;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
@@ -11,6 +11,7 @@ namespace GRYLibrary.Tests.Testcases.Playlists.ConcretePlaylistHandler
     public class M3uHandlerTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void AddSongTo3UTest1()
         {
             //arrange
@@ -33,6 +34,7 @@ namespace GRYLibrary.Tests.Testcases.Playlists.ConcretePlaylistHandler
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void AddSongTo3UTest2()
         {
             //arrange

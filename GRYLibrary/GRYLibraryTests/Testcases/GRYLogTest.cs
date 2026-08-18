@@ -1,3 +1,4 @@
+﻿using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Logging.GRYLogger;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -10,6 +11,7 @@ namespace GRYLibrary.Tests.Testcases
     public class GRYLogTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestLogProgress()
         {
             GRYLog logObject = GRYLog.Create();
@@ -25,6 +27,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestLogTimezone()
         {
             StringWriter stringWriter = new StringWriter();

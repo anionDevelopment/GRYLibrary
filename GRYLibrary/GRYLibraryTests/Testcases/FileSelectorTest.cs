@@ -1,4 +1,4 @@
-using GRYLibrary.Core.Misc;
+﻿using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 
@@ -8,6 +8,7 @@ namespace GRYLibrary.Tests.Testcases
     public class FileSelectorTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void FileSelectorTest1()
         {
             string baseDir = "basetestdir/";

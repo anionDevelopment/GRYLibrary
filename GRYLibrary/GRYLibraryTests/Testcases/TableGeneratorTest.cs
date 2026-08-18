@@ -1,3 +1,4 @@
+﻿using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static GRYLibrary.Core.Misc.TableGenerator;
 
@@ -7,6 +8,7 @@ namespace GRYLibrary.Tests.Testcases
     public class TableGeneratorTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestSimpleASCIITable1()
         {
             string[,] items = new string[3, 4];
@@ -32,6 +34,7 @@ namespace GRYLibrary.Tests.Testcases
             Assert.AreEqual("└───────────┴──────────────┴──────────────┴────────────────┘", table[5]);
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestSimpleASCIITable2()
         {
             string[,] items = new string[3, 4];
@@ -56,6 +59,7 @@ namespace GRYLibrary.Tests.Testcases
             Assert.AreEqual("╚══════════╩═══════════╩═══════════╩═══════════╝", table[4]);
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestSimpleCSVTable1()
         {
             string[,] items = new string[3, 4];

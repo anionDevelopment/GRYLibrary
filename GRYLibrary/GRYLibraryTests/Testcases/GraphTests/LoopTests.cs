@@ -1,3 +1,4 @@
+﻿using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Graph;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
     public class LoopTests
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void HasOneOrMoreCycleTest1()
         {
             DirectedGraph graph = TestGraphs.GetTestConnectedGraphWithSimpleLoop();
@@ -21,6 +23,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.AreEqual(1, cycles.Count);
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void HasOneOrMoreCycleTest()
         {
             DirectedGraph graph = TestGraphs.GetTestGraphWithoutLoop2();
@@ -28,6 +31,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.IsFalse(graph.ContainsOneOrMoreSelfLoops());
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsConnectedTest1()
         {
             Assert.IsTrue(TestGraphs.GetTestConnectedGraphWithSimpleLoop().ToUndirectedGraph().IsConnected());

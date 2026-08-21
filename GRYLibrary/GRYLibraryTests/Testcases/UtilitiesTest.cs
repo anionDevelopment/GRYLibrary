@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.XMLSerializer;
 using GRYLibrary.Tests.TestData.TestTypes.CyclicDataStructure;
 using GRYLibrary.Tests.TestData.TestTypes.SimpleDataStructure;
@@ -978,6 +978,26 @@ namespace GRYLibrary.Tests.Testcases
 
             // assert
             Assert.AreEqual(expected, actual);
+        }
+
+        /// <remarks>
+        /// One byte states two characters, so an odd amount of characters is the case which can go wrong: it is
+        /// answered by generating one byte more and using one character of it. The two amounts here are therefore an
+        /// odd one and an even one.
+        /// </remarks>
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void GenerateSecureRandomValueReturnsAValueOfTheWantedLength()
+        {
+            // act
+            string valueOfAnOddLength = GUtilities.GenerateSecureRandomValue(null,7);
+            string valueOfAnEvenLength = GUtilities.GenerateSecureRandomValue(null, 8);
+
+            // assert
+            Assert.AreEqual(7, valueOfAnOddLength.Length);
+            Assert.AreEqual(8, valueOfAnEvenLength.Length);
+            Assert.IsTrue(valueOfAnOddLength.All("0123456789abcdef".Contains), "Every character has to be a hexadecimal one.");
+            Assert.IsTrue(valueOfAnEvenLength.All("0123456789abcdef".Contains), "Every character has to be a hexadecimal one.");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Playlists.ConcretePlaylistHandler;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;

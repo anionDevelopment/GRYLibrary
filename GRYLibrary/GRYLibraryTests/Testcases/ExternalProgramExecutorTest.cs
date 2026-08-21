@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.ExecutePrograms;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.CustomDisposables;

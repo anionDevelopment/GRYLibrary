@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.AOA;
 using GRYLibrary.Tests.TestData.TestTypes.ComplexDataStructure;
 using GRYLibrary.Tests.TestData.TestTypes.ComplexDataStructure2;

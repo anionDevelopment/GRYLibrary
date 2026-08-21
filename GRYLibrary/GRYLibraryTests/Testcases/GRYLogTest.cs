@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Logging.GRYLogger;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

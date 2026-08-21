@@ -3651,6 +3651,37 @@ namespace GRYLibrary.Core.Misc
                 return Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
             }
         }
+        /// <summary>
+        /// Creates a value which can be used as a password or as a token: a hexadecimal string of the given amount of
+        /// characters, whose bytes come from the random-generator of the operating-system.
+        /// </summary>
+        /// <param name="amountOfCharacters">The amount of characters of the result. 32 characters state 16 bytes, which is enough that a value can not be guessed and short enough to be handed over by a person.</param>
+        /// <remarks>
+        /// The random-generator of the operating-system is used and not <see cref="Random"/>: the latter is meant to be
+        /// fast and reproducible, which is the opposite of what a password needs. Whoever knows a few of its values can
+        /// compute the following ones, and a token which can be computed is no token.
+        ///
+        /// One byte states two characters, so an odd amount is answered by generating one byte more and using one
+        /// character of it. That keeps every character of the result what it is: one of the sixteen hexadecimal
+        /// characters, chosen with the same probability and independently of the others.
+        /// </remarks>
+        /// <exception cref="ArgumentException">Thrown when the amount of characters is not a positive number.</exception>
+        public static string GenerateSecureRandomValue(string? prefix= null,int amountOfCharacters = 32)
+        {
+            if (amountOfCharacters <= 0)
+            {
+                throw new ArgumentException($"The amount of characters has to be a positive number, but {amountOfCharacters} was given.", nameof(amountOfCharacters));
+            }
+            int amountOfBytes = (amountOfCharacters + 1) / 2;
+            string result = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(amountOfBytes)).ToLowerInvariant();
+            result= result[..amountOfCharacters];
+            if (prefix!=null)
+            {
+                result = prefix +"_"+ result;
+            }
+            return result;
+        }
+
         public static string GetRandomHexCharacter(int digits, IRandomnessProvider random)
         {
             byte[] buffer = new byte[digits / 2];

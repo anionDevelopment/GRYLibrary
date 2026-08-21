@@ -8,6 +8,7 @@
 ## Articles
 
 - [Introduction](./Articles/Introduction.md)
+- [APIServer](./Articles/APIServer.md)
 - [ExternalProgramExecutorWrapper](./Articles/ExternalProgramExecutorWrapper.md)
 - [GRYLog](./Articles/GRYLog.md)
 - [SimpleGenericXMLSerializer](./Articles/SimpleGenericXMLSerializer.md)

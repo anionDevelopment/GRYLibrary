@@ -29,6 +29,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi;
@@ -361,6 +362,10 @@ namespace GRYLibrary.Core.APIServer
                     mvcOptions.InputFormatters.Add(new ByteArrayInputFormatter());
                     mvcOptions.UseGeneralRoutePrefix(ServerConfiguration.APIRoutePrefix);
                 });//TODO add handling for /robots.txt
+                // A common route whose link is not configured is not hosted at all. The convention is added through
+                // the options-pattern and not directly, because it needs the configured information, which is
+                // registered by the application and therefore only resolvable when the container exists.
+                services.AddSingleton<IConfigureOptions<Microsoft.AspNetCore.Mvc.MvcOptions>, ConfigureCommonRoutes>();
                 mvcBuilder = mvcBuilder.ConfigureApplicationPartManager(manager =>
                     {
                         manager.FeatureProviders.Clear();
@@ -483,17 +488,29 @@ namespace GRYLibrary.Core.APIServer
                         };
                         if (this._Configuration.InitializationInformation.ApplicationConstants.CommonRoutesHostInformation is HostCommonRoutes)
                         {
-                            openAPIInfo.TermsOfService = new Uri(persistedApplicationSpecificConfiguration.ServerConfiguration.GetServerAddress() + ServerConfiguration.TermsOfServiceURLSubPath);
-                            openAPIInfo.Contact = new OpenApiContact
+                            // Only the routes which are hosted are offered: a link which is not configured means that
+                            // its route does not exist, so the api-specification must not name it either.
+                            ICommonRoutesInformation? commonRoutesInformation = services.BuildServiceProvider().GetService<ICommonRoutesInformation>();
+                            if (!string.IsNullOrWhiteSpace(commonRoutesInformation?.TermsOfServiceLink))
                             {
-                                Name = "Contact",
-                                Url = new Uri(persistedApplicationSpecificConfiguration.ServerConfiguration.GetServerAddress() + ServerConfiguration.ContactURLSubPath)
-                            };
-                            openAPIInfo.License = new OpenApiLicense
+                                openAPIInfo.TermsOfService = new Uri(persistedApplicationSpecificConfiguration.ServerConfiguration.GetServerAddress() + ServerConfiguration.TermsOfServiceURLSubPath);
+                            }
+                            if (!string.IsNullOrWhiteSpace(commonRoutesInformation?.ContactLink))
                             {
-                                Name = "License",
-                                Url = new Uri(persistedApplicationSpecificConfiguration.ServerConfiguration.GetServerAddress() + ServerConfiguration.LicenseURLSubPath)
-                            };
+                                openAPIInfo.Contact = new OpenApiContact
+                                {
+                                    Name = "Contact",
+                                    Url = new Uri(persistedApplicationSpecificConfiguration.ServerConfiguration.GetServerAddress() + ServerConfiguration.ContactURLSubPath)
+                                };
+                            }
+                            if (!string.IsNullOrWhiteSpace(commonRoutesInformation?.LicenseLink))
+                            {
+                                openAPIInfo.License = new OpenApiLicense
+                                {
+                                    Name = "License",
+                                    Url = new Uri(persistedApplicationSpecificConfiguration.ServerConfiguration.GetServerAddress() + ServerConfiguration.LicenseURLSubPath)
+                                };
+                            }
                         }
                         swaggerOptions.SwaggerDoc(ServerConfiguration.APISpecificationDocumentName, openAPIInfo);
                         string xmlFilename = $"{this._Configuration.InitializationInformation.ApplicationConstants.ApplicationName}.xml";

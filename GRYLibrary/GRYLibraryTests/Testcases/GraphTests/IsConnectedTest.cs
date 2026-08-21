@@ -1,4 +1,4 @@
-﻿using GRYLibrary.Core.Misc;
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Graph;
 using GRYLibrary.Core.Graph.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

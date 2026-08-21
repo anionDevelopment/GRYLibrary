@@ -1,3 +1,4 @@
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.ExecutePrograms;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.CustomDisposables;
@@ -12,6 +13,7 @@ namespace GRYLibrary.Tests.Testcases
     public class ExternalProgramExecutorTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void TestEchoWithSomeSpecialCharacter()
         {
             string testStdOut = "test \\ \" < > ' testend";
@@ -24,6 +26,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void TestCopyFileWithSpaceInFilename()
         {
             //arrange
@@ -44,6 +47,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void TestCopyFileUseUmlautsAndOtherCharacterFromOtherLanguages()
         {
             //arrange
@@ -64,6 +68,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void TestVerboseExecutionProducesExpectedStdOutLogSequence()
         {
             //arrange

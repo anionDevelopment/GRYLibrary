@@ -1,3 +1,4 @@
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Crypto;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static GRYLibrary.Core.Misc.Utilities;
@@ -9,6 +10,7 @@ namespace GRYLibrary.Tests.Testcases.CryptoSystemsTests
     public class SHA256PureCSharpTests
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void SHA256PureTests()
         {
             AssertPureSHA256ValueIsEqualsToDotNetImplementation(string.Empty);
@@ -23,6 +25,7 @@ namespace GRYLibrary.Tests.Testcases.CryptoSystemsTests
         /// This is the edge-case of the padding-calculation and therefore tested explicitly.
         /// </remarks>
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void SHA256PureTestsWithInputWhichDoesNotRequireAdditionalPadding()
         {
             AssertPureSHA256ValueIsEqualsToDotNetImplementation(new string('a', 55));
@@ -32,6 +35,7 @@ namespace GRYLibrary.Tests.Testcases.CryptoSystemsTests
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void RightRotateTests()
         {
             Assert.AreEqual("10110100010111010101010100010010", UintToBinaryString(SHA256PureCSharp.RightRotate(BinaryStringToUint("10001011101010101010001001010110"), 5)));

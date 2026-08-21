@@ -1,3 +1,4 @@
+using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using GVersion = GRYLibrary.Core.Misc.Version;
@@ -8,6 +9,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
     public class VersionTests
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ParseVersionWithTwoParts()
         {
@@ -24,6 +26,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
 
         [TestMethod]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ParseVersionWithFourParts()
         {
             // act
@@ -37,6 +40,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
 
         [TestMethod]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void NegativeValuesAreNotAllowed()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => new GVersion(-1, 2));
@@ -47,6 +51,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         /// A version whose build and revision are not set must also be convertible, because <see cref="System.Version"/> does not accept the value -1.
         /// </remarks>
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ToSystemVersionWorksForEveryAmountOfSetParts()
         {
@@ -59,6 +64,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         /// <see cref="System.Version"/> uses -1 as marker for "not set". Such a value must be transferred to "not set" and not be treated as error.
         /// </remarks>
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void CreateBySystemVersionWithoutBuildAndRevision()
         {
@@ -73,6 +79,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
 
         [TestMethod]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void CompareVersions()
         {
             Assert.IsTrue(new GVersion("1.2") < new GVersion("1.3"));
@@ -85,6 +92,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
 
         [TestMethod]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void CompareToDoesNotAcceptOtherTypes()
         {
             Assert.AreEqual(1, new GVersion("1.2").CompareTo(null));
@@ -92,6 +100,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void CloneCreatesAnEqualVersion()
         {

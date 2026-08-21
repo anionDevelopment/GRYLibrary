@@ -10,7 +10,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
     public class ExclusiveAccessTests
     {
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void RunReturnsTheResultOfTheGivenFunction()
         {
             // arrange
@@ -29,7 +29,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         /// call another operation on the same resource without deadlocking itself.
         /// </remarks>
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void NestedRunOnTheSameThreadDoesNotBlock()
         {
             // arrange
@@ -44,7 +44,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void AccessIsReleasedAgainAfterANestedRun()
         {
             // arrange
@@ -60,7 +60,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void RunOfAnotherThreadWaitsUntilTheAccessIsReleased()
         {
             // arrange
@@ -85,7 +85,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void AccessIsReleasedWhenTheOperationThrowsAnException()
         {
             // arrange
@@ -101,7 +101,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void OnlyOneThreadIsInTheCriticalSectionAtTheSameTime()
         {
             // arrange

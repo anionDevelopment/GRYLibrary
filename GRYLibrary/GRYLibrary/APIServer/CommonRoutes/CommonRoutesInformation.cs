@@ -2,8 +2,13 @@ namespace GRYLibrary.Core.APIServer.CommonRoutes
 {
     public class CommonRoutesInformation : ICommonRoutesInformation
     {
-        public string TermsOfServiceLink { get; set; }
-        public string ContactLink { get; set; }
-        public string LicenseLink { get; set; }
+        /// <inheritdoc/>
+        public string? TermsOfServiceLink { get; set; }
+
+        /// <inheritdoc/>
+        public string? ContactLink { get; set; }
+
+        /// <inheritdoc/>
+        public string? LicenseLink { get; set; }
     }
 }

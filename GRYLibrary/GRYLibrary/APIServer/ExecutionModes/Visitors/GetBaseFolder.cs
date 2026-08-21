@@ -1,5 +1,6 @@
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using System;
+using System.Collections;
 using System.IO;
 
 namespace GRYLibrary.Core.APIServer.ExecutionModes.Visitors
@@ -37,18 +38,32 @@ namespace GRYLibrary.Core.APIServer.ExecutionModes.Visitors
             Misc.Utilities.EnsureDirectoryExists(result);
             return result;
         }
+        /// <summary>
+        /// The name of the environment-variable which states that the application runs in a container. It is written
+        /// in upper case, which is the usual form of an environment-variable, so that the name is the same one on a
+        /// system which compares such names case-sensitively (linux) and on one which does not (windows).
+        /// </summary>
+        public const string NameOfTheVariableWhichStatesTheContainer = "ISRUNNINGINCONTAINER";
+
+        /// <summary>
+        /// States whether the application runs in a container.
+        /// </summary>
+        /// <remarks>
+        /// The name of the variable is compared without case: an image which sets it as "IsRunningInContainer" states
+        /// the same thing as one which sets it as "ISRUNNINGINCONTAINER", and on linux a case-sensitive lookup would
+        /// silently answer "no container" for the first one - which moves every folder of the application somewhere
+        /// else.
+        /// </remarks>
         public static bool IsRunningInContainer()
         {
-            string? value = Environment.GetEnvironmentVariable("ISRUNNINGINCONTAINER");
-
-            if (value != null)
+            foreach (DictionaryEntry variable in Environment.GetEnvironmentVariables())
             {
-                return value.Equals("true", StringComparison.CurrentCultureIgnoreCase);
+                if (variable.Key is string name && name.Equals(NameOfTheVariableWhichStatesTheContainer, StringComparison.OrdinalIgnoreCase))
+                {
+                    return variable.Value is string value && value.Equals("true", StringComparison.OrdinalIgnoreCase);
+                }
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public static string GetBaseFolderForProjectInCommonProjectStructure(GRYEnvironment environment, string programFolder, ExecutionMode executionMode, bool isTestRun)

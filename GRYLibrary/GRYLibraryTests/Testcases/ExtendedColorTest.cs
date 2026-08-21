@@ -7,12 +7,14 @@ namespace GRYLibrary.Tests.Testcases
     public class ExtendedColorTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ExtendedColorTest1()
         {
             ExtendedColor color = new();
             Assert.AreEqual(0, color.ColorCode);
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ExtendedColorTest2()
         {
             ExtendedColor color1 = new(42);
@@ -21,6 +23,7 @@ namespace GRYLibrary.Tests.Testcases
             Assert.AreEqual(color1.GetHashCode(), color2.GetHashCode());
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ExtendedColorTest3()
         {
             byte testValueA = 200;

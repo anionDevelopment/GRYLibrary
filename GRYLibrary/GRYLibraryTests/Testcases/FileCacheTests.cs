@@ -10,6 +10,7 @@ namespace GRYLibrary.Tests.Testcases
     {
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void FileCacheTestGet()
         {
             // arrange
@@ -30,6 +31,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void FileCacheTestSet()
         {
             // arrange
@@ -53,6 +55,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void FileCacheTestRemove()
         {
             // arrange

@@ -1,3 +1,4 @@
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.AOA;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -8,6 +9,7 @@ namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Equals
     {
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void PrimitiveEqualsTestString()
         {
             string testString = "test";
@@ -16,6 +18,7 @@ namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Equals
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void PrimitiveEqualsTestInt()
         {
             int testInt = 4;

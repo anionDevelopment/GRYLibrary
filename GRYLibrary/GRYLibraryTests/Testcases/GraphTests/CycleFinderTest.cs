@@ -1,3 +1,4 @@
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Graph;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
     public class CycleFinderTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestSimpleGraph()
         {
             /*
@@ -69,6 +71,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.IsTrue(foundCycles.SetEquals(expectedCycles));
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestSimpleGraph2()
         {
             DirectedGraph graph = new();
@@ -117,6 +120,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
 
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestSimpleGraph3()
         {
             DirectedGraph graph = new();
@@ -189,6 +193,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.IsTrue(foundCycles.SetEquals(expectedCycles), $"Expected <{Cycle.CycleSetToString(expectedCycles)}> but found <{Cycle.CycleSetToString(foundCycles)}>");
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestSimpleGraph4()
         {
             DirectedGraph graph = new();

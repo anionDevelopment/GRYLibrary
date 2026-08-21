@@ -32,7 +32,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void SolvingACaptchaWithTheCorrectInputSucceedsAndYieldsAnAcceptedAccessKey()
         {
             // arrange
@@ -52,7 +52,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         /// expires, which removes the automation-barrier the captcha exists for.
         /// </remarks>
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ASolvedCaptchaCanNotBeSolvedASecondTime()
         {
             // arrange
@@ -74,7 +74,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         /// guessed by repeating the attempt with the same captcha-id.
         /// </remarks>
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void AFailedAttemptConsumesTheCaptchaAsWell()
         {
             // arrange
@@ -95,7 +95,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         /// because a captcha which is generated but never solved is not removed anywhere else.
         /// </remarks>
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ExpiredCaptchasAreRemoved()
         {
             // arrange
@@ -111,7 +111,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ExpiredAccessKeysAreRemoved()
         {
             // arrange
@@ -129,7 +129,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void AnUnknownCaptchaIsRejected()
         {
             // arrange

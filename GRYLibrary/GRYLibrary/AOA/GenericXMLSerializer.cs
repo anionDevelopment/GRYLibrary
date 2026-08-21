@@ -73,15 +73,10 @@ namespace GRYLibrary.Core.AOA
                 throw new ArgumentException($"Can only serialize objects of type {@object.GetType().FullName} but the given object has the type {this._T.FullName}");
             }
             object objectForRealSerialization = GRYSObject.Create(@object, this.SerializationConfiguration);
-            IEnumerable<(object, Type)> allReferencedObjects = new PropertyIterator().IterateOverObjectTransitively(objectForRealSerialization);
-            HashSet<Type> extraTypes = [];
-            foreach ((object, Type) referencedObject in allReferencedObjects)
-            {
-                if (referencedObject.Item1 is not null and IGRYSerializable extraTypesProvider)
-                {
-                    extraTypes.UnionWith(extraTypesProvider.GetExtraTypesWhichAreRequiredForSerialization());
-                }
-            }
+            // The extra types which the objects of the graph state (IGRYSerializable.GetExtraTypesWhichAreRequiredForSerialization)
+            // are not collected here: the serializer does not use them yet (see the TODO in GetSerializer), and collecting
+            // them means walking the whole graph with reflection a second time - which for a large object costs more than
+            // the serialization itself. Collect them where they are used, not before.
             this.GetSerializer().Serialize(writer, objectForRealSerialization);
         }
 

@@ -34,5 +34,17 @@ namespace GRYLibrary.Core.AOA.EqualsHelper
         {
             this._ContainedObjects.Add(@object);
         }
+
+        /// <summary>
+        /// States whether the given object belongs to this equivalence-class.
+        /// </summary>
+        /// <remarks>
+        /// This asks the contained objects directly. <see cref="ContainedObjects"/> is not used for it: that property
+        /// creates a copy of the whole set on every access, which is the wrong price for a question about one object.
+        /// </remarks>
+        internal bool Contains(object @object)
+        {
+            return this._ContainedObjects.Contains(@object);
+        }
     }
 }

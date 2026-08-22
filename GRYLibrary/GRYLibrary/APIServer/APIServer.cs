@@ -457,7 +457,11 @@ namespace GRYLibrary.Core.APIServer
                             }
                         }
                     };
-                    if (apiServerConfiguration.InitializationInformation.ApplicationConstants.ListenOnEveryIP)
+                    // In a test-run the server is only addressed by the test-process itself. Binding every ip would make the operating-system ask the user
+                    // whether this process is allowed to communicate in the network (for example the firewall-dialog of windows), which nobody can answer
+                    // in an unattended test-run. Therefore the loopback-interface is bound in a test-run regardless of ListenOnEveryIP.
+                    bool listenOnEveryIP = apiServerConfiguration.InitializationInformation.ApplicationConstants.ListenOnEveryIP && apiServerConfiguration.InitializationInformation.ApplicationConstants.ExecutionMode is not TestRun;
+                    if (listenOnEveryIP)
                     {
                         kestrelOptions.ListenAnyIP(persistedApplicationSpecificConfiguration.ServerConfiguration.Protocol.Port, lOptions);
                     }

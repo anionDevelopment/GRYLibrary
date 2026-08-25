@@ -173,17 +173,52 @@ namespace GRYLibrary.Core.Misc
 
             public string Handle(OSX operatingSystem)
             {
-                return this._Path.Replace(this.WindowsPathSeparatorChar, this.LinuxAndOSXPathSeparatorChar);
+                return Sanitize(this._Path.Replace(this.WindowsPathSeparatorChar, this.LinuxAndOSXPathSeparatorChar), this.LinuxAndOSXPathSeparatorChar);
             }
 
             public string Handle(GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows operatingSystem)
             {
-                return this._Path.Replace(this.LinuxAndOSXPathSeparatorChar, this.WindowsPathSeparatorChar);
+                return Sanitize(this._Path.Replace(this.LinuxAndOSXPathSeparatorChar, this.WindowsPathSeparatorChar), this.WindowsPathSeparatorChar);
             }
 
             public string Handle(Linux operatingSystem)
             {
-                return this._Path.Replace(this.WindowsPathSeparatorChar, this.LinuxAndOSXPathSeparatorChar);
+                return Sanitize(this._Path.Replace(this.WindowsPathSeparatorChar, this.LinuxAndOSXPathSeparatorChar), this.LinuxAndOSXPathSeparatorChar);
+            }
+            private string Sanitize(string path, char separator)
+            {
+                // Remove duplicate separators (e.g. "C:\\\\Users\\\\User" -> "C:\\Users\\User")
+                string doubleSeparator = new string(separator, 2);
+                if (path.StartsWith(doubleSeparator))
+                {
+                    path = doubleSeparator + path[2..].TrimStart(separator);
+                }
+                while (path.Contains(doubleSeparator))
+                {
+                    path = path.Replace(doubleSeparator, separator.ToString());
+                }
+                if (path.Length > 1 && path.EndsWith(separator) && !IsRootPath(path, separator))
+                {
+                    path = path.TrimEnd(separator);
+                }
+                return path;
+            }
+
+            private static bool IsRootPath(string path, char separator)
+            {
+                if (path.Length == 1 && path[0] == separator)
+                {
+                    return true;
+                }
+                if (path.Length == 2 && path[0] == separator && path[1] == separator)
+                {
+                    return true;
+                }
+                if (path.Length == 3 && char.IsLetter(path[0]) && path[1] == ':' && path[2] == separator)
+                {
+                    return true;
+                }
+                return false;
             }
         }
 
@@ -3666,7 +3701,7 @@ namespace GRYLibrary.Core.Misc
         /// characters, chosen with the same probability and independently of the others.
         /// </remarks>
         /// <exception cref="ArgumentException">Thrown when the amount of characters is not a positive number.</exception>
-        public static string GenerateSecureRandomValue(string? prefix= null,int amountOfCharacters = 32)
+        public static string GenerateSecureRandomValue(string? prefix = null, int amountOfCharacters = 32)
         {
             if (amountOfCharacters <= 0)
             {
@@ -3674,10 +3709,10 @@ namespace GRYLibrary.Core.Misc
             }
             int amountOfBytes = (amountOfCharacters + 1) / 2;
             string result = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(amountOfBytes)).ToLowerInvariant();
-            result= result[..amountOfCharacters];
-            if (prefix!=null)
+            result = result[..amountOfCharacters];
+            if (prefix != null)
             {
-                result = prefix +"_"+ result;
+                result = prefix + "_" + result;
             }
             return result;
         }

@@ -7,7 +7,7 @@ namespace GRYLibrary.Tests.Testcases
     public class ColorGradientTest
     {
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ColorGradientTest1()
         {
             ExtendedColor startColor = new(255, 142, 0);

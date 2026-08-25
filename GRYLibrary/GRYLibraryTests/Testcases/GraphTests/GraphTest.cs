@@ -1,3 +1,4 @@
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Graph;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
     public class GraphTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void SimpleVertexTest()
         {
             Vertex v1 = new("v1");
@@ -20,6 +22,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.AreEqual(v1, v1);
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void VertexEqual()
         {
             Vertex v1 = new("v");
@@ -27,6 +30,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.AreEqual(v1, v2);
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void SimpleEdgeTest()
         {
             Vertex v1 = new("v1");
@@ -47,6 +51,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
 
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void EdgeEquals()
         {
             Vertex v1 = new("v1");
@@ -59,6 +64,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.AreNotEqual(e1, e22);
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void SimpleDirectedGraphTest()
         {
             DirectedGraph g = new();
@@ -142,6 +148,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.IsTrue(new HashSet<Vertex>() { v3, v5 }.SetEquals(successorsOfv4));
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void SimpleUndrectedGraphTest()
         {
             UndirectedGraph g = new();
@@ -221,6 +228,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.IsTrue(new HashSet<Vertex>() { v3, v5 }.SetEquals(successorsOfv4));
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void GraphTpAdjacencyMatrixTest()
         {
             DirectedGraph graph = this.GetTestGraph();
@@ -230,6 +238,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void AdjacencyMatrixToGraphTest()
         {
             DirectedGraph graph = this.GetTestGraph();

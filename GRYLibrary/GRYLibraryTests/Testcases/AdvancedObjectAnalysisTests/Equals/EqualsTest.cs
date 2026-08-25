@@ -1,3 +1,4 @@
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.AOA;
 using GRYLibrary.Tests.TestData.TestTypes.CyclicDataStructure;
 using GRYLibrary.Tests.Utilities;
@@ -12,6 +13,7 @@ namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Equals
     public class EqualsTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void NotEqualCyclicTestObject1()
         {
             CycleA testObject1 = CycleA.GetRandom();
@@ -19,6 +21,7 @@ namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Equals
             TestUtilities.AssertNotEqual(testObject1, testObject2);
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void NotEqualCyclicTestObject2()
         {
             CycleA testObject1 = CycleA.GetRandom();
@@ -27,6 +30,7 @@ namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Equals
             TestUtilities.AssertNotEqual(testObject1, testObject2);
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void EqualCyclicTestObject()
         {
             CycleA testObject1 = CycleA.GetRandom();
@@ -35,6 +39,7 @@ namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Equals
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void PrimitiveEqualsTestObjectWithSameObject()
         {
             object testObject = new();
@@ -43,6 +48,7 @@ namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Equals
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void PrimitiveEqualsTestObjectWithEqualObject()
         {
             PropertyEqualsCalculator comparer = new();
@@ -50,6 +56,7 @@ namespace GRYLibrary.Tests.Testcases.AdvancedObjectAnalysisTests.Equals
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void PrimitiveEqualsTestObjectWithTypes()
         {
             PropertyEqualsCalculator comparer = new();

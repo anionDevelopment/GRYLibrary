@@ -1,3 +1,4 @@
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Graph;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -10,6 +11,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
     public class BreadthFirstSearchTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestSimpleBreadthFirstSearch()
         {
             List<int> order = [];
@@ -26,6 +28,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.IsTrue(new HashSet<int>(new int[] { 9, 10 }).SetEquals(new int[] { order[8], order[9] }));
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestSimpleBreadthFirstSearch2()
         {
             List<Tuple<Vertex, IList<Edge>>> order = [];

@@ -10,6 +10,17 @@ namespace GRYLibrary.Core.AOA.EqualsHelper
     {
         private static readonly IdGenerator<int> _IdGenerator = IdGenerator.GetDefaultIntIdGenerator();
         internal ISet<EquivalenceClass> EquivalenceClasses { get; } = new HashSet<EquivalenceClass>();
+
+        /// <summary>
+        /// States for an object which equivalence-class it belongs to.
+        /// </summary>
+        /// <remarks>
+        /// The classes themselves are not searched for it. A comparison asks this question for every pair of objects it
+        /// looks at, and searching through every class would make the comparison of two objects depend on how many
+        /// objects were compared before - which is what turns the comparison of two large object-graphs into a
+        /// comparison of every object with every other one.
+        /// </remarks>
+        private Dictionary<object, EquivalenceClass> EquivalenceClassOfAnObject { get; } = new Dictionary<object, EquivalenceClass>(new ReferenceEqualsComparer());
         private ISet<ReferenceTuple> NotEqualPairs { get; } = new HashSet<ReferenceTuple>();
         private ISet<ReferenceTuple> PendingComparisons { get; } = new HashSet<ReferenceTuple>();
         public Func<PropertyInfo, bool> PropertySelector { get; set; } = (PropertyInfo propertyInfo) =>
@@ -80,13 +91,9 @@ namespace GRYLibrary.Core.AOA.EqualsHelper
         /// <remarks>This function requires that <paramref name="object"/> was already assigned to an <see cref="EquivalenceClass"/>.</remarks>
         private EquivalenceClass GetEquivalenceClassOfObject(object @object)
         {
-            foreach (EquivalenceClass equivalenceClass in this.EquivalenceClasses)
+            if (@object != null && this.EquivalenceClassOfAnObject.TryGetValue(@object, out EquivalenceClass equivalenceClass))
             {
-                if (this.BelongsToEquivalenceClass(equivalenceClass, @object))
-                {
-                    equivalenceClass.Add(@object);
-                    return equivalenceClass;
-                }
+                return equivalenceClass;
             }
             throw new KeyNotFoundException($"Object '{@object}' was not assigned to an {nameof(EquivalenceClass)} yet.");
         }
@@ -103,7 +110,7 @@ namespace GRYLibrary.Core.AOA.EqualsHelper
 
         private bool BelongsToEquivalenceClass(EquivalenceClass equivalenceClass, object @object)
         {
-            return equivalenceClass.ContainedObjects.Contains(@object);
+            return equivalenceClass.Contains(@object);
         }
 
         public bool AreInSameEquivalenceClass(object object1, object object2)
@@ -121,39 +128,35 @@ namespace GRYLibrary.Core.AOA.EqualsHelper
 
         private bool HasEquivalenceClass(object @object)
         {
-            foreach (EquivalenceClass equivalenceClass in this.EquivalenceClasses)
-            {
-                if (this.BelongsToEquivalenceClass(equivalenceClass, @object))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return @object != null && this.EquivalenceClassOfAnObject.ContainsKey(@object);
         }
 
         internal void AddEqualObjectsToEquivalenceClasses(object object1, object object2)
         {
             this.RemovePending(object1, object2);
-            foreach (EquivalenceClass loopEquivalenceClass in this.EquivalenceClasses)
+            if (this.HasEquivalenceClass(object1))
             {
-                if (this.BelongsToEquivalenceClass(loopEquivalenceClass, object1))
-                {
-                    loopEquivalenceClass.Add(object2);
-                    return;
-                }
+                this.AddToEquivalenceClass(this.GetEquivalenceClassOfObject(object1), object2);
+                return;
             }
-
-            foreach (EquivalenceClass loopEquivalenceClass in this.EquivalenceClasses)
+            if (this.HasEquivalenceClass(object2))
             {
-                if (this.BelongsToEquivalenceClass(loopEquivalenceClass, object2))
-                {
-                    loopEquivalenceClass.Add(object1);
-                    return;
-                }
+                this.AddToEquivalenceClass(this.GetEquivalenceClassOfObject(object2), object1);
+                return;
             }
             EquivalenceClass equivalenceClass = new(object1, _IdGenerator.GenerateNewId());
-            equivalenceClass.Add(object2);
             this.EquivalenceClasses.Add(equivalenceClass);
+            this.AddToEquivalenceClass(equivalenceClass, object1);
+            this.AddToEquivalenceClass(equivalenceClass, object2);
+        }
+
+        private void AddToEquivalenceClass(EquivalenceClass equivalenceClass, object @object)
+        {
+            equivalenceClass.Add(@object);
+            if (@object != null)
+            {
+                this.EquivalenceClassOfAnObject[@object] = equivalenceClass;
+            }
         }
     }
 }

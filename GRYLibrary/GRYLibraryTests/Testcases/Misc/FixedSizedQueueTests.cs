@@ -9,7 +9,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
     public class FixedSizedQueueTests
     {
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void FixedSizedQueueTest()
         {
             //arrange

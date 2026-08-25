@@ -185,25 +185,23 @@ namespace GRYLibrary.Core.APIServer.Utilities
         {
             if (0 < this.GenericDatabaseInteractor().GetAllTableNames().ToList().Count)
             {
-                DbConnection connection = this._GenericDatabaseInteractor.GetConnection();
-                try
+                this._GenericDatabaseInteractor.UseConnection(connection =>
                 {
                     using DbCommand cmd = connection.CreateCommand();
                     cmd.CommandText = this._ResetDatabaseScript;
                     cmd.ExecuteNonQuery();
-                }
-                catch
-                {
-                    throw;
-                }
-                // The reset script may drop the schema/database the connection is currently attached to
-                // (MariaDB's reset-script does "DROP DATABASE ...; CREATE DATABASE ..."). The connection
-                // itself stays open in that case - just without a selected database - so every further
-                // query on it fails with "No database selected", and the connection's self-healing
-                // background thread (GenericDatabaseInteractor.StartTryToConnectScheduler) never notices,
-                // because the connection's ConnectionState is still Open. Closing it here makes that
-                // background thread reconnect, which re-applies "Database=..." from the connection string.
-                connection.Close();
+
+                    // The reset script may drop the schema/database the connection is currently attached to
+                    // (MariaDB's reset-script does "DROP DATABASE ...; CREATE DATABASE ..."). The connection
+                    // itself stays open in that case - just without a selected database - so every further
+                    // query on it fails with "No database selected", and the connection's self-healing
+                    // background thread (GenericDatabaseInteractor.StartTryToConnectScheduler) never notices,
+                    // because the connection's ConnectionState is still Open. Closing it here makes that
+                    // background thread reconnect, which re-applies "Database=..." from the connection string.
+                    connection.Close();
+                });
+                // Attention: this must happen outside of the connection-access, because the background thread
+                // needs that access to create the new connection.
                 this._GenericDatabaseInteractor.WaitUntilAvailable(TimeSpan.FromSeconds(30));
             }
         }

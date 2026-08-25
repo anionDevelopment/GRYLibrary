@@ -22,9 +22,23 @@ namespace GRYLibrary.Core.AOA.EqualsHelper.CustomComparer
             {
                 return false;
             }
+            // A set states no order, so every element of the one set has to be searched in the other one. The elements
+            // of that other set are grouped by their hash-code once, so the search starts with the elements which can
+            // be the searched one instead of comparing against everything (see Contains).
+            Dictionary<int, List<T>> elementsByTheirHashCode = new Dictionary<int, List<T>>();
+            foreach (T item in set2)
+            {
+                int hashCode = Generic.GenericGetHashCode(item);
+                if (!elementsByTheirHashCode.TryGetValue(hashCode, out List<T> elementsWithThatHashCode))
+                {
+                    elementsWithThatHashCode = new List<T>();
+                    elementsByTheirHashCode.Add(hashCode, elementsWithThatHashCode);
+                }
+                elementsWithThatHashCode.Add(item);
+            }
             foreach (T obj in set1)
             {
-                if (!this.Contains(set2, obj))
+                if (!this.Contains(elementsByTheirHashCode, obj))
                 {
                     return false;
                 }
@@ -32,9 +46,34 @@ namespace GRYLibrary.Core.AOA.EqualsHelper.CustomComparer
             return true;
         }
 
-        private bool Contains<T>(ISet<T> set, T obj)
+        /// <summary>
+        /// States whether one of the given elements equals the given object.
+        /// </summary>
+        /// <remarks>
+        /// The elements which share the hash-code of the searched object are compared first, because that is where an
+        /// equal element is. The remaining ones are compared afterwards and not skipped: a hash-code which differs is
+        /// no proof that two objects differ, and this comparison decides what equal means - not the hash-code.
+        /// </remarks>
+        private bool Contains<T>(Dictionary<int, List<T>> elementsByTheirHashCode, T obj)
         {
-            foreach (T item in set)
+            int hashCodeOfTheSearchedObject = Generic.GenericGetHashCode(obj);
+            if (elementsByTheirHashCode.TryGetValue(hashCodeOfTheSearchedObject, out List<T> elementsWithTheSameHashCode) && this.ContainsInList(elementsWithTheSameHashCode, obj))
+            {
+                return true;
+            }
+            foreach (KeyValuePair<int, List<T>> entry in elementsByTheirHashCode)
+            {
+                if (entry.Key != hashCodeOfTheSearchedObject && this.ContainsInList(entry.Value, obj))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool ContainsInList<T>(List<T> elements, T obj)
+        {
+            foreach (T item in elements)
             {
                 if (this._PropertyEqualsCalculator.Equals(item, obj))
                 {

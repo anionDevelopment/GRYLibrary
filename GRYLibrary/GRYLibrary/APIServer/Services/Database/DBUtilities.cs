@@ -81,58 +81,97 @@ namespace GRYLibrary.Core.APIServer.Services.Database
             AccessDatabase(database, interactor =>
             {
                 log.Log("Run DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                DbConnection connection = interactor.GetGenericDatabaseInteractor().GetConnection();
+                //The exclusive access is held for the entire transaction, so no other user of the database can interfere with it and the connection can not be
+                //replaced while the transaction is running.
+                interactor.GetGenericDatabaseInteractor().UseConnection(connection => RunTransactionCore(nameOfAction, log, runTransactional, connection, functions, results));
+            });
+            return [.. results];
+        }
+
+        private static void RunTransactionCore<T>(string nameOfAction, IGRYLog log, bool runTransactional, DbConnection connection, Func<DbCommand, T?>[] functions, List<T?> results)
+        {
+            foreach (Func<DbCommand, T?> function in functions)
+            {
+                //Every function gets its own transaction, so whether it is committed must be decided per function and not once for all of them.
                 bool commit = true;
-                foreach (Func<DbCommand, T?> function in functions)
+                DbTransaction? transaction = null;
+                if (runTransactional)
                 {
-                    DbTransaction? transaction = null;
-                    if (runTransactional)
+                    transaction = connection.BeginTransaction();
+                }
+                try
+                {
+                    using (DbCommand cmd = connection.CreateCommand())
                     {
-                        transaction = connection.BeginTransaction();
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandTimeout = 300;
+                        if (runTransactional)
+                        {
+                            cmd.Transaction = transaction;
+                        }
+                        try
+                        {
+                            T? result = function(cmd);
+                            results.Add(result);
+                        }
+                        catch (Exception e)
+                        {
+                            commit = false;
+                            log.Log($"Error in database occurred while doing DB-transaction {nameOfAction}.", e);
+                            throw;
+                        }
                     }
+                }
+                finally
+                {
                     try
                     {
-                        using (DbCommand cmd = connection.CreateCommand())
+                        if (runTransactional)
                         {
-                            cmd.CommandType = CommandType.Text;
-                            cmd.CommandTimeout = 300;
-                            if (runTransactional)
-                            {
-                                cmd.Transaction = transaction;
-                            }
-                            try
-                            {
-                                T? result = function(cmd);
-                                results.Add(result);
-                            }
-                            catch (Exception e)
-                            {
-                                commit = false;
-                                log.Log($"Error in database occurred while doing DB-transaction {nameOfAction}.", e);
-                                throw;
-                            }
+                            CompleteTransaction(nameOfAction, log, transaction!, commit);
                         }
                     }
                     finally
                     {
-                        if (runTransactional)
-                        {
-                            if (commit)
-                            {
-                                log.Log("Commit DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                                transaction!.Commit();
-                            }
-                            else
-                            {
-                                log.Log("Rollback DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
-                                transaction!.Rollback();
-                            }
-                            transaction!.Dispose();
-                        }
+                        transaction?.Dispose();//also required when completing the transaction failed
                     }
                 }
-            });
-            return [.. results];
+            }
+        }
+
+        /// <summary>Completes <paramref name="transaction"/> by committing or rolling it back, depending on <paramref name="commit"/>.</summary>
+        private static void CompleteTransaction(string nameOfAction, IGRYLog log, DbTransaction transaction, bool commit)
+        {
+            if (commit)
+            {
+                log.Log("Commit DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
+                try
+                {
+                    transaction.Commit();
+                }
+                catch (Exception exception)
+                {
+                    //A failed commit is not the same as a failed statement: the database may have applied the transaction anyway and only the answer did not
+                    //reach the application, for example when the connection ran into a timeout while waiting for it. The caller therefore must not assume that
+                    //nothing happened, which is why this is stated explicitly instead of only reporting a connection-error.
+                    log.Log($"Commit of DB-transaction {nameOfAction} failed. It is undetermined whether the database applied this transaction or not.", exception);
+                    throw;
+                }
+            }
+            else
+            {
+                log.Log("Rollback DB-transaction " + nameOfAction, Microsoft.Extensions.Logging.LogLevel.Trace);
+                try
+                {
+                    transaction.Rollback();
+                }
+                catch (Exception exception)
+                {
+                    //A rollback is only done while the exception which caused it is on its way to the caller. Letting the rollback-exception out would replace
+                    //that exception and therefore hide the actual reason of the failure, so it is only reported here.
+                    log.Log($"Rollback of DB-transaction {nameOfAction} failed.", exception);
+                }
+            }
         }
     }
 }

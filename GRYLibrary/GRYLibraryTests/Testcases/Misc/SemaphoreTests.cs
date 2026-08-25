@@ -11,7 +11,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
     public class SemaphoreTests
     {
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void LockAndUnlockChangeTheState()
         {
             // arrange
@@ -26,7 +26,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UnlockingAnUnlockedSemaphoreIsNotAllowed()
         {
             // arrange
@@ -40,7 +40,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         /// This testcase ensures that <see cref="GSemaphore.Lock"/> does not block <see cref="GSemaphore.Unlock"/> while it is waiting.
         /// </remarks>
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void LockWaitsUntilTheSemaphoreIsUnlockedByAnotherThread()
         {
             // arrange
@@ -58,7 +58,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void SemaphoreEnsuresThatOnlyOneThreadIsInTheCriticalSectionAtTheSameTime()
         {
             // arrange

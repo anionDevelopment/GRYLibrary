@@ -23,6 +23,7 @@ namespace GRYLibrary.Tests.Testcases
     public class UtilitiesTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestResolvePathOfProgram()
         {
             // arrange
@@ -41,6 +42,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void NormalizePathConvertsSeparatorsForTheGivenOperatingSystem()
         {
             // The target-operating-system is passed explicitly (not derived from the host), so this test performs exactly the same operation and expects
@@ -53,6 +55,27 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void NormalizePathKeepsLeadingDoubleSeparators_Linux()
+        {
+            AssertNormalizePath(@"\\server\\path\\", GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Linux.Instance, '/');
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void NormalizePathKeepsLeadingDoubleSeparators_Windows()
+        {
+            AssertNormalizePath("//server//path/", GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows.Instance, '\\');
+        }
+
+        private static void AssertNormalizePath(string input, GRYLibrary.Core.OperatingSystem.OperatingSystem operatingSystem, char separator)
+        {
+            string expected = new string(separator, 2) + "server" + separator + "path";
+            Assert.AreEqual(expected, GUtilities.NormalizePath(input, operatingSystem));
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UtilitiesTestEnsureFileExists()
         {
             string testFile = "file";
@@ -71,6 +94,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UtilitiesTestEnsureFileDoesNotExist()
         {
             string testFile = "file";
@@ -83,6 +107,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UtilitiesTestEnsureDirectoryExists()
         {
             string testDir = "dir";
@@ -101,6 +126,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UtilitiesTestEnsureDirectoryDoesNotExist()
         {
             string testDir = "dir";
@@ -113,6 +139,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UtilitiesTestEnsureDirectoryDoesNotExist2()
         {
             string dir = "dir";
@@ -124,6 +151,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void FileSelectorTest1()
         {
             string baseDir = "basetestdir/";
@@ -150,6 +178,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IncrementGuidTest1()
         {
             string input = "5fe3eb8e-39dc-469c-a9cd-ea740e90d338";
@@ -159,6 +188,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IncrementGuidTest2()
         {
             string input = "0003eb8e-39dc-469c-a9cd-00740e90d338";
@@ -168,6 +198,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IncrementGuidTest3()
         {
             string input = "0003eb8e-39dc-469c-a9cd-90740e90d338";
@@ -177,6 +208,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IncrementGuidTest4()
         {
             string input = "5fe3eb8e-39dc-469c-a9cd-ea740e90d338";
@@ -189,6 +221,7 @@ namespace GRYLibrary.Tests.Testcases
         /// A guid whose highest hex-digit is greater than or equal to 8 must be treated as unsigned value.
         /// </remarks>
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IncrementGuidWithGuidWhoseHighestBitIsSet()
         {
             Assert.AreEqual("ffe3eb8e-39dc-469c-a9cd-ea740e90d339", GUtilities.IncrementGuid(Guid.Parse("ffe3eb8e-39dc-469c-a9cd-ea740e90d338")).ToString());
@@ -199,12 +232,14 @@ namespace GRYLibrary.Tests.Testcases
         /// Incrementing the highest possible guid results in the lowest possible guid.
         /// </remarks>
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IncrementGuidWithOverflow()
         {
             Assert.AreEqual("00000000-0000-0000-0000-000000000000", GUtilities.IncrementGuid(Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff")).ToString());
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ContainsSublistDoesOnlyMatchCompleteItems()
         {
             // arrange
@@ -222,6 +257,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ToCaseInsensitiveSetRemovesItemsWhichOnlyDifferInTheirCasing()
         {
             // arrange
@@ -237,6 +273,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void GenericSerializerTest1()
         {
             SimpleDataStructure3 testObject = SimpleDataStructure3.GetRandom();
@@ -247,6 +284,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void SerializeableDictionaryTest()
         {
             SerializableDictionary<int, string> dictionary = new()
@@ -263,6 +301,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsListTest()
         {
             Assert.IsTrue(EnumerableTools.ObjectIsList(new List<int>()));
@@ -275,6 +314,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsPrimitiveTest()
         {
             Assert.IsTrue(GUtilities.ObjectIsPrimitive(true));
@@ -301,6 +341,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TypeRepresentsTypeTest()
         {
             Assert.IsFalse(GUtilities.TypeRepresentsType(typeof(object)));
@@ -310,6 +351,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsDictionaryEntryTest()
         {
             Assert.IsFalse(EnumerableTools.ObjectIsDictionaryEntry(new List<int>()));
@@ -321,6 +363,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsDictionaryTest()
         {
             Assert.IsTrue(EnumerableTools.ObjectIsDictionary(new Dictionary<int, string>()));
@@ -331,6 +374,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsSetTest()
         {
             Assert.IsTrue(EnumerableTools.ObjectIsSet(new HashSet<int>()));
@@ -341,30 +385,35 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsKeyValuePairTest11()
         {
             Assert.IsTrue(EnumerableTools.ObjectIsKeyValuePair(new System.Collections.Generic.KeyValuePair<object, object>(new object(), new object())));
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsKeyValuePairTest12()
         {
             Assert.IsTrue(EnumerableTools.ObjectIsKeyValuePair(new System.Collections.Generic.KeyValuePair<int, string>()));
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsKeyValuePairTest21()
         {
             Assert.IsTrue(EnumerableTools.ObjectIsKeyValuePair(new System.Collections.Generic.KeyValuePair<object, object>(new object(), new object())));
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsKeyValuePairTest22()
         {
             Assert.IsTrue(EnumerableTools.ObjectIsKeyValuePair(new System.Collections.Generic.KeyValuePair<int, string>()));
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ObjectToKeyValuePairTest1()
         {
             object kvp11 = new();
@@ -377,6 +426,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ObjectToKeyValuePairTest2()
         {
             int kvp11 = 6;
@@ -389,30 +439,35 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsTupleTest11()
         {
             Assert.IsTrue(EnumerableTools.ObjectIsTuple(new Tuple<object, object>(new object(), new object())));
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsTupleTest12()
         {
             Assert.IsTrue(EnumerableTools.ObjectIsTuple(new WriteableTuple<object, object>()));
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsTupleTest21()
         {
             Assert.IsTrue(EnumerableTools.ObjectIsTuple(new Tuple<int, string>(5, "test")));
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsTupleTest22()
         {
             Assert.IsTrue(EnumerableTools.ObjectIsTuple(new WriteableTuple<int, string>()));
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ObjectToTupleTest1()
         {
             object kvp11 = new();
@@ -425,6 +480,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ObjectToTupleTest2()
         {
             int kvp11 = 6;
@@ -437,6 +493,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ObjectToSettTest()
         {
             Assert.Throws<InvalidCastException>(() => EnumerableTools.ObjectToSet<object>(new object()));
@@ -450,6 +507,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ObjectToListTest()
         {
             Assert.Throws<InvalidCastException>(() => EnumerableTools.ObjectToList<object>(new object()));
@@ -463,6 +521,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ObjectToDictionaryFailTest()
         {
             Assert.Throws<InvalidCastException>(() => EnumerableTools.ObjectToDictionary<object, object>(new object()));
@@ -470,6 +529,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ObjectToDictionarySuccessTest()
         {
             Dictionary<int, string> testDictionary = new() { { 3, "3s" }, { 4, "4s" }, { 5, "5s" } };
@@ -478,6 +538,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void DictionaryEqualsFailTest()
         {
             //arrange
@@ -489,6 +550,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void DictionaryEqualsSuccessTest1()
         {
             Dictionary<int, string> testDictionary = new() { { 3, "3s" }, { 4, "4s" }, { 5, "5s" } };
@@ -497,6 +559,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void DictionaryEqualsSuccessTest2()
         {
             Dictionary<int, string> testDictionary = new() { { 3, "3s" }, { 4, "4s" }, { 5, "5s" } };
@@ -514,6 +577,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ObjectIsEnumerableTest()
         {
             IEnumerable setAsEnumerable = new HashSet<object> { 3, 4, 5 };
@@ -526,6 +590,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void EnumerableCount()
         {
             List<object> list = [3, 4, 5];
@@ -534,6 +599,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IsAssignableFromTest()
         {
             Assert.IsTrue(GUtilities.IsAssignableFrom(new SimpleDataStructure1(), typeof(SimpleDataStructure1)));
@@ -541,6 +607,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ReferenceEqualsWithCommonValuesTest()
         {
             Guid guid1 = Guid.NewGuid();
@@ -568,6 +635,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ReferenceEqualsCycleTest1()
         {
             CycleA cycle = CycleA.GetRandom();
@@ -575,12 +643,14 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ReferenceEqualsCycleTest2()
         {
             Assert.IsFalse(GUtilities.ImprovedReferenceEquals(CycleA.GetRandom(), CycleA.GetRandom()));
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ReferenceEqualsCycleTest3()
         {
             object obj1 = new();
@@ -624,12 +694,14 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void EnsurePathHasNoLeadingOrTrailingQuotesTest()
         {
             Assert.AreEqual("a", GUtilities.EnsurePathHasNoLeadingOrTrailingQuotes("'\"'\"a\"'\"'"));
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void EnsurePathDoesNotHaveLeadingOrTrailingSlashOrBackslashTest()
         {
             Assert.AreEqual("a", GUtilities.EnsurePathEndsWithoutSlashOrBackslash("a/"));
@@ -637,6 +709,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void HexStringToByteArrayTest()
         {
             // arrange
@@ -651,6 +724,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ByteArrayToHexStringTest()
         {
             // arrange
@@ -665,6 +739,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void BinaryStringToUintTest1()
         {
             // arrange
@@ -679,6 +754,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void BinaryStringToUintTest2()
         {
             // arrange
@@ -693,6 +769,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void BinaryStringToUintTest3()
         {
             // arrange
@@ -707,6 +784,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UintToBinaryStringTest()
         {
             // arrange
@@ -721,6 +799,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void GetEncodingTest()
         {
             Assert.AreEqual(new ASCIIEncoding(), GUtilities.GetEncodingByIdentifier("us-ascii"));
@@ -738,6 +817,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UnsignedInteger32BitToByteArrayAndViceVersaTest1()
         {
             // arrange
@@ -751,6 +831,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UnsignedInteger32BitToByteArrayAndViceVersaTest2()
         {
             // arrange
@@ -764,6 +845,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TypeComparerIgnoringGenericsTest()
         {
             // assert
@@ -772,6 +854,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void CastTest()
         {
             System.Collections.Generic.KeyValuePair<object, object> testObject = new System.Collections.Generic.KeyValuePair<object, object>(1, 2);
@@ -788,16 +871,18 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void DateAndTimeToStringTest()
         {
             Assert.AreEqual("2022-02-27_15-05-00", GUtilities.DateTimeForFilename(new DateTime(2022, 02, 27, 15, 05, 00)));
-            Assert.AreEqual("2022-02-27T15:05:00,120+03:00", GUtilities.DateTimeToISO8601String(new DateTimeOffset(2022, 02, 27, 15, 05, 00, 120,TimeSpan.FromHours(3))));
+            Assert.AreEqual("2022-02-27T15:05:00,120+03:00", GUtilities.DateTimeToISO8601String(new DateTimeOffset(2022, 02, 27, 15, 05, 00, 120, TimeSpan.FromHours(3))));
             Assert.AreEqual("2022-02-27T15:05:00+03:00", GUtilities.DateTimeToUserFriendlyString(new DateTimeOffset(2022, 02, 27, 15, 05, 00, TimeSpan.FromHours(3))));
             Assert.AreEqual("2022-02-27", GUtilities.DateToUserFriendlyString(new DateOnly(2022, 02, 27)));
             Assert.AreEqual("15:05:00", GUtilities.TimeToUserFriendlyString(new TimeOnly(15, 05, 00)));
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestIsAbsolutePath()
         {
             // Windows-drive-letter-paths (like "X:\") are only absolute on Windows.
@@ -841,6 +926,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestParseDateAmericanFormat()
         {
             // arrange
@@ -855,6 +941,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void DecimalToStringTest1()
         {
             // arrange
@@ -869,6 +956,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void DecimalToStringTest2()
         {
             // arrange
@@ -883,6 +971,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void DecimalToStringTest3()
         {
             // arrange
@@ -897,6 +986,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void DecimalToStringTest4()
         {
             // arrange
@@ -908,6 +998,26 @@ namespace GRYLibrary.Tests.Testcases
 
             // assert
             Assert.AreEqual(expected, actual);
+        }
+
+        /// <remarks>
+        /// One byte states two characters, so an odd amount of characters is the case which can go wrong: it is
+        /// answered by generating one byte more and using one character of it. The two amounts here are therefore an
+        /// odd one and an even one.
+        /// </remarks>
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void GenerateSecureRandomValueReturnsAValueOfTheWantedLength()
+        {
+            // act
+            string valueOfAnOddLength = GUtilities.GenerateSecureRandomValue(null, 7);
+            string valueOfAnEvenLength = GUtilities.GenerateSecureRandomValue(null, 8);
+
+            // assert
+            Assert.AreEqual(7, valueOfAnOddLength.Length);
+            Assert.AreEqual(8, valueOfAnEvenLength.Length);
+            Assert.IsTrue(valueOfAnOddLength.All("0123456789abcdef".Contains), "Every character has to be a hexadecimal one.");
+            Assert.IsTrue(valueOfAnEvenLength.All("0123456789abcdef".Contains), "Every character has to be a hexadecimal one.");
         }
     }
 }

@@ -7,7 +7,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
     public class PercentValueTest
     {
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void DivisionByDoubleTest()
         {
             //arrange
@@ -21,7 +21,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void DivisionOfDoubleByPercentValueTest()
         {
             //arrange

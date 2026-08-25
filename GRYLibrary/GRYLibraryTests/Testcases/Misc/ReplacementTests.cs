@@ -7,7 +7,7 @@ namespace GRYLibrary.Tests.Testcases.Miscellaneous
     public class ReplacementTests
     {
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestReplaceBooleanVariable()
         {
             Assert.AreEqual("a", ReplacementTools.ReplaceBooleanVariable("a", "b", true));

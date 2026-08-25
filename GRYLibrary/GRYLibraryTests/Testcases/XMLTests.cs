@@ -1,3 +1,4 @@
+using GRYLibrary.Core.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text;
@@ -9,6 +10,7 @@ namespace GRYLibrary.Tests.Testcases
     {
         private readonly Encoding _FileEncoding = new UTF8Encoding(false);
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void TestXSDValidator1()
         {
             string testDataFolder = Path.Combine("TestData", "XSDValidator", "Test1");
@@ -23,6 +25,7 @@ namespace GRYLibrary.Tests.Testcases
             Assert.IsFalse(Core.Misc.Utilities.ValidateXMLAgainstXSD(xmlNotWorking, xsd, out _));
         }
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void TestXSLT1()
         {
             string testDataFolder = Path.Combine("TestData", "XSLTTransformator", "Test1");

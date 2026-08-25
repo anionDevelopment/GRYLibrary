@@ -8,7 +8,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
     public class IdGeneratorTests
     {
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void IntIdGeneratorGeneratesIncreasingIds()
         {
             // arrange
@@ -21,7 +21,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void GeneratedIdsContainsAllGeneratedIds()
         {
             // arrange
@@ -37,7 +37,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ResetSetsTheGeneratorBackToItsInitialState()
         {
             // arrange
@@ -53,7 +53,7 @@ namespace GRYLibrary.Tests.Testcases.Misc
         }
 
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void ResetWithLastValueContinuesAtTheGivenValue()
         {
             // arrange

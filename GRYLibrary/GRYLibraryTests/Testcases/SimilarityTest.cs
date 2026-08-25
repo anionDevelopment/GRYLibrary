@@ -8,7 +8,7 @@ namespace GRYLibrary.Tests.Testcases
     {
         #region Combined
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestCalculateCombinedSimilarity1()
         {
             this.TestRange(0.8.ToPercentValue(), Similarity.CalculateCombinedSimilarity("123a5678", "123b5678"), 0.99.ToPercentValue());
@@ -19,21 +19,21 @@ namespace GRYLibrary.Tests.Testcases
         #endregion 
         #region Jaccard
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestCalculateJaccardSimilarityWithEqualStrings()
         {
             string testString = "test";
             Assert.AreEqual(1, Similarity.CalculateJaccardSimilarity(testString, testString).Value);
         }
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestJaccardIndexWithEqualStrings()
         {
             string testString = "test";
             Assert.AreEqual(0.5, Similarity.CalculateJaccardIndex(testString, testString));
         }
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestJaccardSimilarityWithDifferentValues()
         {
             Assert.AreEqual(4 / (decimal)5, Similarity.CalculateJaccardSimilarity("test1", "test2").Value);
@@ -48,7 +48,7 @@ namespace GRYLibrary.Tests.Testcases
             Assert.AreEqual((decimal)5 / 8, Similarity.CalculateJaccardSimilarity("12xxx678", "12yyy678").Value);
         }
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestJaccardIndexSimilarityWithCompletelyDifferentStrings()
         {
             Assert.AreEqual(0, Similarity.CalculateJaccardSimilarity("abcd", "efgh").Value);
@@ -56,21 +56,21 @@ namespace GRYLibrary.Tests.Testcases
         #endregion
         #region Levenshtein
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestLevenshteinSimilarityWithEqualStrings()
         {
             string testString = "test";
             Assert.AreEqual(1, Similarity.CalculateLevenshteinSimilarity(testString, testString).Value);
         }
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestLevenshteinDistanceWithEqualStrings()
         {
             string testString = "test";
             Assert.AreEqual(0, Similarity.CalculateLevenshteinDistance(testString, testString));
         }
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestLevenshteinDistanceWithDifferentValues()
         {
             Assert.AreEqual(1, Similarity.CalculateLevenshteinDistance("test", "test2"));
@@ -84,7 +84,7 @@ namespace GRYLibrary.Tests.Testcases
             Assert.AreEqual(4, Similarity.CalculateLevenshteinDistance("abcd", "efgh"));
         }
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestLevenshteinSimilarityWithDifferentValues()
         {
             Assert.AreEqual((decimal)4 / 5, Similarity.CalculateLevenshteinSimilarity("test", "test2").Value);
@@ -101,7 +101,7 @@ namespace GRYLibrary.Tests.Testcases
             Assert.AreEqual((decimal)7 / 10, Similarity.CalculateLevenshteinSimilarity("12345678", "1x34567890").Value);
         }
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestLevenshteinSimilarityWithCompletelyDifferentStrings()
         {
             Assert.AreEqual(0, Similarity.CalculateLevenshteinSimilarity("abcd", "efgh").Value);
@@ -110,20 +110,20 @@ namespace GRYLibrary.Tests.Testcases
         #endregion
         #region Cosine
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestCosineSimilarityWithEqualStrings()
         {
             string testString = "test";
             Assert.AreEqual(1, Similarity.CalculateCosineSimilarity(testString, testString).Value);
         }
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestCosineSimilarityWithCompletelyDifferentStrings()
         {
             Assert.AreEqual(0, Similarity.CalculateCosineSimilarity("abcd", "efgh").Value);
         }
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestCosineSimilarityWithDifferentValues()
         {
             this.TestRange(0.9.ToPercentValue(), Similarity.CalculateCosineSimilarity("test", "test2"), 1.ToPercentValue());

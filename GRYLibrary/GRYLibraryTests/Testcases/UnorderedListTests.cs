@@ -7,6 +7,7 @@ namespace GRYLibrary.Tests.Testcases
     public class UnorderedListTests
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UnorderedList_True_1()
         {
             // arrange 
@@ -22,6 +23,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UnorderedList_True_2()
         {
             // arrange 
@@ -37,6 +39,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UnorderedList_False_1()
         {
             // arrange 
@@ -52,6 +55,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UnorderedList_False_2()
         {
             // arrange 
@@ -67,6 +71,7 @@ namespace GRYLibrary.Tests.Testcases
         }
 
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UnorderedList_False_3()
         {
             // arrange 

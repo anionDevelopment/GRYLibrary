@@ -8,7 +8,7 @@ namespace GRYLibrary.Tests.Testcases
     public class PropertyTest
     {
         [TestMethod]
-        [TestProperty(nameof(TestKind), nameof(TestKind.UnitTest))]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void SimplePropertyTests()
         {
             object object1 = new();

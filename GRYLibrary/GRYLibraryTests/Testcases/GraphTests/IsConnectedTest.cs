@@ -1,3 +1,4 @@
+using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Graph;
 using GRYLibrary.Core.Graph.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,6 +10,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
     public class IsConnectedTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void TestGraphWithOneVertex()
         {
             Graph graph = new UndirectedGraph();

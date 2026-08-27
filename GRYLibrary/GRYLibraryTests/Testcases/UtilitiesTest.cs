@@ -56,6 +56,26 @@ namespace GRYLibrary.Tests.Testcases
 
         [TestMethod]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void NormalizePathKeepsLeadingDoubleSeparators_Linux()
+        {
+            AssertNormalizePath(@"\\server\\path\\", GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Linux.Instance, '/');
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void NormalizePathKeepsLeadingDoubleSeparators_Windows()
+        {
+            AssertNormalizePath("//server//path/", GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows.Instance, '\\');
+        }
+
+        private static void AssertNormalizePath(string input, GRYLibrary.Core.OperatingSystem.OperatingSystem operatingSystem, char separator)
+        {
+            string expected = new string(separator, 2) + "server" + separator + "path";
+            Assert.AreEqual(expected, GUtilities.NormalizePath(input, operatingSystem));
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void UtilitiesTestEnsureFileExists()
         {
             string testFile = "file";
@@ -855,7 +875,7 @@ namespace GRYLibrary.Tests.Testcases
         public void DateAndTimeToStringTest()
         {
             Assert.AreEqual("2022-02-27_15-05-00", GUtilities.DateTimeForFilename(new DateTime(2022, 02, 27, 15, 05, 00)));
-            Assert.AreEqual("2022-02-27T15:05:00,120+03:00", GUtilities.DateTimeToISO8601String(new DateTimeOffset(2022, 02, 27, 15, 05, 00, 120,TimeSpan.FromHours(3))));
+            Assert.AreEqual("2022-02-27T15:05:00,120+03:00", GUtilities.DateTimeToISO8601String(new DateTimeOffset(2022, 02, 27, 15, 05, 00, 120, TimeSpan.FromHours(3))));
             Assert.AreEqual("2022-02-27T15:05:00+03:00", GUtilities.DateTimeToUserFriendlyString(new DateTimeOffset(2022, 02, 27, 15, 05, 00, TimeSpan.FromHours(3))));
             Assert.AreEqual("2022-02-27", GUtilities.DateToUserFriendlyString(new DateOnly(2022, 02, 27)));
             Assert.AreEqual("15:05:00", GUtilities.TimeToUserFriendlyString(new TimeOnly(15, 05, 00)));
@@ -990,7 +1010,7 @@ namespace GRYLibrary.Tests.Testcases
         public void GenerateSecureRandomValueReturnsAValueOfTheWantedLength()
         {
             // act
-            string valueOfAnOddLength = GUtilities.GenerateSecureRandomValue(null,7);
+            string valueOfAnOddLength = GUtilities.GenerateSecureRandomValue(null, 7);
             string valueOfAnEvenLength = GUtilities.GenerateSecureRandomValue(null, 8);
 
             // assert

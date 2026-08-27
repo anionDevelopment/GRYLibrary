@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace GRYLibrary.Core.APIServer.Services.Database
 {
@@ -171,6 +173,138 @@ namespace GRYLibrary.Core.APIServer.Services.Database
                     //that exception and therefore hide the actual reason of the failure, so it is only reported here.
                     log.Log($"Rollback of DB-transaction {nameOfAction} failed.", exception);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Reads the current schema (tables, columns, foreign keys) of an already-migrated database and writes it
+        /// as a PlantUML entity-relationship diagram to <paramref name="targetFile"/>.
+        /// </summary>
+        /// <remarks>
+        /// This is deliberately based on reading the schema back from the database itself instead of on static
+        /// analysis of migration-scripts: that is what guarantees the diagram matches what the migrations actually
+        /// produced. Currently only MariaDB/MySQL-flavored <c>information_schema</c> queries are implemented.
+        /// </remarks>
+        /// <typeparam name="ProjectSpecificDatabaseInteractor">The project-specific database-interactor type.</typeparam>
+        /// <param name="database">The database-connection to read the schema from. Its migrations must already have been run.</param>
+        /// <param name="log">The logger used while querying the database.</param>
+        /// <param name="title">The title shown at the top of the generated diagram.</param>
+        /// <param name="targetFile">The file the generated PlantUML diagram is written to.</param>
+        /// <returns>The generated PlantUML diagram content.</returns>
+        public static string GenerateDatabaseStructurePlantUmlDiagram<ProjectSpecificDatabaseInteractor>(ProjectSpecificDatabaseInteractor database, IGRYLog log, string title, string targetFile)
+            where ProjectSpecificDatabaseInteractor : IProjectSpecificDatabaseInteractor
+        {
+            const string migrationBookkeepingTableName = "GRYMigrationInformation";
+
+            IList<DatabaseStructureColumnInformation> columns = RunTransaction<IList<DatabaseStructureColumnInformation>, ProjectSpecificDatabaseInteractor>(nameof(GenerateDatabaseStructurePlantUmlDiagram), log, database, true, (command) =>
+            {
+                IList<DatabaseStructureColumnInformation> result = new List<DatabaseStructureColumnInformation>();
+                command.CommandText = "SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME <> @MigrationTableName ORDER BY TABLE_NAME, ORDINAL_POSITION;";
+                command.Parameters.Add(database.GetGenericDatabaseInteractor().GetParameter("MigrationTableName", migrationBookkeepingTableName));
+                using DbDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    result.Add(new DatabaseStructureColumnInformation(
+                        tableName: reader.GetString(0),
+                        columnName: reader.GetString(1),
+                        columnType: reader.GetString(2),
+                        isNullable: reader.GetString(3) == "YES",
+                        isPrimaryKey: reader.GetString(4) == "PRI"));
+                }
+                return result;
+            })[0]!;
+
+            IList<DatabaseStructureForeignKeyInformation> foreignKeys = RunTransaction<IList<DatabaseStructureForeignKeyInformation>, ProjectSpecificDatabaseInteractor>(nameof(GenerateDatabaseStructurePlantUmlDiagram), log, database, true, (command) =>
+            {
+                IList<DatabaseStructureForeignKeyInformation> result = new List<DatabaseStructureForeignKeyInformation>();
+                command.CommandText = "SELECT TABLE_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL ORDER BY TABLE_NAME, COLUMN_NAME;";
+                using DbDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    result.Add(new DatabaseStructureForeignKeyInformation(
+                        tableName: reader.GetString(0),
+                        columnName: reader.GetString(1),
+                        referencedTableName: reader.GetString(2),
+                        referencedColumnName: reader.GetString(3)));
+                }
+                return result;
+            })[0]!;
+
+            string plantUml = GenerateDatabaseStructurePlantUml(title, columns, foreignKeys);
+            File.WriteAllText(targetFile, plantUml, new UTF8Encoding(false));
+            return plantUml;
+        }
+
+        private static string GenerateDatabaseStructurePlantUml(string title, IList<DatabaseStructureColumnInformation> columns, IList<DatabaseStructureForeignKeyInformation> foreignKeys)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine("@startuml");
+            builder.AppendLine($"title {title}");
+            builder.AppendLine("hide circle");
+            builder.AppendLine();
+
+            foreach (IGrouping<string, DatabaseStructureColumnInformation> table in columns.GroupBy(c => c.TableName))
+            {
+                builder.AppendLine($"entity \"{table.Key}\" {{");
+                IList<DatabaseStructureColumnInformation> primaryKeyColumns = table.Where(c => c.IsPrimaryKey).ToList();
+                IList<DatabaseStructureColumnInformation> otherColumns = table.Where(c => !c.IsPrimaryKey).ToList();
+                foreach (DatabaseStructureColumnInformation column in primaryKeyColumns)
+                {
+                    builder.AppendLine($"  * {column.ColumnName} : {column.ColumnType} <<PK>>");
+                }
+                if (primaryKeyColumns.Count > 0 && otherColumns.Count > 0)
+                {
+                    builder.AppendLine("  --");
+                }
+                foreach (DatabaseStructureColumnInformation column in otherColumns)
+                {
+                    string nullability = column.IsNullable ? "" : " <<NOT NULL>>";
+                    builder.AppendLine($"  {column.ColumnName} : {column.ColumnType}{nullability}");
+                }
+                builder.AppendLine("}");
+                builder.AppendLine();
+            }
+
+            foreach (DatabaseStructureForeignKeyInformation foreignKey in foreignKeys)
+            {
+                builder.AppendLine($"\"{foreignKey.TableName}\" }}o--|| \"{foreignKey.ReferencedTableName}\" : {foreignKey.ColumnName}");
+            }
+
+            builder.AppendLine("@enduml");
+            return builder.ToString();
+        }
+
+        private sealed class DatabaseStructureColumnInformation
+        {
+            public string TableName { get; }
+            public string ColumnName { get; }
+            public string ColumnType { get; }
+            public bool IsNullable { get; }
+            public bool IsPrimaryKey { get; }
+
+            public DatabaseStructureColumnInformation(string tableName, string columnName, string columnType, bool isNullable, bool isPrimaryKey)
+            {
+                this.TableName = tableName;
+                this.ColumnName = columnName;
+                this.ColumnType = columnType;
+                this.IsNullable = isNullable;
+                this.IsPrimaryKey = isPrimaryKey;
+            }
+        }
+
+        private sealed class DatabaseStructureForeignKeyInformation
+        {
+            public string TableName { get; }
+            public string ColumnName { get; }
+            public string ReferencedTableName { get; }
+            public string ReferencedColumnName { get; }
+
+            public DatabaseStructureForeignKeyInformation(string tableName, string columnName, string referencedTableName, string referencedColumnName)
+            {
+                this.TableName = tableName;
+                this.ColumnName = columnName;
+                this.ReferencedTableName = referencedTableName;
+                this.ReferencedColumnName = referencedColumnName;
             }
         }
     }

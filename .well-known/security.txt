@@ -3,24 +3,24 @@ Hash: SHA256
 
 # If you would like to report a security issue
 # you may report it to:
-Contact: mailto:marius.goecke@gmail.com
-Expires: 2029-12-31T23:59:59.999
+Contact: mailto:marius.goecke@aniondev.de
+Expires: 2034-12-31T23:59:59.999
 Encryption: https://raw.githubusercontent.com/anionDev/anionDev/main/PublicKeys/PGP-Key.txt
-Preferred-Languages: en, de
-Canonical: https://raw.githubusercontent.com/anionDev/GRYLibrary/main/.well-known/security.txt
+Preferred-Languages: de, en
+Canonical: https://raw.githubusercontent.com/anionDevelopment/GRYLibrary/main/.well-known/security.txt
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEvVGQBLyIDHMspke4cqOMNHa+Jy8FAmKCpJAACgkQcqOMNHa+
-Jy8Eug//X0cku8Kr4htZdOsqB2CzBl039+6qxLHlaJz/k6BR/MlvqnmQUsslZCHJ
-6SM4ufzViSq7e2U77yIT7Xcvt4Dypn1Vh4QIGXWAH1uieP1w2vplGDcChB5Z4PHE
-pey4GHkTm7PUJsbWdOuVOt/H71haSJmz2K99+jX+G7/sBZv36u3kSD9VBFXET4GT
-PygBaM6GFNRuMAZXZd/8PHHgPJIaG8GkjNWHAJcVDGMgOW+9gi72tWCwLyRpe7KK
-yCrNNVGWcb4C+0Rs0N7RMAd17wtBHSUaKqrye7W8ht9dnAeYY6PkH3bFBWQMTzt+
-Ke8cHcLeJgj+AATlbZiIAjkELexzoWBEE1uCbTi5XygsyGjEAYhrI1oLm73bSzUX
-ER8NPTno2nYDr8YX0l8TJbCIUABaRSCA5iT0SPEJjWEOodvHkJz+X+pTmcEtThQ2
-rvOhQ7LySe0OxlRMXeAWQ1YggXo0PqVU981d8Dx/zoXOGK8qA5l+PvbtucLefITP
-SXeB0J4GW6d6p5LjfFDGaK9WT7X87f9Y9c2oDj10cH1MtU5Dv47nG6J9ThtAfUsE
-9jLNG5Xupo3DMAhWzfpbr9Mvf+Jbfn5GwwgBLIlxtFWaz1x9m7M1birW0Dtj7T2Q
-wqgZroOEAIkGJ1xOdHe7sH3miJ/NTgnTzDXy365zXPe1vq7zwrs=
-=vlE8
+iQIzBAEBCAAdFiEEvVGQBLyIDHMspke4cqOMNHa+Jy8FAmqZ2UEACgkQcqOMNHa+
+Jy+Sjw//YPl/fj/q/rWWcK3DcmEI4spAyQDSHRItLjq6MISfNyFeAXIPDhuPrGZN
+0CvK81ciH5G9NmgWKNWJBdMZjn4nLll/APC4E9OCXh1K/DGG1Yy53D+eNfgVbVFn
+wjoQjARzoerJChPAzde+Mda8yAMTwxFAccdqgBpUT7MqaZyvgGIyS8eVELWX/6W5
+5aJ4nRAxMLvCtSayYTKPDOdcdMjp/ej8NJmG0inEwpk0cnmOlOfxM1SikYGAuzJF
+CCjSHoaxqnnZDa2AXaGhnYPuS3P05n7Jir/KtIgVhKbrep/UOKXAL5tg2JCPQ0mr
+qHNxm8VSSUZ7bXEDRko++fUDUXp2s4FcEY2c60k9JvIzGLMor1J81vfIB5cgI3fd
+ZJgfvAu3MVZHnHadww0hYZPsM5KjVTpQWVb8tizY1IhXxPfnhLvG1wZFnW01geAL
+C60XoQ4U9tRadaZXRMhsJ+YiwPmFS5mvau+ZtAQRnugYyiB3bPHdCyG6NPai5rCs
+jet5dRfVOlfZIjwC2MxlgwGV/kq1hOhyEPHV0VNI5J90XaL8RMXQCM+Y3HSFbMUa
+DEDc/+Uq5OsxsyAu3aZ5xWxMrEUm2n79qOi22D6ZutwFp/2rFx6hqtt0cjT+tGxX
+UpENIPMKJtCknv5C6CCP3xt6mU7nVpRFsFLNxDemO03yU1rNpZs=
+=h7L/
 -----END PGP SIGNATURE-----

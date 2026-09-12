@@ -68,6 +68,22 @@ namespace GRYLibrary.Tests.Testcases
             AssertNormalizePath("//server//path/", GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows.Instance, '\\');
         }
 
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void NormalizePathReducesDuplicatedSeparators()
+        {
+            Assert.AreEqual("foo/bar/baz", GUtilities.NormalizePath(@"foo//bar\\baz", GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Linux.Instance));
+            Assert.AreEqual("foo\\bar\\baz", GUtilities.NormalizePath(@"foo//bar\\baz", GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows.Instance));
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void NormalizePathThrowsExceptionForMoreThanTwoLeadingSeparators()
+        {
+            Assert.Throws<ArgumentException>(() => GUtilities.NormalizePath("///server/path", GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Linux.Instance));
+            Assert.Throws<ArgumentException>(() => GUtilities.NormalizePath(@"\\\server\path", GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows.Instance));
+        }
+
         private static void AssertNormalizePath(string input, GRYLibrary.Core.OperatingSystem.OperatingSystem operatingSystem, char separator)
         {
             string expected = new string(separator, 2) + "server" + separator + "path";

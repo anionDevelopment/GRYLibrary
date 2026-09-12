@@ -187,16 +187,27 @@ namespace GRYLibrary.Core.Misc
             }
             private string Sanitize(string path, char separator)
             {
-                // Remove duplicate separators (e.g. "C:\\\\Users\\\\User" -> "C:\\Users\\User")
                 string doubleSeparator = new string(separator, 2);
+                string tripleSeparator = new string(separator, 3);
+                // A path is allowed to start with exactly two separators (for example an UNC-path like "\\server\share").
+                // This is the only place where a duplicated separator is meaningful, so it is taken away before the duplicate-reduction below and
+                // put back afterwards. More than two leading separators do not denote a valid path.
+                string leadingDoubleSeparator = string.Empty;
                 if (path.StartsWith(doubleSeparator))
                 {
-                    path = doubleSeparator + path[2..].TrimStart(separator);
+                    if (path.StartsWith(tripleSeparator))
+                    {
+                        throw new ArgumentException($"'{this._Path}' is invalid as path because it starts with more than two path-separators.");
+                    }
+                    leadingDoubleSeparator = doubleSeparator;
+                    path = path[2..];
                 }
+                // Reduce duplicated separators (e.g. "C:\\Users\\User" becomes "C:\Users\User")
                 while (path.Contains(doubleSeparator))
                 {
                     path = path.Replace(doubleSeparator, separator.ToString());
                 }
+                path = leadingDoubleSeparator + path;
                 if (path.Length > 1 && path.EndsWith(separator) && !IsRootPath(path, separator))
                 {
                     path = path.TrimEnd(separator);

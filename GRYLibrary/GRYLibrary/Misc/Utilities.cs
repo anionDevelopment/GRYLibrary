@@ -173,17 +173,63 @@ namespace GRYLibrary.Core.Misc
 
             public string Handle(OSX operatingSystem)
             {
-                return this._Path.Replace(this.WindowsPathSeparatorChar, this.LinuxAndOSXPathSeparatorChar);
+                return Sanitize(this._Path.Replace(this.WindowsPathSeparatorChar, this.LinuxAndOSXPathSeparatorChar), this.LinuxAndOSXPathSeparatorChar);
             }
 
             public string Handle(GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows operatingSystem)
             {
-                return this._Path.Replace(this.LinuxAndOSXPathSeparatorChar, this.WindowsPathSeparatorChar);
+                return Sanitize(this._Path.Replace(this.LinuxAndOSXPathSeparatorChar, this.WindowsPathSeparatorChar), this.WindowsPathSeparatorChar);
             }
 
             public string Handle(Linux operatingSystem)
             {
-                return this._Path.Replace(this.WindowsPathSeparatorChar, this.LinuxAndOSXPathSeparatorChar);
+                return Sanitize(this._Path.Replace(this.WindowsPathSeparatorChar, this.LinuxAndOSXPathSeparatorChar), this.LinuxAndOSXPathSeparatorChar);
+            }
+            private string Sanitize(string path, char separator)
+            {
+                string doubleSeparator = new string(separator, 2);
+                string tripleSeparator = new string(separator, 3);
+                // A path is allowed to start with exactly two separators (for example an UNC-path like "\\server\share").
+                // This is the only place where a duplicated separator is meaningful, so it is taken away before the duplicate-reduction below and
+                // put back afterwards. More than two leading separators do not denote a valid path.
+                string leadingDoubleSeparator = string.Empty;
+                if (path.StartsWith(doubleSeparator))
+                {
+                    if (path.StartsWith(tripleSeparator))
+                    {
+                        throw new ArgumentException($"'{this._Path}' is invalid as path because it starts with more than two path-separators.");
+                    }
+                    leadingDoubleSeparator = doubleSeparator;
+                    path = path[2..];
+                }
+                // Reduce duplicated separators (e.g. "C:\\Users\\User" becomes "C:\Users\User")
+                while (path.Contains(doubleSeparator))
+                {
+                    path = path.Replace(doubleSeparator, separator.ToString());
+                }
+                path = leadingDoubleSeparator + path;
+                if (path.Length > 1 && path.EndsWith(separator) && !IsRootPath(path, separator))
+                {
+                    path = path.TrimEnd(separator);
+                }
+                return path;
+            }
+
+            private static bool IsRootPath(string path, char separator)
+            {
+                if (path.Length == 1 && path[0] == separator)
+                {
+                    return true;
+                }
+                if (path.Length == 2 && path[0] == separator && path[1] == separator)
+                {
+                    return true;
+                }
+                if (path.Length == 3 && char.IsLetter(path[0]) && path[1] == ':' && path[2] == separator)
+                {
+                    return true;
+                }
+                return false;
             }
         }
 
@@ -3666,7 +3712,7 @@ namespace GRYLibrary.Core.Misc
         /// characters, chosen with the same probability and independently of the others.
         /// </remarks>
         /// <exception cref="ArgumentException">Thrown when the amount of characters is not a positive number.</exception>
-        public static string GenerateSecureRandomValue(string? prefix= null,int amountOfCharacters = 32)
+        public static string GenerateSecureRandomValue(string? prefix = null, int amountOfCharacters = 32)
         {
             if (amountOfCharacters <= 0)
             {
@@ -3674,10 +3720,10 @@ namespace GRYLibrary.Core.Misc
             }
             int amountOfBytes = (amountOfCharacters + 1) / 2;
             string result = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(amountOfBytes)).ToLowerInvariant();
-            result= result[..amountOfCharacters];
-            if (prefix!=null)
+            result = result[..amountOfCharacters];
+            if (prefix != null)
             {
-                result = prefix +"_"+ result;
+                result = prefix + "_" + result;
             }
             return result;
         }

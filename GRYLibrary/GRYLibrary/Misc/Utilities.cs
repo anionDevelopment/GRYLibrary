@@ -75,13 +75,17 @@ namespace GRYLibrary.Core.Misc
             return OperatingSystem.OperatingSystem.GetCurrentOperatingSystem().Accept(new IsAdministratorVisitor());
         }
 
+        /// <remarks>
+        /// Unix-based operating-systems do not have an equivalent of the windows-administrator-role, so the effective user-id is used there:
+        /// only the user "root" has the same permissions as a windows-user whose process runs with an elevated administrator-token.
+        /// </remarks>
         private class IsAdministratorVisitor : IOperatingSystemVisitor<bool>
         {
             public bool Handle(OSX operatingSystem)
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
-                    throw new NotImplementedException();
+                    return UnixNativeMethods.GetEffectiveUserId() == 0;
                 }
                 else
                 {
@@ -105,9 +109,9 @@ namespace GRYLibrary.Core.Misc
 
             public bool Handle(Linux operatingSystem)
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    throw new NotImplementedException();
+                    return UnixNativeMethods.GetEffectiveUserId() == 0;
                 }
                 else
                 {
@@ -1047,7 +1051,7 @@ namespace GRYLibrary.Core.Misc
 
             public (bool, string) Handle(OSX operatingSystem)
             {
-                throw new NotImplementedException();
+                return this.ResolvePathUsingUnixPathVariable();
             }
 
             public (bool, string) Handle(GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows operatingSystem)
@@ -1076,6 +1080,14 @@ namespace GRYLibrary.Core.Misc
             }
 
             public (bool, string) Handle(Linux operatingSystem)
+            {
+                return this.ResolvePathUsingUnixPathVariable();
+            }
+
+            /// <remarks>
+            /// All unix-based operating-systems use the same separator-character in the path-variable and the same criterion (an executable file) to resolve a program.
+            /// </remarks>
+            private (bool, string) ResolvePathUsingUnixPathVariable()
             {
                 string program = null;
                 string paths = Environment.ExpandEnvironmentVariables("%PATH%");// "$PATH" not used because of https://github.com/dotnet/runtime/issues/25792
@@ -3389,7 +3401,16 @@ namespace GRYLibrary.Core.Misc
 
             public void Handle(OSX operatingSystem)
             {
-                throw new NotImplementedException();
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    string darkModeValue = this._Enabled ? "true" : "false";
+                    using ExternalProgramExecutor externalProgramExecutor = new("osascript", $"-e \"tell application \\\"System Events\\\" to tell appearance preferences to set dark mode to {darkModeValue}\"");
+                    externalProgramExecutor.Run();
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
             }
 
             public void Handle(GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows operatingSystem)
@@ -3406,14 +3427,34 @@ namespace GRYLibrary.Core.Misc
 
             public void Handle(Linux operatingSystem)
             {
-                throw new NotImplementedException();
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    string colorScheme = this._Enabled ? "prefer-dark" : "default";
+                    using ExternalProgramExecutor externalProgramExecutor = new("gsettings", $"set org.gnome.desktop.interface color-scheme '{colorScheme}'");
+                    externalProgramExecutor.Run();
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
             }
         }
         private class GetDarkModeEnabledVisitor : IOperatingSystemVisitor<bool>
         {
             public bool Handle(OSX operatingSystem)
             {
-                throw new NotSupportedException();
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    using ExternalProgramExecutor externalProgramExecutor = new("defaults", "read -g AppleInterfaceStyle");
+                    externalProgramExecutor.Configuration.WaitingState = new RunSynchronously() { ThrowErrorIfExitCodeIsNotZero = false };
+                    externalProgramExecutor.Run();
+                    // OSX only contains the preference "AppleInterfaceStyle" while the dark-mode is enabled. If the light-mode is enabled then this preference does not exist and "defaults" terminates with an exit-code which is not 0.
+                    return externalProgramExecutor.ExitCode == 0 && string.Join(string.Empty, externalProgramExecutor.AllStdOutLines).Trim() == "Dark";
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
             }
 
             public bool Handle(GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows operatingSystem)
@@ -3437,7 +3478,21 @@ namespace GRYLibrary.Core.Misc
 
             public bool Handle(Linux operatingSystem)
             {
-                throw new NotSupportedException();
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    using ExternalProgramExecutor externalProgramExecutor = new("gsettings", "get org.gnome.desktop.interface color-scheme");
+                    externalProgramExecutor.Configuration.WaitingState = new RunSynchronously() { ThrowErrorIfExitCodeIsNotZero = false };
+                    externalProgramExecutor.Run();
+                    if (externalProgramExecutor.ExitCode != 0)
+                    {
+                        throw new NotSupportedException($"The state of the dark-mode can not be determined because the setting \"org.gnome.desktop.interface color-scheme\" is not available. (Error-output of gsettings: {string.Join(" ", externalProgramExecutor.AllStdErrLines)})");
+                    }
+                    return string.Join(string.Empty, externalProgramExecutor.AllStdOutLines).Trim().Trim('\'') == "prefer-dark";
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
             }
         }
         public static NullReferenceException CreateNullReferenceExceptionDueToParameter(string parameterName)

@@ -186,7 +186,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
                 new Cycle([e_hi, e_ij, e_jc, e_cd, e_dh]),
                 new Cycle([e_hi, e_ij, e_jb, e_bc, e_cd, e_dh])
             };
-            Assert.AreEqual(5, expectedCycles.Count);
+            Assert.HasCount(5, expectedCycles);
 
             ISet<Cycle> foundCycles = graph.GetAllCycles();
 
@@ -225,7 +225,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
                 new Cycle([e_bc, e_cb]),
                 new Cycle([e_ca, e_ac])
             };
-            Assert.AreEqual(5, expectedCycles.Count);
+            Assert.HasCount(5, expectedCycles);
             ISet<Cycle> foundCycles = graph.GetAllCycles();
 
             Assert.IsTrue(foundCycles.SetEquals(expectedCycles), $"Expected <{Cycle.CycleSetToString(expectedCycles)}> but found <{Cycle.CycleSetToString(foundCycles)}>");

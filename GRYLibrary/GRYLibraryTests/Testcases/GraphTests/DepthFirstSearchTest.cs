@@ -20,7 +20,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
                 order.Add(new Tuple<int, IList<Edge>>(int.Parse(v.Name.Replace("v", string.Empty)), edges));
                 return true;
             });
-            Assert.AreEqual(10, order.Count);
+            Assert.HasCount(10, order);
             int i1 = this.GetIndexOfTupleWithSpeicficFirstvalue(order, 1);
             int i2 = this.GetIndexOfTupleWithSpeicficFirstvalue(order, 2);
             int i3 = this.GetIndexOfTupleWithSpeicficFirstvalue(order, 3);
@@ -32,15 +32,15 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             int i9 = this.GetIndexOfTupleWithSpeicficFirstvalue(order, 9);
             int i10 = this.GetIndexOfTupleWithSpeicficFirstvalue(order, 10);
             Assert.AreEqual(0, i1);
-            Assert.IsTrue(i1 < i4);
-            Assert.IsTrue(i4 < i8);
-            Assert.IsTrue(i1 < i3);
-            Assert.IsTrue(i3 < i7);
-            Assert.IsTrue(i3 < i6);
-            Assert.IsTrue(i6 < i10);
-            Assert.IsTrue(i1 < i2);
-            Assert.IsTrue(i2 < i5);
-            Assert.IsTrue(i5 < i9);
+            Assert.IsLessThan(i4, i1);
+            Assert.IsLessThan(i8, i4);
+            Assert.IsLessThan(i3, i1);
+            Assert.IsLessThan(i7, i3);
+            Assert.IsLessThan(i6, i3);
+            Assert.IsLessThan(i10, i6);
+            Assert.IsLessThan(i2, i1);
+            Assert.IsLessThan(i5, i2);
+            Assert.IsLessThan(i9, i5);
         }
 
         private int GetIndexOfTupleWithSpeicficFirstvalue(IList<Tuple<int, IList<Edge>>> l, int index)

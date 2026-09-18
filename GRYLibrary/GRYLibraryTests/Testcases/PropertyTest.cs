@@ -15,7 +15,7 @@ namespace GRYLibrary.Tests.Testcases
             object object2 = new();
             string name = "propertyName";
             Property<object> property = new(object1, name, true);
-            Assert.AreEqual(1, property.History.Count);
+            Assert.HasCount(1, property.History);
             Assert.AreEqual(object1, property.History.Pop().Value);
             Assert.AreEqual(name, property.PropertyName);
             Assert.AreEqual(object1, property.Value);
@@ -32,7 +32,7 @@ namespace GRYLibrary.Tests.Testcases
             }
             Assert.AreEqual(object2, property.Value);
             System.Collections.Generic.Stack<System.Collections.Generic.KeyValuePair<DateTimeOffset, object>> currentHistoy = property.History;
-            Assert.AreEqual(2, currentHistoy.Count);
+            Assert.HasCount(2, currentHistoy);
             Assert.AreEqual(object2, currentHistoy.Pop().Value);
             Assert.AreEqual(object1, currentHistoy.Pop().Value);
         }

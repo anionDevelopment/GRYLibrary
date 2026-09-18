@@ -37,7 +37,7 @@ namespace GRYLibrary.Tests.Testcases
 
             // assert
             Assert.IsTrue(Path.IsPathFullyQualified(result.Item1));
-            Assert.IsTrue(program.Contains(originalProgram));
+            Assert.Contains(originalProgram, program);
             Assert.AreEqual(argument, originalArgument);
         }
 
@@ -185,7 +185,7 @@ namespace GRYLibrary.Tests.Testcases
                 GUtilities.EnsureFileExists(file4, true);
 
                 IEnumerable<string> result = GUtilities.GetFilesOfFolderRecursively(baseDir);
-                Assert.AreEqual(4, result.Count());
+                Assert.HasCount(4, result);
             }
             finally
             {
@@ -283,9 +283,9 @@ namespace GRYLibrary.Tests.Testcases
             ISet<string> result = input.ToCaseInsensitiveSet();
 
             // assert
-            Assert.AreEqual(2, result.Count);
-            Assert.IsTrue(result.Contains("vAlUe"));
-            Assert.IsTrue(result.Contains("OTHER"));
+            Assert.HasCount(2, result);
+            Assert.Contains("vAlUe", result);
+            Assert.Contains("OTHER", result);
         }
 
         [TestMethod]
@@ -311,7 +311,7 @@ namespace GRYLibrary.Tests.Testcases
             SimpleGenericXMLSerializer<SerializableDictionary<int, string>> serializer = new();
             string serializedDictionary = serializer.Serialize(dictionary);
             SerializableDictionary<int, string> reloadedDictionary = serializer.Deserialize(serializedDictionary);
-            Assert.AreEqual(2, reloadedDictionary.Count);
+            Assert.HasCount(2, reloadedDictionary);
             Assert.AreEqual("test1", reloadedDictionary[1]);
             Assert.AreEqual("test2", reloadedDictionary[2]);
         }

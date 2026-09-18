@@ -20,7 +20,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.IsFalse(graph.ContainsOneOrMoreSelfLoops());
             Assert.IsTrue(graph.HasHamiltonianCycle(out _));
             ISet<Cycle> cycles = graph.GetAllCycles();
-            Assert.AreEqual(1, cycles.Count);
+            Assert.HasCount(1, cycles);
         }
         [TestMethod]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]

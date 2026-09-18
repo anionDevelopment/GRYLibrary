@@ -30,11 +30,11 @@ namespace GRYLibrary.Tests.Testcases
                 SimpleObjectPersistence<SerializeTestClass> sop2 = SimpleObjectPersistence<SerializeTestClass>.CreateByFile(file);
                 sop2.LoadObjectFromFile();
 
-                Assert.AreEqual(3, sop2.Object.ListTest.Count);
-                Assert.AreEqual(true, sop2.Object.ListTest[0]);
-                Assert.AreEqual(false, sop2.Object.ListTest[1]);
-                Assert.AreEqual(true, sop2.Object.ListTest[2]);
-                Assert.AreEqual(null, sop2.Object.TestAttribute.TestAttribute1.TestAttribute1);
+                Assert.HasCount(3, sop2.Object.ListTest);
+                Assert.IsTrue(sop2.Object.ListTest[0]);
+                Assert.IsFalse(sop2.Object.ListTest[1]);
+                Assert.IsTrue(sop2.Object.ListTest[2]);
+                Assert.IsNull(sop2.Object.TestAttribute.TestAttribute1.TestAttribute1);
                 Assert.AreEqual("x", sop2.Object.TestAttribute.TestAttribute1.TestString1);
                 Assert.AreEqual("encodingtest: áä?<👍你好", sop2.Object.TestAttribute.TestString1);
                 Assert.AreEqual(22 / (double)7, sop2.Object.TestDouble);

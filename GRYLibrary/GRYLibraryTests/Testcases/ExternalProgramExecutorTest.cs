@@ -20,9 +20,9 @@ namespace GRYLibrary.Tests.Testcases
             ExternalProgramExecutor externalProgramExecutor = new("echo", '"' + testStdOut.Replace("\"", "\\\"") + '"');
             externalProgramExecutor.Run();
             Assert.AreEqual(0, externalProgramExecutor.ExitCode);
-            Assert.AreEqual(1, externalProgramExecutor.AllStdOutLines.Length);
+            Assert.HasCount(1, externalProgramExecutor.AllStdOutLines);
             Assert.AreEqual(testStdOut, externalProgramExecutor.AllStdOutLines[0]);
-            Assert.AreEqual(0, externalProgramExecutor.AllStdErrLines.Length);
+            Assert.IsEmpty(externalProgramExecutor.AllStdErrLines);
         }
 
         [TestMethod]
@@ -119,13 +119,13 @@ namespace GRYLibrary.Tests.Testcases
                 $"Process-Id: {processId}",
                 "Exit-code: 0",
             ];
-            Assert.AreEqual(expectedLines.Length + 1, actualLines.Count);
+            Assert.HasCount(expectedLines.Length + 1, actualLines);
             for (int i = 0; i < expectedLines.Length; i++)
             {
                 Assert.AreEqual(expectedLines[i], actualLines[i]);
             }
             // The last line contains the (non-deterministic) execution-duration.
-            Assert.IsTrue(actualLines[^1].StartsWith("Execution-duration: "));
+            Assert.StartsWith("Execution-duration: ", actualLines[^1]);
         }
     }
 }

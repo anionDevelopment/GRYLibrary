@@ -25,7 +25,7 @@ namespace GRYLibrary.Tests.Testcases
             items[2, 2] = "lastline2";
             items[2, 3] = "lastline3_012345";
             string[] table = Generate(items, new ASCIITable() { TableHasTitles = true });
-            Assert.AreEqual(6, table.Length);
+            Assert.HasCount(6, table);
             Assert.AreEqual("┌───────────┬──────────────┬──────────────┬────────────────┐", table[0]);
             Assert.AreEqual("│firstline0 │firstline1_012│firstline2    │firstline3      │", table[1]);
             Assert.AreEqual("├───────────┼──────────────┼──────────────┼────────────────┤", table[2]);
@@ -51,7 +51,7 @@ namespace GRYLibrary.Tests.Testcases
             items[2, 2] = "lastline2";
             items[2, 3] = "lastline3_012345";
             string[] table = Generate(items, new ASCIITable() { Characters = new DoubleLineTableCharacter(), MaximalWidth = 11 });
-            Assert.AreEqual(5, table.Length);
+            Assert.HasCount(5, table);
             Assert.AreEqual("╔══════════╦═══════════╦═══════════╦═══════════╗", table[0]);
             Assert.AreEqual("║firstline0║firstlin...║firstline2 ║firstline3 ║", table[1]);
             Assert.AreEqual("║secondline║secondline1║secondli...║secondline3║", table[2]);
@@ -76,7 +76,7 @@ namespace GRYLibrary.Tests.Testcases
             items[2, 2] = "lastline2";
             items[2, 3] = "lastline3_012345";
             string[] table = Generate(items, new CSV());
-            Assert.AreEqual(3, table.Length);
+            Assert.HasCount(3, table);
             Assert.AreEqual("firstline0;firstline1_012;firstline2;firstline3", table[0]);
             Assert.AreEqual("secondline;secondline1;secondline2_01;secondline3", table[1]);
             Assert.AreEqual("lastline0;lastline1;lastline2;lastline3_012345", table[2]);

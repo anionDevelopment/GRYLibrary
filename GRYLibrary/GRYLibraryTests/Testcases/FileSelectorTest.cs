@@ -26,14 +26,14 @@ namespace GRYLibrary.Tests.Testcases
                 Core.Misc.Utilities.EnsureFileExists(file4, true);
 
                 FileSelector fileSelector = FileSelector.SingleFile(file2);
-                Assert.AreEqual(1, fileSelector.Files.Count());
+                Assert.HasCount(1, fileSelector.Files);
                 Assert.AreEqual(file2, fileSelector.Files.First());
 
                 fileSelector = FileSelector.FilesInFolder(baseDir, true);
-                Assert.AreEqual(4, fileSelector.Files.Count());
+                Assert.HasCount(4, fileSelector.Files);
 
                 fileSelector = FileSelector.FilesInFolder(baseDir, false);
-                Assert.AreEqual(0, fileSelector.Files.Count());
+                Assert.IsEmpty(fileSelector.Files);
             }
             finally
             {

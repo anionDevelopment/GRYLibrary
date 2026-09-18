@@ -147,8 +147,8 @@ namespace GRYLibrary.Tests.Testcases
             Assert.IsTrue(minimumValue < actualValue, $"Expected {minimumValue}<{actualValue}");
             Assert.IsTrue(actualValue < maximalValue, $"Expected {actualValue}<{maximalValue}");
 
-            Assert.IsTrue(minimumValue.Value < actualValue.Value, $"Expected {minimumValue.Value}<{actualValue.Value}");
-            Assert.IsTrue(actualValue.Value < maximalValue.Value, $"Expected {actualValue.Value}<{maximalValue.Value}");
+            Assert.IsLessThan(actualValue.Value, minimumValue.Value, $"Expected {minimumValue.Value}<{actualValue.Value}");
+            Assert.IsLessThan(maximalValue.Value, actualValue.Value, $"Expected {actualValue.Value}<{maximalValue.Value}");
         }
         #endregion
     }

@@ -17,7 +17,7 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
         public void SimpleVertexTest()
         {
             Vertex v1 = new("v1");
-            Assert.AreEqual(0, v1.GetConnectedEdges().Count);
+            Assert.IsEmpty(v1.GetConnectedEdges());
             Assert.AreEqual("v1", v1.Name);
             Assert.AreEqual(v1, v1);
         }
@@ -92,9 +92,9 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             g.AddEdge(e4);
             g.AddEdge(e5);
 
-            Assert.AreEqual(5, g.Vertices.Count);
-            Assert.AreEqual(5, g.Edges.Count);
-            Assert.AreEqual(2, v1.GetConnectedEdges().Count);
+            Assert.HasCount(5, g.Vertices);
+            Assert.HasCount(5, g.Edges);
+            Assert.HasCount(2, v1.GetConnectedEdges());
 
             //test TryGetConnectionBetween:
             Assert.IsTrue(g.TryGetEdge(v1, v2, out Edge e1Reloaded));
@@ -115,8 +115,8 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             g.AddEdge(eSelfLoop);
             g.TryGetEdge(v1, v1, out Edge eSelfLoopReloaded);
             Assert.AreEqual(eSelfLoop, eSelfLoopReloaded);
-            Assert.AreEqual(5, g.Vertices.Count);
-            Assert.AreEqual(6, g.Edges.Count);
+            Assert.HasCount(5, g.Vertices);
+            Assert.HasCount(6, g.Edges);
             Assert.AreEqual(2, g.GetMinimumDegree());
             Assert.AreEqual(4, g.GetMaximumDegree());
 
@@ -134,17 +134,17 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.IsFalse(g.TryGetEdge(v1, v1, out _));
             g.SelfLoopIsAllowed = false;
             Assert.IsFalse(g.SelfLoopIsAllowed);
-            Assert.AreEqual(5, g.Vertices.Count);
-            Assert.AreEqual(5, g.Edges.Count);
+            Assert.HasCount(5, g.Vertices);
+            Assert.HasCount(5, g.Edges);
 
             ISet<Vertex> successorsOfv5 = g.GetDirectSuccessors(v5);
-            Assert.AreEqual(1, successorsOfv5.Count);
+            Assert.HasCount(1, successorsOfv5);
             Assert.AreEqual(v1, successorsOfv5.First());
 
             DirectedEdge e43 = new(v4, v3, "e43");
             g.AddEdge(e43);
             ISet<Vertex> successorsOfv4 = g.GetDirectSuccessors(v4);
-            Assert.AreEqual(2, successorsOfv4.Count);
+            Assert.HasCount(2, successorsOfv4);
             Assert.IsTrue(new HashSet<Vertex>() { v3, v5 }.SetEquals(successorsOfv4));
         }
         [TestMethod]
@@ -176,9 +176,9 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             g.AddEdge(e4);
             g.AddEdge(e5);
 
-            Assert.AreEqual(5, g.Vertices.Count);
-            Assert.AreEqual(5, g.Edges.Count);
-            Assert.AreEqual(2, v1.GetConnectedEdges().Count);
+            Assert.HasCount(5, g.Vertices);
+            Assert.HasCount(5, g.Edges);
+            Assert.HasCount(2, v1.GetConnectedEdges());
 
             //test TryGetEdge:
             Assert.IsTrue(g.TryGetEdge(v1, v2, out Edge e1Reloaded1));
@@ -203,8 +203,8 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             g.AddEdge(eSelfLoop);
             g.TryGetEdge(v1, v1, out Edge eSelfLoopReloaded);
             Assert.AreEqual(eSelfLoop, eSelfLoopReloaded);
-            Assert.AreEqual(5, g.Vertices.Count);
-            Assert.AreEqual(6, g.Edges.Count);
+            Assert.HasCount(5, g.Vertices);
+            Assert.HasCount(6, g.Edges);
 
             try
             {
@@ -220,11 +220,11 @@ namespace GRYLibrary.Tests.Testcases.GraphTests
             Assert.IsFalse(g.TryGetEdge(v1, v1, out _));
             g.SelfLoopIsAllowed = false;
             Assert.IsFalse(g.SelfLoopIsAllowed);
-            Assert.AreEqual(5, g.Vertices.Count);
-            Assert.AreEqual(5, g.Edges.Count);
+            Assert.HasCount(5, g.Vertices);
+            Assert.HasCount(5, g.Edges);
 
             ISet<Vertex> successorsOfv4 = g.GetDirectSuccessors(v4, true);
-            Assert.AreEqual(2, successorsOfv4.Count);
+            Assert.HasCount(2, successorsOfv4);
             Assert.IsTrue(new HashSet<Vertex>() { v3, v5 }.SetEquals(successorsOfv4));
         }
         [TestMethod]

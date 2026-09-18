@@ -20,7 +20,7 @@ namespace GRYLibrary.Tests.Testcases
             logObject.LogProgress(0, 4);
             logObject.LogProgress(3, 122);
             logObject.LogProgress(73, 73);
-            Assert.AreEqual(3, logObject.ProcessedLogItems.Count);
+            Assert.HasCount(3, logObject.ProcessedLogItems);
             Assert.AreEqual("Processed 0/4 items (0.0%)", logObject.ProcessedLogItems[0].PlainMessage);
             Assert.AreEqual("Processed 003/122 items (2.46%)", logObject.ProcessedLogItems[1].PlainMessage);
             Assert.AreEqual("Processed 73/73 items (100.0%)", logObject.ProcessedLogItems[2].PlainMessage);

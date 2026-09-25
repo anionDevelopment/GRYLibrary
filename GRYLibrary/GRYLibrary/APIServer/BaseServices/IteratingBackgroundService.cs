@@ -12,6 +12,13 @@ namespace GRYLibrary.Core.APIServer.BaseServices
     public abstract class IteratingBackgroundService : IDisposable
     {
         public bool Enabled { get; set; }
+        /// <summary>Whether the service also runs when the execution-mode is not <see cref="RunProgram"/>.</summary>
+        /// <remarks>
+        /// The execution-mode does not tell whether the background-services are wanted: a test-run which checks what the application really
+        /// does needs them, while a test-run which only drives the api does not. Only the application knows which of both it is, so it is
+        /// the application which decides this.
+        /// </remarks>
+        public bool RunAlsoWhenTheExecutionModeIsNotRunProgram { get; set; }
         private bool _Running;
         private readonly object _Lock = new object();
         private bool _Disposed = false;
@@ -97,7 +104,7 @@ namespace GRYLibrary.Core.APIServer.BaseServices
         }
         public bool ShouldBeExecuted()
         {
-            if (this._ExecutionMode is not RunProgram)
+            if (this._ExecutionMode is not RunProgram && !this.RunAlsoWhenTheExecutionModeIsNotRunProgram)
             {
                 return false;
             }

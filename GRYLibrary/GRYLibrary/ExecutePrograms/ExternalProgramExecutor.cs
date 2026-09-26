@@ -285,10 +285,15 @@ namespace GRYLibrary.Core.ExecutePrograms
 
         public Process _Process = new Process();
         private IDisposable _SubNamespace;
+        private readonly Stopwatch _StopWatch = new();
+        /// <summary>
+        /// Ensures that <see cref="_Process"/> can not be terminated and disposed at the same time.
+        /// </summary>
+        private readonly object _ProcessLockObject = new();
+        private bool _ProcessIsDisposed = false;
         private Task StartProgram()
         {
             this._SubNamespace = this.LogObject.UseSubNamespace(this.Configuration.LogNamespace);
-            Stopwatch stopWatch = new();
             try
             {
                 this.ProcessWasAbortedDueToTimeout = false;
@@ -344,7 +349,7 @@ namespace GRYLibrary.Core.ExecutePrograms
                         this.EnqueueError(dataReceivedEventArgs.Data);
                     }
                 };
-                stopWatch.Start();
+                this._StopWatch.Start();
                 this._Process.Start();
                 if (this.Configuration.RedirectStandardOutput)
                 {
@@ -371,51 +376,51 @@ namespace GRYLibrary.Core.ExecutePrograms
                 this.LogException(processStartException);
                 throw processStartException;
             }
-            Task task = new(() => this.Configuration.WaitingState.Accept(new RunningHandler(this, stopWatch)));
+            // The handler blocks until the executed program is ended, also when the program is executed
+            // asynchronously. It therefore gets a thread of its own instead of a thread of the thread-pool.
+            Task task = new(() => this.Configuration.WaitingState.Accept(new RunningHandler(this)), TaskCreationOptions.LongRunning);
             task.Start();
             return task;
         }
         private class RunningHandler : IWaitingStateVisitor
         {
             private readonly ExternalProgramExecutor _ExternalProgramExecutor;
-            private readonly Stopwatch _StopWatch;
 
-            public RunningHandler(ExternalProgramExecutor externalProgramExecutor, Stopwatch stopWatch)
+            public RunningHandler(ExternalProgramExecutor externalProgramExecutor)
             {
                 this._ExternalProgramExecutor = externalProgramExecutor;
-                this._StopWatch = stopWatch;
             }
 
+            /// <remarks>
+            /// The execution of an asynchronously executed program has to be completed as well, because otherwise the
+            /// result of the program would never become available, <see cref="IsRunning"/> would stay true for ever
+            /// and the thread which logs the output of the program would never end. No caller waits for the task
+            /// which executes this, so an exception must not leave this method.
+            /// </remarks>
             public void Handle(RunAsynchronously runAsynchronously)
             {
-                Utilities.NoOperation();
+                try
+                {
+                    this._ExternalProgramExecutor.CompleteExecution();
+                }
+                catch (Exception exception)
+                {
+                    if (this._ExternalProgramExecutor.Configuration.Verbosity != Verbosity.Quiet)
+                    {
+                        this._ExternalProgramExecutor.LogObject.Log("Error while finishing program-execution", exception);
+                    }
+                }
+                finally
+                {
+                    this._ExternalProgramExecutor.DisposeProcess();
+                }
             }
 
             public void Handle(RunSynchronously runSynchronously)
             {
                 try
                 {
-                    this._ExternalProgramExecutor.WaitForProcessEnd(this._ExternalProgramExecutor._Process, this._StopWatch);
-                    this._ExternalProgramExecutor.ExecutionDuration = this._StopWatch.Elapsed;
-                    this._ExternalProgramExecutor.ExitCode = this._ExternalProgramExecutor._Process.ExitCode;
-                    while (!this._ExternalProgramExecutor._NotLoggedOutputLines.IsEmpty)
-                    {
-                        Thread.Sleep(60);
-                    }
-                    lock (this._ExternalProgramExecutor._ExecutionLockObject)
-                    {
-                        this._ExternalProgramExecutor._AllStdOutLinesAsArray = [.. this._ExternalProgramExecutor._AllStdOutLines];
-                        this._ExternalProgramExecutor._AllStdErrLinesAsArray = [.. this._ExternalProgramExecutor._AllStdErrLines];
-                    }
-                    this._ExternalProgramExecutor.LogEnd();
-                    try
-                    {
-                        this._ExternalProgramExecutor.ExecutionFinishedEvent?.Invoke(this._ExternalProgramExecutor, this._ExternalProgramExecutor.ExitCode);
-                    }
-                    catch
-                    {
-                        Utilities.NoOperation();
-                    }
+                    this._ExternalProgramExecutor.CompleteExecution();
                     if (runSynchronously.ThrowErrorIfExitCodeIsNotZero && this._ExternalProgramExecutor.ExitCode != 0)
                     {
                         throw new UnexpectedExitCodeException(this._ExternalProgramExecutor);
@@ -435,10 +440,47 @@ namespace GRYLibrary.Core.ExecutePrograms
                 }
             }
         }
+
+        /// <summary>
+        /// Waits until the executed program is ended, takes over its result and makes its output available.
+        /// </summary>
+        private void CompleteExecution()
+        {
+            this.WaitForProcessEnd(this._Process, this._StopWatch);
+            this.ExecutionDuration = this._StopWatch.Elapsed;
+            this.ExitCode = this._Process.ExitCode;
+            while (!this._NotLoggedOutputLines.IsEmpty)
+            {
+                Thread.Sleep(60);
+            }
+            lock (this._ExecutionLockObject)
+            {
+                this._AllStdOutLinesAsArray = [.. this._AllStdOutLines];
+                this._AllStdErrLinesAsArray = [.. this._AllStdErrLines];
+            }
+            this.LogEnd();
+            try
+            {
+                this.ExecutionFinishedEvent?.Invoke(this, this.ExitCode);
+            }
+            catch
+            {
+                Utilities.NoOperation();
+            }
+        }
+
         public void DisposeProcess()
         {
-            Utilities.IgnoreExceptions(() => this._SubNamespace?.Dispose());
-            Utilities.IgnoreExceptions(() => this._Process?.Dispose());
+            lock (this._ProcessLockObject)
+            {
+                if (this._ProcessIsDisposed)
+                {
+                    return;
+                }
+                Utilities.IgnoreExceptions(() => this._SubNamespace?.Dispose());
+                Utilities.IgnoreExceptions(() => this._Process?.Dispose());
+                this._ProcessIsDisposed = true;
+            }
         }
 
         private void WaitForProcessEnd(Process process, Stopwatch stopwatch)
@@ -744,14 +786,49 @@ namespace GRYLibrary.Core.ExecutePrograms
             }
         }
 
+        /// <remarks>
+        /// An object of this type owns the program which it executed, so this ends that program if it is still running,
+        /// see <see cref="Terminate"/>. A program which is supposed to outlive the object which executed it must
+        /// therefore not be executed by an object which is disposed.
+        /// </remarks>
         public void Dispose()
         {
-            Misc.Utilities.NoOperation();
+            if (this.CurrentExecutionState == ExecutionState.NotStarted)
+            {
+                return;
+            }
+            this.Terminate();
         }
 
+        /// <summary>
+        /// Ends the executed program and every program which was started by it.
+        /// </summary>
+        /// <remarks>
+        /// When this returns then the program is ended and the result of the execution is available. Calling this for a
+        /// program which is already ended does nothing.
+        /// </remarks>
+        /// <exception cref="InvalidOperationException">
+        /// If the program was not started yet.
+        /// </exception>
         public void Terminate()
         {
-            this._Process.Close();
+            if (this.CurrentExecutionState == ExecutionState.NotStarted)
+            {
+                throw new InvalidOperationException(this.GetInvalidOperationDueToNotTerminatedMessageByMembername(nameof(this.Terminate), ExecutionState.NotStarted, false));
+            }
+            lock (this._ProcessLockObject)
+            {
+                if (this._ProcessIsDisposed)
+                {
+                    return;
+                }
+                if (this.Configuration.Verbosity != Verbosity.Quiet)
+                {
+                    this.LogObject.Log($"Terminate '{this.Configuration.Title}'.", LogLevel.Debug);
+                }
+                this._Process.Kill(true);
+            }
+            this.WaitUntilTerminated();
         }
     }
     /// <summary>

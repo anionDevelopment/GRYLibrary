@@ -54,6 +54,7 @@ These operations exist but throw a `NotImplementedException`:
 - `Misc.Utilities.GetRandomHexCharacter` returns as many hex-characters as stated by its parameter `digits` and not one single character as its (singular) name suggests.
 - `Misc.Utilities.IsSelfSIgned` contains a typo in its name. Fixing it changes the public API.
 - `Misc.ByteArray.CreateByHexString`, `CreateByInteger` and `CreateByString` are factory-operations but they are implemented as instance-operations, so an already existing `ByteArray`-instance is required to create a new one. Making them `static` changes the public API.
+- `ExecutePrograms.ExternalProgramExecutor._Process` is a public field although it is an implementation-detail (its name follows the convention for private fields). A caller can therefore manipulate the process of a running execution directly and thereby bypass the state-handling of the class. Making it private changes the public API.
 
 ### Thread-safety
 

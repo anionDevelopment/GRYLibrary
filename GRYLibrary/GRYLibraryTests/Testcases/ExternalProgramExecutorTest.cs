@@ -1,9 +1,13 @@
 using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.ExecutePrograms;
+using GRYLibrary.Core.ExecutePrograms.WaitingStates;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc.CustomDisposables;
+using GRYLibrary.Tests.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -126,6 +130,134 @@ namespace GRYLibrary.Tests.Testcases
             }
             // The last line contains the (non-deterministic) execution-duration.
             Assert.StartsWith("Execution-duration: ", actualLines[^1]);
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void TestTerminateEndsAnAsynchronouslyExecutedProgram()
+        {
+            //arrange
+            ExternalProgramExecutor externalProgramExecutor = CreateExecutorForALongRunningAsynchronousProgram();
+            externalProgramExecutor.Run();
+            int processId = externalProgramExecutor.ProcessId;
+            Assert.IsTrue(ProcessIsRunning(processId));
+
+            //act
+            externalProgramExecutor.Terminate();
+
+            //assert
+            Assert.IsFalse(ProcessIsRunning(processId));
+            Assert.IsFalse(externalProgramExecutor.IsRunning);
+            Assert.AreEqual(ExecutionState.Terminated, externalProgramExecutor.CurrentExecutionState);
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void TestDisposeEndsAnAsynchronouslyExecutedProgram()
+        {
+            //arrange
+            int processId;
+
+            //act
+            using (ExternalProgramExecutor externalProgramExecutor = CreateExecutorForALongRunningAsynchronousProgram())
+            {
+                externalProgramExecutor.Run();
+                processId = externalProgramExecutor.ProcessId;
+                Assert.IsTrue(ProcessIsRunning(processId));
+            }
+
+            //assert
+            Assert.IsFalse(ProcessIsRunning(processId));
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void TestTerminateAnAlreadyEndedProgramDoesNothing()
+        {
+            //arrange
+            ExternalProgramExecutor externalProgramExecutor = CreateExecutorForALongRunningAsynchronousProgram();
+            externalProgramExecutor.Run();
+            externalProgramExecutor.Terminate();
+
+            //act
+            externalProgramExecutor.Terminate();
+
+            //assert
+            Assert.AreEqual(ExecutionState.Terminated, externalProgramExecutor.CurrentExecutionState);
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void TestTerminateANotStartedProgramThrowsAnException()
+        {
+            //arrange
+            ExternalProgramExecutor externalProgramExecutor = CreateExecutorForALongRunningAsynchronousProgram();
+
+            //act and assert
+            Assert.Throws<InvalidOperationException>(externalProgramExecutor.Terminate);
+        }
+
+        /// <remarks>
+        /// The execution of an asynchronously executed program has to be completed when the program ends on its own,
+        /// because otherwise its result would never become available and the resources of the execution would never be
+        /// released.
+        /// </remarks>
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void TestAsynchronousExecutionIsCompletedWhenTheProgramEndsOnItsOwn()
+        {
+            //arrange
+            // See the remark in TestVerboseExecutionProducesExpectedStdOutLogSequence regarding the used echo-program.
+            string echoProgram = System.OperatingSystem.IsWindows() ? "echo2" : "echo";
+            ExternalProgramExecutor externalProgramExecutor = new(new ExternalProgramExecutorConfiguration()
+            {
+                Program = echoProgram,
+                Argument = "x",
+                WaitingState = new RunAsynchronously(),
+            });
+
+            //act
+            externalProgramExecutor.Run();
+
+            //assert
+            // The timeout is set explicitly (and much shorter than the default-timeout) so that this testcase fails
+            // instead of blocking the testrun if the execution is not completed anymore.
+            Core.Misc.Utilities.WaitUntilConditionIsTrue(() => externalProgramExecutor.CurrentExecutionState == ExecutionState.Terminated, TimeSpan.FromSeconds(30), "Wait until the asynchronous execution is completed");
+            Assert.IsFalse(externalProgramExecutor.IsRunning);
+            Assert.AreEqual(0, externalProgramExecutor.ExitCode);
+            Assert.AreEqual("x", externalProgramExecutor.AllStdOutLines.Single());
+        }
+
+        private static ExternalProgramExecutor CreateExecutorForALongRunningAsynchronousProgram()
+        {
+            (string program, string argument) = TestUtilities.GetLongRunningProgram(60);
+            return new ExternalProgramExecutor(new ExternalProgramExecutorConfiguration()
+            {
+                Program = program,
+                Argument = argument,
+                WaitingState = new RunAsynchronously(),
+            });
+        }
+
+        /// <remarks>
+        /// This asks the operating-system and not the <see cref="ExternalProgramExecutor"/>, because the point of the
+        /// testcases which use this is that the executed program itself is really ended and not only that the execution
+        /// is bookkept as ended.
+        /// </remarks>
+        private static bool ProcessIsRunning(int processId)
+        {
+            Process[] processes = Process.GetProcesses();
+            try
+            {
+                return processes.Any(process => process.Id == processId);
+            }
+            finally
+            {
+                foreach (Process process in processes)
+                {
+                    process.Dispose();
+                }
+            }
         }
     }
 }

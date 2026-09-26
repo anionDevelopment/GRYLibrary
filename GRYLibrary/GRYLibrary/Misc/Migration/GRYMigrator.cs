@@ -20,6 +20,15 @@ namespace GRYLibrary.Core.Misc.Migration
         private readonly ITimeService _TimeService;
         private readonly IList<MigrationInstance> _Migrations;
         public const string MigrationTableName = "GRYMigrationInformation";
+        /// <summary>Command-timeout which lets a migration run until the database has finished it.</summary>
+        /// <remarks>
+        /// A migration can touch every row which is already stored (for example when it adds an index to a table of a productive database), so how long it runs
+        /// depends on the amount of data of the database it is applied to and can not be covered by a fixed duration. The database-providers give every command a
+        /// default-command-timeout (30 seconds for most of them), which aborts such a migration on the client-side while the database is still executing it; the
+        /// migration is then not marked as executed and fails again on every following start. The value 0 means "no timeout" for every database-provider which is
+        /// supported here.
+        /// </remarks>
+        private const int NoCommandTimeout = 0;
         private readonly IGenericDatabaseInteractor _DatabaseInteractor;
         public GRYMigrator(ITimeService timeService, IList<MigrationInstance> migrations, IGenericDatabaseInteractor databaseInteractor)
         {
@@ -67,6 +76,7 @@ namespace GRYLibrary.Core.Misc.Migration
                         using DbTransaction transaction = connection.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
                         sqlCommand.Connection = connection;
                         sqlCommand.Transaction = transaction;
+                        sqlCommand.CommandTimeout = NoCommandTimeout;
                         try
                         {
                             sqlCommand.ExecuteNonQuery();

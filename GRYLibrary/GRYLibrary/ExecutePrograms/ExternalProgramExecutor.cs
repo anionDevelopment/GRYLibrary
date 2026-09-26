@@ -712,7 +712,10 @@ namespace GRYLibrary.Core.ExecutePrograms
         {
             while (this.IsRunning || !this._NotLoggedOutputLines.IsEmpty)
             {
-                if (this._NotLoggedOutputLines.TryDequeue(out (LogLevel, string) logItem))
+                // The item is only peeked here and dequeued after it was logged. Otherwise the queue would already be empty while the item is still being logged,
+                // so that waiting threads (which wait until the queue is empty) could continue too early and log "Finished executing program." before the last output-line.
+                // This is safe because this thread is the only consumer of the queue.
+                if (this._NotLoggedOutputLines.TryPeek(out (LogLevel, string) logItem))
                 {
                     string message = logItem.Item2;
                     LogLevel logLevel = logItem.Item1;
@@ -735,6 +738,7 @@ namespace GRYLibrary.Core.ExecutePrograms
                         }
                     }
                     this.LogObject.Log(message, logLevel);
+                    this._NotLoggedOutputLines.TryDequeue(out _);
                 }
                 Thread.Sleep(10);
             }

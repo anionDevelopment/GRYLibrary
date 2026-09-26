@@ -91,27 +91,42 @@ namespace GRYLibrary.Tests.Utilities
             // assert
             Assert.IsTrue(expectedResult.SequenceEqual(actualResult));
         }
-        public static string GetTimeoutTool()
+        /// <summary>
+        /// Returns a program and the argument for it which lets the program run for at least the given amount of
+        /// seconds. The returned program is available on the current operating-system without an additional
+        /// installation.
+        /// </summary>
+        public static (string Program, string Argument) GetLongRunningProgram(uint durationInSeconds)
         {
-            return Core.OperatingSystem.OperatingSystem.GetCurrentOperatingSystem().Accept(GetTimeoutToolVisitor.Instance);
+            return Core.OperatingSystem.OperatingSystem.GetCurrentOperatingSystem().Accept(new GetLongRunningProgramVisitor(durationInSeconds));
         }
-        private class GetTimeoutToolVisitor : IOperatingSystemVisitor<string>
+        private class GetLongRunningProgramVisitor : IOperatingSystemVisitor<(string Program, string Argument)>
         {
-            public static IOperatingSystemVisitor<string> Instance { get; set; } = new GetTimeoutToolVisitor();
+            private readonly uint _DurationInSeconds;
 
-            public string Handle(OSX operatingSystem)
+            public GetLongRunningProgramVisitor(uint durationInSeconds)
             {
-                return "sleep";
+                this._DurationInSeconds = durationInSeconds;
             }
 
-            public string Handle(GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows operatingSystem)
+            public (string Program, string Argument) Handle(OSX operatingSystem)
             {
-                return "timeout";
+                return ("sleep", this._DurationInSeconds.ToString());
             }
 
-            public string Handle(Linux operatingSystem)
+            /// <remarks>
+            /// Windows does not have a "sleep"-program, and the "timeout"-program of Windows aborts immediately if its
+            /// standard-input is not a console, which is the case when it is started by a testrunner. Therefore a ping
+            /// against the loopback-address is used, which waits one second between two attempts.
+            /// </remarks>
+            public (string Program, string Argument) Handle(GRYLibrary.Core.OperatingSystem.ConcreteOperatingSystems.Windows operatingSystem)
             {
-                return "sleep";
+                return ("ping", $"-n {this._DurationInSeconds + 1} 127.0.0.1");
+            }
+
+            public (string Program, string Argument) Handle(Linux operatingSystem)
+            {
+                return ("sleep", this._DurationInSeconds.ToString());
             }
         }
     }

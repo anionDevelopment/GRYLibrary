@@ -255,9 +255,9 @@ lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
   is the pattern every consumer copies, it is worth offering the whole password-verification as a service of the library instead
   of only the primitive.
 
-**GRY-12 - The library offers no usable password-hashing-primitive** (High, confirmed)
+~~**GRY-12 - The library offers no usable password-hashing-primitive**~~ (High, confirmed)
 
-- State: open
+- State: fixed (a dependency-free `PasswordHasher` on PBKDF2-HMAC-SHA256 with a per-password salt, a stored iteration-count and a constant-time verify was added in `Crypto/PasswordHasher.cs`; the `Argon2`-stub was kept as decided)
 
 - Fixable without breaking changes: Yes. `Argon2.Hash` currently throws `NotImplementedException`, so no working caller can exist; implementing it and adding a new `PasswordHasher` are additive. (Removing the class would be breaking, so take the implement-path.)
 
@@ -753,7 +753,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 ### Prioritized remediation plan
 
 1. Replace the password-handling: a real key-derivation-function with a salt, offered as a service of the library, and remove or
-   implement the argon2-stub (GRY-11, GRY-12). Everything a consumer copies starts here.
+   implement the argon2-stub (GRY-11, ~~GRY-12~~). Everything a consumer copies starts here.
 2. Make the oidc-validation strict: require the audience, require https for the authority, and carry the issuer in the principal
    (GRY-23, GRY-14, GRY-24).
 3. Stop logging bodies unredacted, and exclude the authentication-routes by default (GRY-30, GRY-31).
@@ -777,7 +777,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 | GRY-11 | A04 Cryptographic Failures | `TransientAuthenticationService.Hash` | Critical | confirmed | open |
 | GRY-01 | A01 Broken Access Control | `AuthenticationMiddleware.AuthenticationIsRequired` | High | confirmed | open |
 | GRY-03 | A01 Broken Access Control | `AutSRMiddleware.IsAuthorized`, `AutSAMiddleware.IsAuthorized` | High | confirmed | open |
-| GRY-12 | A04 Cryptographic Failures | `Crypto/Argon2`, `Crypto/GRYBCryptoSystem` | High | confirmed | open |
+| GRY-12 | A04 Cryptographic Failures | `Crypto/Argon2`, `Crypto/GRYBCryptoSystem` | High | confirmed | fixed |
 | GRY-16 | A06 Insecure Design | `ExceptionManagerMiddleware`, `AuthSMiddleware`, `MaintenanceRoutesController` | High | confirmed | open |
 | GRY-17 | A06 Insecure Design | `MidT/RateLimit`, `MidT/WAF`, `MidT/Obfuscation`, `APIServer.cs` | High | confirmed | open |
 | GRY-23 | A07 Authentication Failures | `OIDCService.ValidateJwtAndParseClaimsAsync` | High | confirmed | open |

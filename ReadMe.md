@@ -218,9 +218,9 @@ lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
 - Impact: every consumer of this library inherits the package, including a consumer which does not use sql-server at all.
 - Recommendation: migrate `SQLServerDatabaseInteractor` to `Microsoft.Data.SqlClient` and drop the old package.
 
-**GRY-10 - A vulnerability in a dependency does not break the build** (Low, confirmed)
+~~**GRY-10 - A vulnerability in a dependency does not break the build**~~ (Low, confirmed)
 
-- State: open
+- State: fixed (`NuGetAuditMode` is set to `all` and `NU1901`-`NU1904` are promoted to errors; the build currently reports no vulnerable dependency)
 
 - Fixable without breaking changes: Yes. The `NuGetAudit`-settings affect only GRYLibrary's own build-pipeline, not any consumer.
 
@@ -767,7 +767,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 8. Let the consumer protect the maintenance-routes, and offer a security-header-middleware (GRY-05, GRY-06).
 9. Make the remaining robustness-findings behave correctly (GRY-34, GRY-35, GRY-36, GRY-37), decide what happens with the
    mfa-stub and the deactivation-flag (GRY-18, GRY-19), and work off the integrity- and supply-chain-findings (GRY-28, GRY-29,
-   ~~GRY-09~~, GRY-10, GRY-13, GRY-15, GRY-20, GRY-22, GRY-27, GRY-32, GRY-33).
+   ~~GRY-09~~, ~~GRY-10~~, GRY-13, GRY-15, GRY-20, GRY-22, GRY-27, GRY-32, GRY-33).
 10. Add tests for every path named in the previous section.
 
 ### Summary of all findings
@@ -804,7 +804,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 | GRY-34 | A10 Mishandling of Exceptional Conditions | `AuthenticationMiddleware`, `AuthorizationMiddleware`, `ExceptionManagerMiddleware` | Medium | confirmed | open |
 | GRY-35 | A10 Mishandling of Exceptional Conditions | `Tools.InitializationStateVisitor` | Medium | confirmed | open |
 | GRY-08 | A02 Security Misconfiguration | `APIServer.cs` (`AllowSynchronousIO`) | Low | confirmed | open |
-| GRY-10 | A03 Software Supply Chain Failures | `GRYLibrary.csproj` | Low | confirmed | open |
+| GRY-10 | A03 Software Supply Chain Failures | `GRYLibrary.csproj` | Low | confirmed | fixed |
 | GRY-15 | A05 Injection | the database-interactors (migration-statements) | Low | confirmed | open |
 | GRY-22 | A06 Insecure Design | `OIDCService.LoginWithPasswordAsync` | Low | confirmed | open |
 | GRY-27 | A07 Authentication Failures | `OIDCService.InitiateLoginAsync` | Low | confirmed | open |

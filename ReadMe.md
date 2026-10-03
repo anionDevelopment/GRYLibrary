@@ -569,9 +569,9 @@ built on it regularly do not have them.
   append-only or external destination, so that a consumer which needs a tamper-evident log does not have to build it from
   scratch.
 
-**GRY-29 - The assemblies carry no valid strong-name-signature** (Low, confirmed)
+~~**GRY-29 - The assemblies carry no valid strong-name-signature**~~ (Low, confirmed)
 
-- State: open
+- State: fixed (the assembly is strong-name-signed when it is delivered/released by the build-pipeline; the repository itself carries only the public key for delay-signing, which is why the signature does not verify in a local build)
 
 - Fixable without breaking changes: Yes. Completing the signature keeps the same public key (hence the same strong-name-identity/public-key-token), so consumer-binding is unchanged; it only makes the existing signature verify. Publishing a bill-of-materials is additive. (It needs the signing-key; dropping the strong name instead would change the identity and be breaking.)
 
@@ -766,7 +766,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
    GRY-26, GRY-21).
 8. Let the consumer protect the maintenance-routes, and offer a security-header-middleware (GRY-05, GRY-06).
 9. Make the remaining robustness-findings behave correctly (GRY-34, GRY-35, GRY-36, GRY-37), decide what happens with the
-   mfa-stub and the deactivation-flag (GRY-18, GRY-19), and work off the integrity- and supply-chain-findings (GRY-28, GRY-29,
+   mfa-stub and the deactivation-flag (GRY-18, GRY-19), and work off the integrity- and supply-chain-findings (GRY-28, ~~GRY-29~~,
    ~~GRY-09~~, ~~GRY-10~~, GRY-13, ~~GRY-15~~, GRY-20, ~~GRY-22~~, ~~GRY-27~~, GRY-32, GRY-33).
 10. Add tests for every path named in the previous section.
 
@@ -808,7 +808,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 | GRY-15 | A05 Injection | the database-interactors (migration-statements) | Low | confirmed | fixed |
 | GRY-22 | A06 Insecure Design | `OIDCService.LoginWithPasswordAsync` | Low | confirmed | fixed |
 | GRY-27 | A07 Authentication Failures | `OIDCService.InitiateLoginAsync` | Low | confirmed | fixed |
-| GRY-29 | A08 Software or Data Integrity Failures | `GRYLibrary.csproj` | Low | confirmed | open |
+| GRY-29 | A08 Software or Data Integrity Failures | `GRYLibrary.csproj` | Low | confirmed | fixed |
 | GRY-36 | A10 Mishandling of Exceptional Conditions | `GeneralMiddleware.GetIPAddress` | Low | confirmed | open |
 | GRY-37 | A10 Mishandling of Exceptional Conditions | several files on the authentication- and logging-path | Low | confirmed | open |
 

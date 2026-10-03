@@ -267,10 +267,10 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
                     result = result + $"    - {kvp.Key}: {value}{Environment.NewLine}";
                 }
             }
-            result = result + $"    Body: {this.FormatBody(request.RequestBody, maximalLengthofRequestBodies)}{Environment.NewLine}"
+            result = result + $"    Body: {this.FormatBodyOrSuppress(request.RequestBody, maximalLengthofRequestBodies, request.Route, this._RequestLoggingSettings.RoutesWhereRequestBodyIsNotLogged)}{Environment.NewLine}"
                         + $"  Response-details:{Environment.NewLine}"
                         + $"    Statuscode: {request.ResponseStatusCode}{Environment.NewLine}"
-                        + $"    Body: {this.FormatBody(request.ResponseBody, maximalLengthofResponseBodies)}{Environment.NewLine}";
+                        + $"    Body: {this.FormatBodyOrSuppress(request.ResponseBody, maximalLengthofResponseBodies, request.Route, this._RequestLoggingSettings.RoutesWhereResponseBodyIsNotLogged)}{Environment.NewLine}";
             if (user == null)
             {
                 result = result + $"  Authentication: (anonymous){Environment.NewLine}";
@@ -293,7 +293,7 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
             return result;
         }
 
-        private string FormatBody((string info, string content, byte[] plainContent) body, uint maximalLengthofRequestBodies)
+        private string FormatBody((string info, string? content, byte[] plainContent) body, uint maximalLengthofRequestBodies)
         {
             string result;
             if (body.content == null)
@@ -305,6 +305,27 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
                 result = $"{body.info} ({this.Truncate(body.content, maximalLengthofRequestBodies, (ulong)body.plainContent.LongLength)})";
             }
             return result;
+        }
+
+        private string FormatBodyOrSuppress((string info, string? content, byte[] plainContent) body, uint maximalLength, string route, ISet<string> routesWhereBodyIsNotLogged)
+        {
+            if (this.BodyLoggingIsDisabledForRoute(route, routesWhereBodyIsNotLogged))
+            {
+                return "(not logged)";
+            }
+            return this.FormatBody(body, maximalLength);
+        }
+
+        private bool BodyLoggingIsDisabledForRoute(string route, ISet<string> routesWhereBodyIsNotLogged)
+        {
+            foreach (string pattern in routesWhereBodyIsNotLogged)
+            {
+                if (Regex.IsMatch(route, pattern))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public virtual bool ShouldBeLogged(Request request)

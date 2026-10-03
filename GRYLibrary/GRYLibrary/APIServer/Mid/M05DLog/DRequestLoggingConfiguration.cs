@@ -15,6 +15,8 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
         public uint MaximalLengthOfResponseBodies { get; set; } = 4000;
         public ISet<string> NotLoggedRoutes { get; set; } = new HashSet<string>();
         public ISet<string> LoggedHTTPRequeustHeader { get; set; } = new HashSet<string>();
+        public ISet<string> RoutesWhereRequestBodyIsNotLogged { get; set; } = new HashSet<string>();
+        public ISet<string> RoutesWhereResponseBodyIsNotLogged { get; set; } = new HashSet<string>();
 
 
         public ISet<FilterDescriptor> GetFilter()

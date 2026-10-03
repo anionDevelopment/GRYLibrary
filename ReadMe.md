@@ -589,9 +589,9 @@ built on it regularly do not have them.
 The good part first: request-headers are logged only when a consumer lists them explicitly in `LoggedHTTPRequeustHeader`, which
 is empty by default. The credential-header and a `password`-header are therefore not written to the log by default.
 
-**GRY-30 - The complete request- and response-body is written to the log-file for every request** (High, confirmed)
+~~**GRY-30 - The complete request- and response-body is written to the log-file for every request**~~ (High, confirmed)
 
-- State: open
+- State: fixed (the request-logging-configuration now offers `RoutesWhereRequestBodyIsNotLogged` and `RoutesWhereResponseBodyIsNotLogged` to switch body-logging off per route; a consumer adds its login-route to the response-body-set so the issued access-token is no longer written to the log. The default is unchanged, so this must be configured per consumer; see the changelog)
 
 - Fixable without breaking changes: Partial. Adding a redaction-configuration and excluding the authentication-routes' bodies/tokens is a security-fix no correct consumer depends on, but making body-logging opt-in removes log-content which a consumer may rely on, so it changes the logging-behaviour.
 
@@ -756,7 +756,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
    implement the argon2-stub (~~GRY-11~~, ~~GRY-12~~). Everything a consumer copies starts here.
 2. Make the oidc-validation strict: require the audience, require https for the authority, and carry the issuer in the principal
    (~~GRY-23~~, GRY-14, GRY-24).
-3. Stop logging bodies unredacted, and exclude the authentication-routes by default (GRY-30, GRY-31).
+3. Stop logging bodies unredacted, and exclude the authentication-routes by default (~~GRY-30~~, GRY-31).
 4. Make the access-control fail closed: authentication required by default, anchored allowlist-patterns, authorization from the
    established principal, and no silent disabling through an empty group-set (GRY-01, GRY-02, GRY-03, GRY-04).
 5. Deliver the threat-protection the library already outlines: a concrete rate-limiting-middleware with a pipeline-hook, plus a
@@ -782,7 +782,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 | GRY-17 | A06 Insecure Design | `MidT/RateLimit`, `MidT/WAF`, `MidT/Obfuscation`, `APIServer.cs` | High | confirmed | open |
 | GRY-23 | A07 Authentication Failures | `OIDCService.ValidateJwtAndParseClaimsAsync` | High | confirmed | fixed |
 | GRY-24 | A07 Authentication Failures | `AuthSMiddleware.TryGetOIDCAuthentication` | High | confirmed | open |
-| GRY-30 | A09 Security Logging and Alerting Failures | `DRequestLoggingMiddleware` | High | confirmed | open |
+| GRY-30 | A09 Security Logging and Alerting Failures | `DRequestLoggingMiddleware` | High | confirmed | fixed |
 | GRY-02 | A01 Broken Access Control | `AuthenticationMiddleware`, `DRequestLoggingMiddleware.IsIgnored` | Medium | confirmed | open |
 | GRY-04 | A01 Broken Access Control | `AuthorizationMiddleware.AuthorizationIsRequired` | Medium | confirmed | open |
 | GRY-05 | A01 Broken Access Control | `MaintenanceRoutesController` | Medium | confirmed | open |

@@ -59,7 +59,7 @@ namespace GRYLibrary.Core.Crypto
         /// The comparison is done in constant time to not leak information through its duration.
         /// Returns <see langword="false"/> for a hash-string which is not in the expected format instead of throwing.
         /// </summary>
-        public bool Verify(string password, string hashString)
+        public bool Verify(string password, string? hashString)
         {
             if (password == null)
             {

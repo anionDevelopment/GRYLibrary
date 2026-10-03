@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using AccessToken = GRYLibrary.Core.APIServer.CommonAuthenticationTypes.AccessToken;
-using GUtilities = GRYLibrary.Core.Misc.Utilities;
 using User = GRYLibrary.Core.APIServer.CommonDBTypes.User;
 
 namespace GRYLibrary.Core.APIServer.Services.Trans
@@ -26,6 +25,7 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
         private readonly ITimeService _TimeService;
         private readonly ITransientAuthenticationServicePersistence<UserType> _TransientAuthenticationServicePersistence;
         private readonly IAuthenticationServiceSettings _AuthenticationServiceSettings;
+        private readonly PasswordHasher _PasswordHasher = new PasswordHasher();
         public TransientAuthenticationService(ITimeService timeService, ITransientAuthenticationServicePersistence<UserType> transientAuthenticationServicePersistence, IAuthenticationServiceSettings authenticationServiceSettings)
         {
             this._TimeService = timeService;
@@ -35,8 +35,7 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
 
         public virtual string Hash(string password)
         {
-            string result = GUtilities.ByteArrayToHexString(new SHA256().Hash(GUtilities.StringToByteArray(password)));
-            return result;
+            return this._PasswordHasher.Hash(password);
         }
 
         public virtual AccessToken Login(string userName, string password)
@@ -46,7 +45,7 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
                 return this.ThrowInvalidCredentialsException();
             }
             UserType user = this.GetUserByNameTyped(userName);
-            if (this.Hash(password) != user.PasswordHash)
+            if (!this._PasswordHasher.Verify(password, user.PasswordHash))
             {
                 return this.ThrowInvalidCredentialsException();
             }

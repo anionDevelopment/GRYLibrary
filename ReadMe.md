@@ -234,9 +234,9 @@ lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
 
 ### A04:2025 Cryptographic Failures
 
-**GRY-11 - The reference authentication-service hashes passwords with an unsalted single-round sha-256** (Critical, confirmed)
+~~**GRY-11 - The reference authentication-service hashes passwords with an unsalted single-round sha-256**~~ (Critical, confirmed)
 
-- State: open
+- State: fixed (the reference `TransientAuthenticationService` now hashes with the new `PasswordHasher` (PBKDF2) and verifies in constant time instead of comparing an unsalted single-round SHA-256; existing password-hashes are incompatible, see the changelog for the required action)
 
 - Fixable without breaking changes: No. A salted key-derivation-function can not keep the current `Hash(password) == storedHash` equality-contract, so it needs a verify-method (a changed or relocated api); `Login` compares with `!=` today. The in-memory, test-only nature of this service removes the stored-hash-migration-problem, but the public `Hash`-contract still changes. (See GRY-12 for the additive primitive.)
 
@@ -753,7 +753,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 ### Prioritized remediation plan
 
 1. Replace the password-handling: a real key-derivation-function with a salt, offered as a service of the library, and remove or
-   implement the argon2-stub (GRY-11, ~~GRY-12~~). Everything a consumer copies starts here.
+   implement the argon2-stub (~~GRY-11~~, ~~GRY-12~~). Everything a consumer copies starts here.
 2. Make the oidc-validation strict: require the audience, require https for the authority, and carry the issuer in the principal
    (GRY-23, GRY-14, GRY-24).
 3. Stop logging bodies unredacted, and exclude the authentication-routes by default (GRY-30, GRY-31).
@@ -774,7 +774,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 
 | Id | OWASP-category | Affected component | Criticality | Confidence | Status |
 | --- | --- | --- | --- | --- | --- |
-| GRY-11 | A04 Cryptographic Failures | `TransientAuthenticationService.Hash` | Critical | confirmed | open |
+| GRY-11 | A04 Cryptographic Failures | `TransientAuthenticationService.Hash` | Critical | confirmed | fixed |
 | GRY-01 | A01 Broken Access Control | `AuthenticationMiddleware.AuthenticationIsRequired` | High | confirmed | open |
 | GRY-03 | A01 Broken Access Control | `AutSRMiddleware.IsAuthorized`, `AutSAMiddleware.IsAuthorized` | High | confirmed | open |
 | GRY-12 | A04 Cryptographic Failures | `Crypto/Argon2`, `Crypto/GRYBCryptoSystem` | High | confirmed | fixed |

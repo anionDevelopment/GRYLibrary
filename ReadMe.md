@@ -205,9 +205,9 @@ surface:
 The positive part first: every nuget-dependency is pinned to an exact version with the bracket-notation, and the project keeps a
 lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
 
-**GRY-09 - A deprecated data-access-package is referenced** (Medium, confirmed)
+~~**GRY-09 - A deprecated data-access-package is referenced**~~ (Medium, confirmed)
 
-- State: open
+- State: fixed (the unused `System.Data.SqlClient`-reference was removed)
 
 - Fixable without breaking changes: Yes. The package is referenced but never used: `SQLServerDatabaseInteractor` throws in every method and imports only `System.Data.Common`, and no public type exposes a `SqlClient`-type. Dropping the reference removes an unused dependency with no consumer-impact. (Implementing sql-server on `Microsoft.Data.SqlClient` is separate, additive work.)
 
@@ -767,7 +767,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 8. Let the consumer protect the maintenance-routes, and offer a security-header-middleware (GRY-05, GRY-06).
 9. Make the remaining robustness-findings behave correctly (GRY-34, GRY-35, GRY-36, GRY-37), decide what happens with the
    mfa-stub and the deactivation-flag (GRY-18, GRY-19), and work off the integrity- and supply-chain-findings (GRY-28, GRY-29,
-   GRY-09, GRY-10, GRY-13, GRY-15, GRY-20, GRY-22, GRY-27, GRY-32, GRY-33).
+   ~~GRY-09~~, GRY-10, GRY-13, GRY-15, GRY-20, GRY-22, GRY-27, GRY-32, GRY-33).
 10. Add tests for every path named in the previous section.
 
 ### Summary of all findings
@@ -788,7 +788,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 | GRY-05 | A01 Broken Access Control | `MaintenanceRoutesController` | Medium | confirmed | open |
 | GRY-06 | A02 Security Misconfiguration | `APIServer.cs` | Medium | confirmed | open |
 | GRY-07 | A02 Security Misconfiguration | `APIServer.cs` (kestrel-configuration) | Medium | confirmed | open |
-| GRY-09 | A03 Software Supply Chain Failures | `GRYLibrary.csproj` (`System.Data.SqlClient`) | Medium | confirmed | open |
+| GRY-09 | A03 Software Supply Chain Failures | `GRYLibrary.csproj` (`System.Data.SqlClient`) | Medium | confirmed | fixed |
 | GRY-13 | A04 Cryptographic Failures | `AccessToken`, `TransientAuthenticationService` | Medium | confirmed | open |
 | GRY-14 | A04 Cryptographic Failures | `OIDCService.FetchDiscoveryAsync`, `.FetchJwksAsync` | Medium | confirmed | open |
 | GRY-18 | A06 Insecure Design | `MFA/TOTP`, `User.CreateNewUser` | Medium | confirmed | open |

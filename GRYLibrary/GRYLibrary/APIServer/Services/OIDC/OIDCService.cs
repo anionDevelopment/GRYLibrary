@@ -36,6 +36,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
             string authorizationEndpoint = discovery.RootElement.GetProperty("authorization_endpoint").GetString()!;
 
             string state = this.GenerateRandomBase64Url(32);
+            string nonce = this.GenerateRandomBase64Url(32);
             string codeVerifier = this.GenerateRandomBase64Url(64);
             string codeChallenge = this.ComputeCodeChallenge(codeVerifier);
 
@@ -45,6 +46,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
                 + "&redirect_uri=" + Uri.EscapeDataString(provider.RedirectUri)
                 + "&scope=" + Uri.EscapeDataString(GetScope(provider))
                 + "&state=" + Uri.EscapeDataString(state)
+                + "&nonce=" + Uri.EscapeDataString(nonce)
                 + "&code_challenge=" + Uri.EscapeDataString(codeChallenge)
                 + "&code_challenge_method=S256";
 
@@ -53,6 +55,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
                 AuthorizationUrl = authorizationUrl,
                 State = state,
                 CodeVerifier = codeVerifier,
+                Nonce = nonce,
             };
         }
 

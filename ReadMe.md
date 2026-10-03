@@ -493,9 +493,9 @@ constant texts with bound parameters.
 - Recommendation: put the issuer into the principal as its own claim, select the provider by the issuer-claim of the token
   instead of by trying all of them, and build the user-identity from both values.
 
-**GRY-25 - The oidc-bearer-path ends in an exception instead of in an authenticated request** (Medium, confirmed)
+~~**GRY-25 - The oidc-bearer-path ends in an exception instead of in an authenticated request**~~ (Medium, confirmed)
 
-- State: open
+- State: fixed (the discarded `GetUserByAccessToken`-lookup was removed, which also stops the exception on the oidc-path; mapping an external subject to a local user remains a separate, not-breaking-change-free feature)
 
 - Fixable without breaking changes: Yes (for the discarded-lookup). Removing the unconditional `GetUserByAccessToken` whose result is discarded removes an unnecessary query and the spurious exception on the oidc-path; on the regular path the result was thrown away, so correct usage is unchanged. (Mapping the external subject to a local user is a separate feature.)
 
@@ -762,7 +762,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 5. Deliver the threat-protection the library already outlines: a concrete rate-limiting-middleware with a pipeline-hook, plus a
    failed-login-counter and a lockout (GRY-17).
 6. Remove the synchronous-over-asynchronous pipeline and the `AllowSynchronousIO`-flag (GRY-16, GRY-08).
-7. Fix the oidc-bearer-path and the credential-header-contract, and cache the discovery-document and the key-set (GRY-25,
+7. Fix the oidc-bearer-path and the credential-header-contract, and cache the discovery-document and the key-set (~~GRY-25~~,
    GRY-26, GRY-21).
 8. Let the consumer protect the maintenance-routes, and offer a security-header-middleware (GRY-05, GRY-06).
 9. Make the remaining robustness-findings behave correctly (GRY-34, GRY-35, GRY-36, GRY-37), decide what happens with the
@@ -795,7 +795,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 | GRY-19 | A06 Insecure Design | `TransientAuthenticationService.Login`, `User` | Medium | confirmed | open |
 | GRY-20 | A06 Insecure Design | `APIServer.cs` (middleware-order) | Medium | confirmed | open |
 | GRY-21 | A06 Insecure Design | `OIDCService`, `AuthSMiddleware` | Medium | confirmed | open |
-| GRY-25 | A07 Authentication Failures | `AuthenticationMiddleware.IsAuthenticatedInternal`, `Tools.GetUser` | Medium | confirmed | open |
+| GRY-25 | A07 Authentication Failures | `AuthenticationMiddleware.IsAuthenticatedInternal`, `Tools.GetUser` | Medium | confirmed | fixed |
 | GRY-26 | A07 Authentication Failures | `HeaderService`, `HeaderTools`, `AuthSFilter` | Medium | confirmed | open |
 | GRY-28 | A08 Software or Data Integrity Failures | `Logging/GRYLogger` | Medium | confirmed | open |
 | GRY-31 | A09 Security Logging and Alerting Failures | `DRequestLoggingMiddleware.ShouldBeLogged` | Medium | confirmed | open |

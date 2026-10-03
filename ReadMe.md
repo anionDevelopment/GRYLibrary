@@ -641,9 +641,9 @@ is empty by default. The credential-header and a `password`-header are therefore
 - Recommendation: either generate the id always, or accept a supplied one only from a trusted proxy and only when it matches a
   strict pattern, and escape the value before writing it.
 
-**GRY-33 - The authentication-middleware swallows every exception without logging it** (Medium, confirmed)
+~~**GRY-33 - The authentication-middleware swallows every exception without logging it**~~ (Medium, confirmed)
 
-- State: open
+- State: fixed (both catch-blocks now log the caught exception at debug-level; the fail-closed outcome is unchanged)
 
 - Fixable without breaking changes: Yes (for the logging). Logging the caught exception is additive and keeps the fail-closed outcome for correct usage. (Distinguishing "credentials are wrong" from "the check could not be performed" and answering with a service-unavailable would change responses, so keep that separate.)
 
@@ -767,7 +767,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 8. Let the consumer protect the maintenance-routes, and offer a security-header-middleware (GRY-05, GRY-06).
 9. Make the remaining robustness-findings behave correctly (GRY-34, GRY-35, GRY-36, GRY-37), decide what happens with the
    mfa-stub and the deactivation-flag (GRY-18, GRY-19), and work off the integrity- and supply-chain-findings (GRY-28, ~~GRY-29~~,
-   ~~GRY-09~~, ~~GRY-10~~, GRY-13, ~~GRY-15~~, GRY-20, ~~GRY-22~~, ~~GRY-27~~, GRY-32, GRY-33).
+   ~~GRY-09~~, ~~GRY-10~~, GRY-13, ~~GRY-15~~, GRY-20, ~~GRY-22~~, ~~GRY-27~~, GRY-32, ~~GRY-33~~).
 10. Add tests for every path named in the previous section.
 
 ### Summary of all findings
@@ -800,7 +800,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 | GRY-28 | A08 Software or Data Integrity Failures | `Logging/GRYLogger` | Medium | confirmed | open |
 | GRY-31 | A09 Security Logging and Alerting Failures | `DRequestLoggingMiddleware.ShouldBeLogged` | Medium | confirmed | open |
 | GRY-32 | A09 Security Logging and Alerting Failures | `GeneralMiddleware` | Medium | confirmed | open |
-| GRY-33 | A09 Security Logging and Alerting Failures | `AuthSMiddleware` | Medium | confirmed | open |
+| GRY-33 | A09 Security Logging and Alerting Failures | `AuthSMiddleware` | Medium | confirmed | fixed |
 | GRY-34 | A10 Mishandling of Exceptional Conditions | `AuthenticationMiddleware`, `AuthorizationMiddleware`, `ExceptionManagerMiddleware` | Medium | confirmed | open |
 | GRY-35 | A10 Mishandling of Exceptional Conditions | `Tools.InitializationStateVisitor` | Medium | confirmed | open |
 | GRY-08 | A02 Security Misconfiguration | `APIServer.cs` (`AllowSynchronousIO`) | Low | confirmed | open |

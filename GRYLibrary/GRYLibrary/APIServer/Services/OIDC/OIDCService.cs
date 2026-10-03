@@ -127,6 +127,10 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
         /// <inheritdoc/>
         public async Task<OIDCTokenResult> ValidateAccessTokenAsync(OIDCProviderConfiguration provider, string accessToken)
         {
+            if (string.IsNullOrWhiteSpace(provider.Audience))
+            {
+                throw new InvalidOperationException($"The OIDC-provider '{provider.Id}' has no audience configured. The audience of an access-token must be validated, otherwise any token which the same provider issued for another client would be accepted here. Set OIDCProviderConfiguration.Audience; an opt-out is intentionally not offered.");
+            }
             JsonDocument discovery = await this.FetchDiscoveryAsync(provider);
             IDictionary<string, string> claims = await this.ValidateJwtAndParseClaimsAsync(provider, discovery, accessToken, provider.Audience);
             return CreateTokenResult(claims);

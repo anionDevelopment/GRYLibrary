@@ -456,9 +456,9 @@ constant texts with bound parameters.
 
 ### A07:2025 Authentication Failures
 
-**GRY-23 - The audience of an oidc-access-token is validated only when it happens to be configured** (High, confirmed)
+~~**GRY-23 - The audience of an oidc-access-token is validated only when it happens to be configured**~~ (High, confirmed)
 
-- State: open
+- State: fixed (`ValidateAccessTokenAsync` now requires `OIDCProviderConfiguration.Audience` and throws when it is not set, instead of silently switching the audience-check off; see the changelog for the required configuration)
 
 - Fixable without breaking changes: No. Requiring the audience rejects tokens for a consumer which did not configure one (behaviour-change plus new mandatory configuration).
 
@@ -755,7 +755,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 1. Replace the password-handling: a real key-derivation-function with a salt, offered as a service of the library, and remove or
    implement the argon2-stub (~~GRY-11~~, ~~GRY-12~~). Everything a consumer copies starts here.
 2. Make the oidc-validation strict: require the audience, require https for the authority, and carry the issuer in the principal
-   (GRY-23, GRY-14, GRY-24).
+   (~~GRY-23~~, GRY-14, GRY-24).
 3. Stop logging bodies unredacted, and exclude the authentication-routes by default (GRY-30, GRY-31).
 4. Make the access-control fail closed: authentication required by default, anchored allowlist-patterns, authorization from the
    established principal, and no silent disabling through an empty group-set (GRY-01, GRY-02, GRY-03, GRY-04).
@@ -780,7 +780,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 | GRY-12 | A04 Cryptographic Failures | `Crypto/Argon2`, `Crypto/GRYBCryptoSystem` | High | confirmed | fixed |
 | GRY-16 | A06 Insecure Design | `ExceptionManagerMiddleware`, `AuthSMiddleware`, `MaintenanceRoutesController` | High | confirmed | open |
 | GRY-17 | A06 Insecure Design | `MidT/RateLimit`, `MidT/WAF`, `MidT/Obfuscation`, `APIServer.cs` | High | confirmed | open |
-| GRY-23 | A07 Authentication Failures | `OIDCService.ValidateJwtAndParseClaimsAsync` | High | confirmed | open |
+| GRY-23 | A07 Authentication Failures | `OIDCService.ValidateJwtAndParseClaimsAsync` | High | confirmed | fixed |
 | GRY-24 | A07 Authentication Failures | `AuthSMiddleware.TryGetOIDCAuthentication` | High | confirmed | open |
 | GRY-30 | A09 Security Logging and Alerting Failures | `DRequestLoggingMiddleware` | High | confirmed | open |
 | GRY-02 | A01 Broken Access Control | `AuthenticationMiddleware`, `DRequestLoggingMiddleware.IsIgnored` | Medium | confirmed | open |

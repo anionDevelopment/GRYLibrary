@@ -38,6 +38,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
         /// <param name="provider">The provider configuration to authenticate against.</param>
         /// <param name="username">The end-user's username.</param>
         /// <param name="password">The end-user's plain-text password.</param>
+        [System.Obsolete("The resource-owner-password-credentials-grant is removed from the current OAuth-guidance because it makes the application handle the credentials of the identity-provider and rules out every protection which happens at the provider (second factor, risk-based checks, consent). Use the authorization-code-flow with PKCE (InitiateLoginAsync + ExchangeCodeAsync) instead.")]
         Task<OIDCPasswordLoginResult> LoginWithPasswordAsync(OIDCProviderConfiguration provider, string username, string password);
 
         /// <summary>

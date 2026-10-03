@@ -438,9 +438,9 @@ constant texts with bound parameters.
   unknown key-id, select the provider from the issuer-claim of the token instead of trying all of them, and inject a configured
   `HttpClient` with a timeout.
 
-**GRY-22 - The resource-owner-password-credentials-grant is offered** (Low, confirmed)
+~~**GRY-22 - The resource-owner-password-credentials-grant is offered**~~ (Low, confirmed)
 
-- State: open
+- State: fixed (`LoginWithPasswordAsync` is marked `[Obsolete]` with a reference to the authorization-code-flow with pkce)
 
 - Fixable without breaking changes: Yes. Marking `LoginWithPasswordAsync` with `[Obsolete]` emits a compiler-warning only; the method keeps working, with no behaviour- or interface-change. (A consumer who treats warnings as errors would see a build-warning, but that is its own build-configuration.)
 
@@ -767,7 +767,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 8. Let the consumer protect the maintenance-routes, and offer a security-header-middleware (GRY-05, GRY-06).
 9. Make the remaining robustness-findings behave correctly (GRY-34, GRY-35, GRY-36, GRY-37), decide what happens with the
    mfa-stub and the deactivation-flag (GRY-18, GRY-19), and work off the integrity- and supply-chain-findings (GRY-28, GRY-29,
-   ~~GRY-09~~, ~~GRY-10~~, GRY-13, ~~GRY-15~~, GRY-20, GRY-22, GRY-27, GRY-32, GRY-33).
+   ~~GRY-09~~, ~~GRY-10~~, GRY-13, ~~GRY-15~~, GRY-20, ~~GRY-22~~, GRY-27, GRY-32, GRY-33).
 10. Add tests for every path named in the previous section.
 
 ### Summary of all findings
@@ -806,7 +806,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 | GRY-08 | A02 Security Misconfiguration | `APIServer.cs` (`AllowSynchronousIO`) | Low | confirmed | open |
 | GRY-10 | A03 Software Supply Chain Failures | `GRYLibrary.csproj` | Low | confirmed | fixed |
 | GRY-15 | A05 Injection | the database-interactors (migration-statements) | Low | confirmed | fixed |
-| GRY-22 | A06 Insecure Design | `OIDCService.LoginWithPasswordAsync` | Low | confirmed | open |
+| GRY-22 | A06 Insecure Design | `OIDCService.LoginWithPasswordAsync` | Low | confirmed | fixed |
 | GRY-27 | A07 Authentication Failures | `OIDCService.InitiateLoginAsync` | Low | confirmed | open |
 | GRY-29 | A08 Software or Data Integrity Failures | `GRYLibrary.csproj` | Low | confirmed | open |
 | GRY-36 | A10 Mishandling of Exceptional Conditions | `GeneralMiddleware.GetIPAddress` | Low | confirmed | open |

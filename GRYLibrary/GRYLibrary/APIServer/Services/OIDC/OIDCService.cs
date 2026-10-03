@@ -79,6 +79,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
         }
 
         /// <inheritdoc/>
+        [System.Obsolete("The resource-owner-password-credentials-grant is removed from the current OAuth-guidance because it makes the application handle the credentials of the identity-provider and rules out every protection which happens at the provider (second factor, risk-based checks, consent). Use the authorization-code-flow with PKCE (InitiateLoginAsync + ExchangeCodeAsync) instead.")]
         public async Task<OIDCPasswordLoginResult> LoginWithPasswordAsync(OIDCProviderConfiguration provider, string username, string password)
         {
             JsonDocument discovery = await this.FetchDiscoveryAsync(provider);

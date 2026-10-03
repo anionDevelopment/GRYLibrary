@@ -312,9 +312,9 @@ No sql-injection was found in the data-access-layer: a command is built from a s
 concrete interactor creates (`GetParameter`), and the queries which the library executes itself against `information_schema` are
 constant texts with bound parameters.
 
-**GRY-15 - The migration-statements are assembled by string-interpolation** (Low, confirmed)
+~~**GRY-15 - The migration-statements are assembled by string-interpolation**~~ (Low, confirmed)
 
-- State: open
+- State: fixed (the migration-table-name and the migration-name are validated against a strict pattern before interpolation; binding the name as a parameter was deliberately not used, because a bound parameter in the same command as the arbitrary migration-DDL would break migrations which legitimately use `@`, which would itself be a breaking change)
 
 - Fixable without breaking changes: Yes. Binding the migration-name as a parameter and validating the table-name is internal to the migration-execution; the values are build-time constants which already satisfy a strict identifier, so valid migrations behave identically and no consumer-api changes.
 
@@ -767,7 +767,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 8. Let the consumer protect the maintenance-routes, and offer a security-header-middleware (GRY-05, GRY-06).
 9. Make the remaining robustness-findings behave correctly (GRY-34, GRY-35, GRY-36, GRY-37), decide what happens with the
    mfa-stub and the deactivation-flag (GRY-18, GRY-19), and work off the integrity- and supply-chain-findings (GRY-28, GRY-29,
-   ~~GRY-09~~, ~~GRY-10~~, GRY-13, GRY-15, GRY-20, GRY-22, GRY-27, GRY-32, GRY-33).
+   ~~GRY-09~~, ~~GRY-10~~, GRY-13, ~~GRY-15~~, GRY-20, GRY-22, GRY-27, GRY-32, GRY-33).
 10. Add tests for every path named in the previous section.
 
 ### Summary of all findings
@@ -805,7 +805,7 @@ resources, and the exact pinning of every dependency together with a lock-file.
 | GRY-35 | A10 Mishandling of Exceptional Conditions | `Tools.InitializationStateVisitor` | Medium | confirmed | open |
 | GRY-08 | A02 Security Misconfiguration | `APIServer.cs` (`AllowSynchronousIO`) | Low | confirmed | open |
 | GRY-10 | A03 Software Supply Chain Failures | `GRYLibrary.csproj` | Low | confirmed | fixed |
-| GRY-15 | A05 Injection | the database-interactors (migration-statements) | Low | confirmed | open |
+| GRY-15 | A05 Injection | the database-interactors (migration-statements) | Low | confirmed | fixed |
 | GRY-22 | A06 Insecure Design | `OIDCService.LoginWithPasswordAsync` | Low | confirmed | open |
 | GRY-27 | A07 Authentication Failures | `OIDCService.InitiateLoginAsync` | Low | confirmed | open |
 | GRY-29 | A08 Software or Data Integrity Failures | `GRYLibrary.csproj` | Low | confirmed | open |

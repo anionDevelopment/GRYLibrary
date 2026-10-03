@@ -36,6 +36,7 @@ namespace GRYLibrary.Core.APIServer.Services.Database
 
         public override string CreateSQLStatementForCreatingMigrationMaintenanceTableIfNotExist(string migrationTableName)
         {
+            AssertMigrationTableNameIsSafe(migrationTableName);
             return $@"CREATE TABLE IF NOT EXISTS ""{migrationTableName}"" (
     ""MigrationName"" VARCHAR(255),
     ""ExecutionTimestamp"" TIMESTAMP);
@@ -44,11 +45,14 @@ namespace GRYLibrary.Core.APIServer.Services.Database
 
         public override string GetSQLStatementForSelectMigrationMaintenanceTableContent(string migrationTableName)
         {
+            AssertMigrationTableNameIsSafe(migrationTableName);
             return $@"select ""MigrationName"", ""ExecutionTimestamp"" from ""{migrationTableName}"";";
         }
 
         public override string GetSQLStatementForRunningMigration(string migrationContent, string migrationTableName, string migrationName, DateTimeOffset now)
         {
+            AssertMigrationTableNameIsSafe(migrationTableName);
+            AssertMigrationNameIsSafe(migrationName);
             DateTimeOffset noUtc = now.ToUniversalTime();
             return @$"
 {migrationContent}

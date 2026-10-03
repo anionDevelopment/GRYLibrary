@@ -1,8 +1,6 @@
 # GRYLibrary
 
-[![CodeFactor](https://www.codefactor.io/repository/github/aniondev/grylibrary/badge/main)](https://www.codefactor.io/repository/github/aniondev/grylibrary/overview/main)
 ![Coverage](./GRYLibrary/Other/Resources/TestCoverageBadges/badge_shieldsio_linecoverage_blue.svg)
-![Lines of code](https://img.shields.io/tokei/lines/github/anionDev/GRYLibrary)
 
 GRYLibrary is a collection with some useful .NET classes and functions which are very easy (re)usable.
 
@@ -38,6 +36,12 @@ view of a consumer: this library is not an application but the framework which i
 default here becomes a weakness in every product which uses it, and a security-control which the library does not offer is a
 control which no consumer has.
 
+Each finding additionally carries a "Fixable without breaking changes"-line. It states whether the finding can be remediated in a
+way which is definitely not a breaking change for a consumer - that is: no behaviour-change when the library is used as intended,
+no additional configuration required and no interface-change. The verdict is one of "Yes", "No" or "Partial" ("Partial" means
+that one part of the recommended remediation is breaking-change-free while another part is not). It describes only the
+breaking-change-risk, not the severity or the effort of the fix.
+
 ### Scope
 
 The analysis concentrates on the parts which an api-server-consumer really runs, because those are the ones with an attack-
@@ -63,6 +67,8 @@ surface:
 
 **GRY-01 - Authentication is opt-in per endpoint, so an unannotated route is public** (High, confirmed)
 
+- Fixable without breaking changes: No. Requiring authentication by default turns every currently-public unannotated route into a 401 and forces consumers to add allow-anonymous entries (behaviour-change plus new configuration). Only the additive start-up log of the reachable routes would be non-breaking.
+
 - Affected component: `APIServer/MidT/Auth/AuthenticationMiddleware.cs` (`AuthenticationIsRequired`)
 - Attack-surface: every endpoint of every consumer
 - Evidence: the method returns `true` only when the action carries an `AuthenticateAttribute` or an `AuthorizeAttribute`.
@@ -74,6 +80,8 @@ surface:
   route-allowlist), and log at start-up which routes are reachable without authentication so that the result is visible.
 
 **GRY-02 - The allowlist of unauthenticated routes is matched with unanchored regular expressions** (Medium, confirmed)
+
+- Fixable without breaking changes: Partial. Compiling each pattern once and null-checking `Path.Value` are behaviour-preserving. Anchoring, rejecting unanchored patterns at start-up and switching to case-insensitive matching change which routes match and would break existing consumer-patterns, so they are not breaking-change-free.
 
 - Affected component: `APIServer/MidT/Auth/AuthenticationMiddleware.cs` (`AuthenticationIsRequired`), `APIServer/Mid/M05DLog/DRequestLoggingMiddleware.cs` (`IsIgnored`)
 - Attack-surface: every endpoint of every consumer
@@ -89,6 +97,8 @@ surface:
 
 **GRY-03 - Authorization re-reads the token from the request and does not re-validate it** (High, confirmed)
 
+- Fixable without breaking changes: Partial. Authorizing from the already-established principal and dropping the duplicate lookup can be behaviour-neutral on the normal path, but adding token-re-validation and rejecting the allowlist-plus-authorize combination at start-up change the behaviour (or abort the start-up) for a consumer who uses that combination.
+
 - Affected component: `APIServer/Mid/AutS/AutSRMiddleware.cs`, `APIServer/Mid/AutS/AutSAMiddleware.cs` (`IsAuthorized`)
 - Attack-surface: every route which carries an `AuthorizeAttribute`
 - Evidence: `IsAuthorized` does not use the `ClaimsPrincipal` which the authentication-middleware put into the context. It takes
@@ -103,6 +113,8 @@ surface:
 
 **GRY-04 - An authorize-attribute without groups disables the authorization-check** (Medium, confirmed)
 
+- Fixable without breaking changes: No. The fix (an empty group-set must fail at start-up or deny) breaks any consumer which currently ships such an attribute (start-up-failure or newly-denied requests).
+
 - Affected component: `APIServer/MidT/Aut/AuthorizationMiddleware.cs` (`AuthorizationIsRequired`)
 - Attack-surface: every route which carries an `AuthorizeAttribute` without a group
 - Evidence: `AuthorizationIsRequired` returns `authorizeAttribute.Groups.Any()`, so an empty group-set means that no
@@ -113,6 +125,8 @@ surface:
   intention has to be written down explicitly.
 
 **GRY-05 - The maintenance-routes can not be protected** (Medium, confirmed)
+
+- Fixable without breaking changes: No. An opt-in per-endpoint auth-control can be added with the default left at today's behaviour (that part is non-breaking), but actually closing the finding needs new configuration and a changed default.
 
 - Affected component: `APIServer/MaintenanceRoutes/MaintenanceRoutesController.cs`
 - Attack-surface: internet-exposed in every consumer which enables one of the endpoints
@@ -129,6 +143,8 @@ surface:
 
 **GRY-06 - The library sets no security-response-headers** (Medium, confirmed)
 
+- Fixable without breaking changes: No. A header-middleware can only be added non-breaking if it is off by default; enabling the headers (`Content-Security-Policy`, …) or deriving the hsts-decision from the public protocol needs new configuration and can change client-visible behaviour.
+
 - Affected component: `APIServer/APIServer.cs`
 - Attack-surface: internet-exposed in every consumer
 - Evidence: the pipeline contains no middleware which sets `Content-Security-Policy`, `X-Content-Type-Options`,
@@ -142,6 +158,8 @@ surface:
 
 **GRY-07 - A certificate-problem in a productive environment is only a warning** (Medium, confirmed)
 
+- Fixable without breaking changes: No. Making a certificate-problem an error by default stops deployments which start today; it can only be added as a configurable option with the default left at "warning", which does not close the finding.
+
 - Affected component: `APIServer/APIServer.cs` (kestrel-configuration)
 - Attack-surface: internet-exposed, when the application terminates tls itself
 - Evidence: a self-signed certificate in a `Productive`-environment and a certificate whose dns-name differs from the configured
@@ -152,6 +170,8 @@ surface:
   productive environment.
 
 **GRY-08 - Synchronous io is enabled for the whole server** (Low on its own, confirmed)
+
+- Fixable without breaking changes: No. Removing `AllowSynchronousIO` can throw for any consumer-code which performs synchronous stream-io; it is only safe once GRY-16 is done and no consumer relies on synchronous io.
 
 - Affected component: `APIServer/APIServer.cs` (`kestrelOptions.AllowSynchronousIO = true`)
 - Attack-surface: internet-exposed in every consumer
@@ -167,6 +187,8 @@ lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
 
 **GRY-09 - A deprecated data-access-package is referenced** (Medium, confirmed)
 
+- Fixable without breaking changes: Yes. The package is referenced but never used: `SQLServerDatabaseInteractor` throws in every method and imports only `System.Data.Common`, and no public type exposes a `SqlClient`-type. Dropping the reference removes an unused dependency with no consumer-impact. (Implementing sql-server on `Microsoft.Data.SqlClient` is separate, additive work.)
+
 - Affected component: `GRYLibrary/GRYLibrary/GRYLibrary.csproj` (`System.Data.SqlClient` 4.9.1)
 - Attack-surface: build and every consumer, because a library-dependency is transitive
 - Evidence: `System.Data.SqlClient` is referenced. That package is the legacy sql-server-client which is superseded by
@@ -175,6 +197,8 @@ lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
 - Recommendation: migrate `SQLServerDatabaseInteractor` to `Microsoft.Data.SqlClient` and drop the old package.
 
 **GRY-10 - A vulnerability in a dependency does not break the build** (Low, confirmed)
+
+- Fixable without breaking changes: Yes. The `NuGetAudit`-settings affect only GRYLibrary's own build-pipeline, not any consumer.
 
 - Affected component: `GRYLibrary/GRYLibrary/GRYLibrary.csproj`
 - Attack-surface: build-pipeline
@@ -187,6 +211,8 @@ lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
 ### A04:2025 Cryptographic Failures
 
 **GRY-11 - The reference authentication-service hashes passwords with an unsalted single-round sha-256** (Critical, confirmed)
+
+- Fixable without breaking changes: No. A salted key-derivation-function can not keep the current `Hash(password) == storedHash` equality-contract, so it needs a verify-method (a changed or relocated api); `Login` compares with `!=` today. The in-memory, test-only nature of this service removes the stored-hash-migration-problem, but the public `Hash`-contract still changes. (See GRY-12 for the additive primitive.)
 
 - Affected component: `APIServer/Services/Trans/TransientAuthenticationService.cs` (`Hash`)
 - Attack-surface: every stored password of every consumer which uses or copies this service
@@ -205,6 +231,8 @@ lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
 
 **GRY-12 - The library offers no usable password-hashing-primitive** (High, confirmed)
 
+- Fixable without breaking changes: Yes. `Argon2.Hash` currently throws `NotImplementedException`, so no working caller can exist; implementing it and adding a new `PasswordHasher` are additive. (Removing the class would be breaking, so take the implement-path.)
+
 - Affected component: `Crypto/Argon2.cs`, `Crypto/GRYBCryptoSystem.cs`
 - Attack-surface: every consumer which looks for the right primitive
 - Evidence: `Argon2.Hash` throws a `NotImplementedException` and only `GetIdentifier` is implemented; `GRYBCryptoSystem` contains
@@ -216,6 +244,8 @@ lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
   verify-method, so that the correct way is the shortest one.
 
 **GRY-13 - Access-tokens are guids and are stored in plaintext as the key of the token-table** (Medium, confirmed)
+
+- Fixable without breaking changes: Partial. Generating the token via `RandomNumberGenerator` (still an opaque string) and making the lifetime configurable with the default left at one day are behaviour-compatible. Storing only the token-hash changes the `AccessToken`-primary-key/schema and breaks persistent consumer-stores.
 
 - Affected component: `APIServer/CommonAuthenticationTypes/AccessToken.cs`, `APIServer/Services/Trans/TransientAuthenticationService.cs`
 - Attack-surface: the token-store of every consumer
@@ -230,6 +260,8 @@ lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
   and make the lifetime configurable.
 
 **GRY-14 - The oidc-authority is not required to use https** (Medium, confirmed)
+
+- Fixable without breaking changes: No. Requiring https rejects consumers which currently use an http-authority; restoring that needs a new development-opt-in (behaviour-change plus new configuration).
 
 - Affected component: `APIServer/Services/OIDC/OIDCService.cs` (`FetchDiscoveryAsync`, `FetchJwksAsync`)
 - Attack-surface: outgoing connection to the identity-provider
@@ -250,6 +282,8 @@ constant texts with bound parameters.
 
 **GRY-15 - The migration-statements are assembled by string-interpolation** (Low, confirmed)
 
+- Fixable without breaking changes: Yes. Binding the migration-name as a parameter and validating the table-name is internal to the migration-execution; the values are build-time constants which already satisfy a strict identifier, so valid migrations behave identically and no consumer-api changes.
+
 - Affected component: `APIServer/Services/Database/PostgreSQLDatabaseInteractor.cs`, `.../MariaDBDatabaseInteractor.cs`, `.../OracleDatabaseInteractor.cs`, `.../SQLServerDatabaseInteractor.cs` (`GetSQLStatementForRunningMigration`, `CreateSQLStatementForCreatingMigrationMaintenanceTableIfNotExist`, `GetSQLStatementForSelectMigrationMaintenanceTableContent`)
 - Attack-surface: build-time content (the migration-resources of a consumer), not a request
 - Evidence: the migration-name is interpolated into a quoted sql-literal and the table-name into a quoted identifier.
@@ -261,6 +295,8 @@ constant texts with bound parameters.
 ### A06:2025 Insecure Design
 
 **GRY-16 - The pipeline is synchronous-over-asynchronous** (High, confirmed)
+
+- Fixable without breaking changes: Partial. The overridable method is already `Task Invoke(HttpContext)`, so converting the library's own middlewares from `.Wait()` to `await` keeps the signature and the happy-path-result identical. What a custom `HandleException` receives changes from an `AggregateException` to the original exception, so it is not guaranteed behaviour-identical for a consumer's exception-handler.
 
 - Affected component: `APIServer/MidT/Exception/ExceptionManagerMiddleware.cs`, `APIServer/Mid/Ex/DefaultExceptionHandlerMiddleware.cs`, `APIServer/Mid/AuthS/AuthSMiddleware.cs`, `APIServer/MaintenanceRoutes/MaintenanceRoutesController.cs`
 - Attack-surface: internet-exposed in every consumer
@@ -277,6 +313,8 @@ constant texts with bound parameters.
   http-calls instead of blocking on them.
 
 **GRY-17 - Rate-limiting can not be switched on** (High, confirmed)
+
+- Fixable without breaking changes: Yes. Adding a concrete rate-limiting-middleware and an `ISupportRateLimitingMiddleware`-hook is purely additive; existing consumers have no rate-limit today and stay unaffected, new consumers can opt in, and that already closes "can not be switched on". (A failed-login-counter or lockout which is active by default would change login-behaviour, so keep it opt-in.)
 
 - Affected component: `APIServer/MidT/RateLimit/RateLimitingMiddleware.cs`, `APIServer/APIServer.cs`
 - Attack-surface: every consumer, especially its login-route
@@ -297,6 +335,8 @@ constant texts with bound parameters.
 
 **GRY-18 - Multi-factor-authentication is a model-only stub** (Medium, confirmed)
 
+- Fixable without breaking changes: No. Making `IsActicated` enforce a second factor changes the login-flow and needs the caller to supply a code; removing the model is an api-removal. Neither is breaking-change-free. (Generating the totp-secret from a random byte-sequence for newly-created users is an internal improvement, but alone does not close the finding.)
+
 - Affected component: `APIServer/MFA/TOTP.cs`, `APIServer/MFA/IMFAMethod.cs`, `APIServer/CommonDBTypes/User.cs`
 - Attack-surface: every consumer which believes the flag has an effect
 - Evidence: `TOTP` holds a `SecretKey` and an `IsActicated`-flag and nothing else; no code anywhere in the library verifies a
@@ -310,6 +350,8 @@ constant texts with bound parameters.
 
 **GRY-19 - The deactivation-flag of a user has no effect and the lock is checked too late** (Medium, confirmed)
 
+- Fixable without breaking changes: Partial. Honouring `UserIsActivated` only affects a consumer which deliberately sets it to false (its documented purpose), but reordering the lock-check and unifying the locked-account-message/status changes client-visible responses.
+
 - Affected component: `APIServer/Services/Trans/TransientAuthenticationService.cs` (`Login`), `APIServer/CommonDBTypes/User.cs`
 - Attack-surface: every consumer
 - Evidence: `User.UserIsActivated` exists and defaults to `true`, but no code in the library ever reads it in a decision. `Login`
@@ -322,6 +364,8 @@ constant texts with bound parameters.
 
 **GRY-20 - The first group of consumer-middlewares runs before authentication** (Medium, confirmed)
 
+- Fixable without breaking changes: Partial. Clarifying the documentation of the property is fully safe; renaming the middleware-group-property is an api-change and is therefore breaking.
+
 - Affected component: `APIServer/APIServer.cs`
 - Attack-surface: every consumer which registers a custom middleware
 - Evidence: `CustomMiddlewares1` is added to `businessMiddlewares1`, which is registered before `specialMiddlewares2` - the group
@@ -333,6 +377,8 @@ constant texts with bound parameters.
   documentation of the property.
 
 **GRY-21 - The oidc-discovery-document and the signing-keys are fetched per validation** (Medium, confirmed)
+
+- Fixable without breaking changes: Partial. Caching the discovery-document and the key-set per provider (with a refresh on an unknown key-id) and giving the default `HttpClient` a timeout are transparent for correct usage. Injecting the `HttpClient` through a new constructor-parameter is an interface-change, and selecting the provider by the issuer-claim changes internal behaviour.
 
 - Affected component: `APIServer/Services/OIDC/OIDCService.cs`, `APIServer/Mid/AuthS/AuthSMiddleware.cs`
 - Attack-surface: internet-exposed, every request which carries an oidc-token
@@ -348,6 +394,8 @@ constant texts with bound parameters.
 
 **GRY-22 - The resource-owner-password-credentials-grant is offered** (Low, confirmed)
 
+- Fixable without breaking changes: Yes. Marking `LoginWithPasswordAsync` with `[Obsolete]` emits a compiler-warning only; the method keeps working, with no behaviour- or interface-change. (A consumer who treats warnings as errors would see a build-warning, but that is its own build-configuration.)
+
 - Affected component: `APIServer/Services/OIDC/OIDCService.cs` (`LoginWithPasswordAsync`)
 - Attack-surface: a consumer which uses that method
 - Evidence: the method implements `grant_type=password` and forwards the user-name and the password of the user to the
@@ -361,6 +409,8 @@ constant texts with bound parameters.
 ### A07:2025 Authentication Failures
 
 **GRY-23 - The audience of an oidc-access-token is validated only when it happens to be configured** (High, confirmed)
+
+- Fixable without breaking changes: No. Requiring the audience rejects tokens for a consumer which did not configure one (behaviour-change plus new mandatory configuration).
 
 - Affected component: `APIServer/Services/OIDC/OIDCService.cs` (`ValidateJwtAndParseClaimsAsync`, `ValidateAccessTokenAsync`)
 - Attack-surface: internet-exposed, every request which carries an oidc-token
@@ -377,6 +427,8 @@ constant texts with bound parameters.
 
 **GRY-24 - The oidc-principal carries only the subject, so subjects of different providers collapse** (High, confirmed)
 
+- Fixable without breaking changes: Partial. Adding the issuer as an additional claim is additive and non-breaking (the existing `NameIdentifier` stays). Changing `NameIdentifier` itself or switching the provider-selection to issuer-based changes behaviour.
+
 - Affected component: `APIServer/Mid/AuthS/AuthSMiddleware.cs` (`TryGetOIDCAuthentication`)
 - Attack-surface: internet-exposed, a consumer with more than one configured provider
 - Evidence: the method accepts the first provider for which the token validates and builds a `ClaimsPrincipal` whose
@@ -390,6 +442,8 @@ constant texts with bound parameters.
   instead of by trying all of them, and build the user-identity from both values.
 
 **GRY-25 - The oidc-bearer-path ends in an exception instead of in an authenticated request** (Medium, confirmed)
+
+- Fixable without breaking changes: Yes (for the discarded-lookup). Removing the unconditional `GetUserByAccessToken` whose result is discarded removes an unnecessary query and the spurious exception on the oidc-path; on the regular path the result was thrown away, so correct usage is unchanged. (Mapping the external subject to a local user is a separate feature.)
 
 - Affected component: `APIServer/MidT/Auth/AuthenticationMiddleware.cs` (`IsAuthenticatedInternal`), `APIServer/Utilities/Tools.cs` (`GetUser`)
 - Attack-surface: a consumer which enables oidc-token-authentication
@@ -406,6 +460,8 @@ constant texts with bound parameters.
 
 **GRY-26 - The contract of the credential-header is inconsistent** (Medium, confirmed)
 
+- Fixable without breaking changes: No. The path which works today is "send the raw token", so any format-/parsing-alignment or rejecting a duplicated header changes observable behaviour for existing clients.
+
 - Affected component: `APIServer/Services/CredH/HeaderService.cs`, `APIServer/Services/CredH/HeaderTools.cs`, `APIServer/Mid/AuthS/AuthSFilter.cs`
 - Attack-surface: internet-exposed in every consumer
 - Evidence: `HeaderTools.GetAccessTokenHeader` produces the value `User=<name>;AccessToken=<token>` for the header
@@ -420,6 +476,8 @@ constant texts with bound parameters.
   and cover the round-trip with a test.
 
 **GRY-27 - The oidc-code-flow sends no nonce** (Low, confirmed)
+
+- Fixable without breaking changes: Yes. Adding a `nonce` to the authorization-request and validating it against the id-token is a specification-compliant, additive change to a flow the library manages internally; the provider echoes the nonce and the state is kept library-side next to the verifier, so correct usage is unchanged.
 
 - Affected component: `APIServer/Services/OIDC/OIDCService.cs` (`InitiateLoginAsync`)
 - Attack-surface: the login-flow
@@ -437,6 +495,8 @@ built on it regularly do not have them.
 
 **GRY-28 - The logging-facility offers no integrity-protection** (Medium, confirmed)
 
+- Fixable without breaking changes: Yes. A hash-chaining/append-only log-target is a new, additive option; the existing log-targets stay untouched.
+
 - Affected component: `Logging/GRYLogger/*`
 - Attack-surface: internal, whoever reaches the log-files
 - Evidence: a log-target writes plain text into a file (or to the console). There is no append-only-mode, no signature, no
@@ -450,6 +510,8 @@ built on it regularly do not have them.
   scratch.
 
 **GRY-29 - The assemblies carry no valid strong-name-signature** (Low, confirmed)
+
+- Fixable without breaking changes: Yes. Completing the signature keeps the same public key (hence the same strong-name-identity/public-key-token), so consumer-binding is unchanged; it only makes the existing signature verify. Publishing a bill-of-materials is additive. (It needs the signing-key; dropping the strong name instead would change the identity and be breaking.)
 
 - Affected component: `GRYLibrary/GRYLibrary/GRYLibrary.csproj`
 - Attack-surface: distribution of the nuget-package
@@ -467,6 +529,8 @@ is empty by default. The credential-header and a `password`-header are therefore
 
 **GRY-30 - The complete request- and response-body is written to the log-file for every request** (High, confirmed)
 
+- Fixable without breaking changes: Partial. Adding a redaction-configuration and excluding the authentication-routes' bodies/tokens is a security-fix no correct consumer depends on, but making body-logging opt-in removes log-content which a consumer may rely on, so it changes the logging-behaviour.
+
 - Affected component: `APIServer/Mid/M05DLog/DRequestLoggingMiddleware.cs` (`ShouldLogEntireRequestContentInLogFile`, `FormatLogEntryFull`)
 - Attack-surface: internal, the log-files and everything they are forwarded to
 - Evidence: `ShouldLogEntireRequestContentInLogFile` returns `true` in every case (its body reads
@@ -483,6 +547,8 @@ is empty by default. The credential-header and a `password`-header are therefore
 
 **GRY-31 - Verbose mode ignores the list of not-logged routes** (Medium, confirmed)
 
+- Fixable without breaking changes: Partial. Providing a separate "log really everything"-switch is additive; keeping the exclusion-list effective in verbose mode changes what verbose mode logs today, so it is a behaviour-change.
+
 - Affected component: `APIServer/Mid/M05DLog/DRequestLoggingMiddleware.cs` (`ShouldBeLogged`)
 - Attack-surface: internal, the log-files
 - Evidence: `if (this._CommandlineParameter.EnforceVerbose) { return true; }` stands before the check of `NotLoggedRoutes`, so
@@ -493,6 +559,8 @@ is empty by default. The credential-header and a `password`-header are therefore
   wants everything.
 
 **GRY-32 - The client decides the request-id which appears in every log-line** (Medium, confirmed)
+
+- Fixable without breaking changes: Partial. Escaping and length-limiting the value (which prevents the log-forging through line-breaks) is behaviour-preserving for a well-formed id; ignoring the client-supplied `X-RequestId` or only trusting it from a proxy changes the correlation-behaviour for a consumer which relies on it.
 
 - Affected component: `APIServer/Mid/General/GeneralMiddleware.cs`
 - Attack-surface: internet-exposed in every consumer
@@ -506,6 +574,8 @@ is empty by default. The credential-header and a `password`-header are therefore
   strict pattern, and escape the value before writing it.
 
 **GRY-33 - The authentication-middleware swallows every exception without logging it** (Medium, confirmed)
+
+- Fixable without breaking changes: Yes (for the logging). Logging the caught exception is additive and keeps the fail-closed outcome for correct usage. (Distinguishing "credentials are wrong" from "the check could not be performed" and answering with a service-unavailable would change responses, so keep that separate.)
 
 - Affected component: `APIServer/Mid/AuthS/AuthSMiddleware.cs` (`TryGetAuthentication`, `TryGetOIDCAuthentication`)
 - Attack-surface: internet-exposed in every consumer
@@ -529,6 +599,8 @@ to take care of that itself.
 
 **GRY-34 - A security-decision is signalled as an exception and mapped by a separate, optional middleware** (Medium, confirmed)
 
+- Fixable without breaking changes: No. Letting the middlewares write the status-code and short-circuit themselves changes the control-flow and the 401/403-behaviour for a consumer which relies on its own exception-middleware for that mapping.
+
 - Affected component: `APIServer/MidT/Auth/AuthenticationMiddleware.cs`, `APIServer/MidT/Aut/AuthorizationMiddleware.cs`, `APIServer/MidT/Exception/ExceptionManagerMiddleware.cs`, `APIServer/APIServer.cs`
 - Attack-surface: internet-exposed in every consumer
 - Evidence: a missing authentication is a `BadRequestException(401)` and a missing authorization a `BadRequestException(403)`;
@@ -544,6 +616,8 @@ to take care of that itself.
 
 **GRY-35 - The health-check reports a healthy service while it is still initializing** (Medium, confirmed)
 
+- Fixable without breaking changes: No. Changing `Initializing` from `Healthy` to `Degraded`/`Unhealthy` changes the readiness-signal an orchestrator acts on; that observable change is the very point of the fix, and a probe which currently depends on "healthy during init" would see it.
+
 - Affected component: `APIServer/Utilities/Tools.cs` (`InitializationStateVisitor.Handle(Initializing)`)
 - Attack-surface: the orchestrator of every consumer
 - Evidence: the visitor answers `Uninitialized` with `Degraded` and `InitializationFailed` with `Unhealthy`, but `Initializing`
@@ -554,6 +628,8 @@ to take care of that itself.
 - Recommendation: answer `Initializing` with `Degraded` (or `Unhealthy`), so that readiness really means ready.
 
 **GRY-36 - A forwarded-for header with several addresses makes every request fail** (Low, confirmed)
+
+- Fixable without breaking changes: Partial. Falling back to the connection-address for a malformed/multi-value header (instead of throwing) only affects today's crash-path and leaves correct single-proxy usage unchanged; restricting the trust to a configured proxy-list is new configuration. `TrustForwardedHeader` defaults to false, so default consumers are unaffected either way.
 
 - Affected component: `APIServer/Mid/General/GeneralMiddleware.cs` (`GetIPAddress`)
 - Attack-surface: a consumer which sets `TrustForwardedHeader`
@@ -568,6 +644,8 @@ to take care of that itself.
   trusted proxy-addresses, and handle a malformed value by falling back to the connection-address instead of by throwing.
 
 **GRY-37 - Smaller robustness-defects in the same area** (Low, confirmed)
+
+- Fixable without breaking changes: Partial. The null-check on `Path.Value`, using `FirstOrDefault` for the `nameidentifier`-claim, routing the error-handling-failure to the log, and removing the dead code are behaviour-preserving robustness-fixes; changing the invalid-credentials-status from 400 to 401 is a client-visible contract-change and is therefore breaking.
 
 - Affected component: `APIServer/Services/Trans/TransientAuthenticationService.cs`, `APIServer/Mid/M05DLog/DRequestLoggingMiddleware.cs`, `APIServer/MidT/Auth/AuthenticationMiddleware.cs`, `APIServer/MidT/Exception/ExceptionManagerMiddleware.cs`
 - Attack-surface: internal

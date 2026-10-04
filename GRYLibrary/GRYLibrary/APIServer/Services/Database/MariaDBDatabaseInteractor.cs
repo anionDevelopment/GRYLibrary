@@ -38,11 +38,14 @@ namespace GRYLibrary.Core.APIServer.Services.Database
 
         public override string CreateSQLStatementForCreatingMigrationMaintenanceTableIfNotExist(string migrationTableName)
         {
+            AssertMigrationTableNameIsSafe(migrationTableName);
             return @$"create table if not exists {migrationTableName}(MigrationName varchar(255), ExecutionTimestamp datetime);";
         }
 
         public override string GetSQLStatementForRunningMigration(string migrationContent, string migrationTableName, string migrationName, DateTimeOffset now)
         {
+            AssertMigrationTableNameIsSafe(migrationTableName);
+            AssertMigrationNameIsSafe(migrationName);
             DateTimeOffset noUtc = now.ToUniversalTime();
             return @$"SET autocommit=0;
 {migrationContent}
@@ -52,6 +55,7 @@ insert into {migrationTableName}(MigrationName, ExecutionTimestamp) values ('{mi
 
         public override string GetSQLStatementForSelectMigrationMaintenanceTableContent(string migrationTableName)
         {
+            AssertMigrationTableNameIsSafe(migrationTableName);
             return $"select MigrationName, ExecutionTimestamp from {migrationTableName};";
         }
 

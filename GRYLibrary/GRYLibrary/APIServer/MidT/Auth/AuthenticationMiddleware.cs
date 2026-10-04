@@ -19,13 +19,11 @@ namespace GRYLibrary.Core.APIServer.MidT.Auth
         public const string CurrentlyUsedAccessTokenInformationName = "CurrentlyUsedAccessToken";
         private readonly IAuthenticationConfiguration _AuthenticationConfiguration;
         private readonly IDictionary<string, IAuthenticationProvider> _AuthenticationProvider;
-        private readonly IAuthenticationService _AuthenticationService;
         private readonly IGRYLog _Log;
         protected AuthenticationMiddleware(RequestDelegate next, IAuthenticationConfiguration authenticationConfiguration, IAuthenticationService authenticationService, IGRYLog log) : base(next)
         {
             this._AuthenticationConfiguration = authenticationConfiguration;
             this._AuthenticationProvider = this.GetAllAvailableAuthenticationProvider(authenticationConfiguration.AuthentificationMethods);
-            this._AuthenticationService = authenticationService;
             this._Log = log;
         }
 
@@ -95,7 +93,6 @@ namespace GRYLibrary.Core.APIServer.MidT.Auth
             bool result;
             if (this.TryGetAuthentication(context, out ClaimsPrincipal? principal, out string? accessToken))
             {
-                CommonDBTypes.User user = this._AuthenticationService.GetUserByAccessToken(accessToken);
                 context.User = principal!;
                 result = true;
                 principal = context.User;

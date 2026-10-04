@@ -11,5 +11,12 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
 
         /// <summary>The PKCE code verifier. Keep server-side; do not expose to the client.</summary>
         public string CodeVerifier { get; set; }
+
+        /// <summary>
+        /// The nonce included in the authorization URL. Keep it server-side next to the <see cref="CodeVerifier"/> and,
+        /// on callback, compare it against the <c>nonce</c>-claim of the id-token (available in
+        /// <see cref="OIDCTokenResult.Claims"/>), the same way the <see cref="State"/> is verified.
+        /// </summary>
+        public string Nonce { get; set; }
     }
 }

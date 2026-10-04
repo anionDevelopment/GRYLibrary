@@ -67,6 +67,34 @@ namespace GRYLibrary.Core.APIServer.Services.Database
             return this.GetParameter(parameterName, value, value!.GetType());
         }
 
+        private static readonly char[] ForbiddenMigrationNameCharacters = ['\'', '"', '`', ';', '\\', '\r', '\n', '\0'];
+
+        /// <summary>
+        /// Ensures that <paramref name="migrationTableName"/> is a plain identifier before it is interpolated into a statement.
+        /// The migration-table-name is not request-data, so this is a hardening-guard which turns a dangerous value into a
+        /// clear error instead of into a broken (or injected) statement.
+        /// </summary>
+        protected static void AssertMigrationTableNameIsSafe(string migrationTableName)
+        {
+            if (string.IsNullOrEmpty(migrationTableName) || !Regex.IsMatch(migrationTableName, "^[A-Za-z0-9_]+$"))
+            {
+                throw new ArgumentException($"The migration-table-name \"{migrationTableName}\" is not a valid identifier (only letters, digits and underscores are allowed).", nameof(migrationTableName));
+            }
+        }
+
+        /// <summary>
+        /// Ensures that <paramref name="migrationName"/> does not contain a character which would break out of the quoted
+        /// literal it is interpolated into (a quote, a semicolon, a backslash or a line-break). A valid migration-name
+        /// behaves exactly as before; only a name which would already have broken the statement is rejected.
+        /// </summary>
+        protected static void AssertMigrationNameIsSafe(string migrationName)
+        {
+            if (migrationName == null || migrationName.IndexOfAny(ForbiddenMigrationNameCharacters) >= 0)
+            {
+                throw new ArgumentException($"The migration-name \"{migrationName}\" contains a character which is not allowed (a quote, a semicolon, a backslash or a line-break).", nameof(migrationName));
+            }
+        }
+
         #region Connection-state
 
         private bool ThreadEnabled

@@ -38,13 +38,14 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
         /// <param name="provider">The provider configuration to authenticate against.</param>
         /// <param name="username">The end-user's username.</param>
         /// <param name="password">The end-user's plain-text password.</param>
+        [System.Obsolete("The resource-owner-password-credentials-grant is removed from the current OAuth-guidance because it makes the application handle the credentials of the identity-provider and rules out every protection which happens at the provider (second factor, risk-based checks, consent). Use the authorization-code-flow with PKCE (InitiateLoginAsync + ExchangeCodeAsync) instead.")]
         Task<OIDCPasswordLoginResult> LoginWithPasswordAsync(OIDCProviderConfiguration provider, string username, string password);
 
         /// <summary>
         /// Validates an access-token (a JWT that was issued by the provider) and returns its claims.
         /// Use this to authenticate subsequent requests that carry an OIDC-token instead of an application-local token:
-        /// the token's signature is verified against the provider's published keys (JWKS) and its issuer and lifetime are checked.
-        /// The audience is only checked if <see cref="OIDCProviderConfiguration.Audience"/> is set.
+        /// the token's signature is verified against the provider's published keys (JWKS) and its issuer, audience and lifetime are checked.
+        /// <see cref="OIDCProviderConfiguration.Audience"/> is required; validating without it throws.
         /// Throws an <see cref="System.Exception"/> (e.g. <see cref="Microsoft.IdentityModel.Tokens.SecurityTokenException"/>)
         /// if the token is invalid, expired or not issued by the provider.
         /// </summary>

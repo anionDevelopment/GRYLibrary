@@ -3,14 +3,15 @@
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <Authors>Marius Göcke</Authors>
-    <Version>2.1.3</Version>
-    <AssemblyVersion>2.1.3</AssemblyVersion>
-    <FileVersion>2.1.3</FileVersion>
+    <Version>2.1.4</Version>
+    <AssemblyVersion>2.1.4</AssemblyVersion>
+    <FileVersion>2.1.4</FileVersion>
     <SelfContained>false</SelfContained>
     <IsPackable>false</IsPackable>
     <PreserveCompilationContext>false</PreserveCompilationContext>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <NuGetAuditMode>all</NuGetAuditMode>
     <Copyright>Copyright © 2026 Marius Göcke</Copyright>
     <Description>GRYLibrary is a collection with some useful .NET classes and functions which are very easy (re)usable.</Description>
     <PackageProjectUrl>https://github.com/anionDevelopment/GRYLibrary</PackageProjectUrl>
@@ -32,7 +33,7 @@
     <AssemblyOriginatorKeyFile>..\..\Other\Resources\PublicKeys\StronglyNamedKey\GRYLibraryPublicKey.snk</AssemblyOriginatorKeyFile>
     <DelaySign>true</DelaySign>
     <NoWarn>1701;1702;CA1822;CS1591;CS1573;IDE0045;IDE0046;IDE0054;IDE0058;IDE0074;IDE0090;ASP0014;SYSLIB10;IDE0017;CS8002;CA1859;IDE0034;IDE0063;IDE0290</NoWarn>
-    <WarningsAsErrors>NU1605</WarningsAsErrors>
+    <WarningsAsErrors>NU1605;NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
     <ErrorLog>..\Other\Resources\CodeAnalysisResult\GRYLibrary.sarif</ErrorLog>
     <OutputType>Library</OutputType>
     <DocumentationFile>..\Other\Artifacts\MetaInformation\GRYLibrary.xml</DocumentationFile>
@@ -83,7 +84,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[10.0.3]" />
     <PackageReference Include="NJsonSchema" Version="[11.5.2]" />
     <PackageReference Include="NSwag.AspNetCore" Version="[14.6.3]" />
-    <PackageReference Include="System.Data.SqlClient" Version="[4.9.1]" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="[8.16.0]" />
     <PackageReference Include="System.Reactive" Version="[6.1.0]" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="[10.2.3]" />

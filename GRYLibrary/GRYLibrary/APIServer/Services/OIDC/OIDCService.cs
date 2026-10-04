@@ -36,6 +36,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
             string authorizationEndpoint = discovery.RootElement.GetProperty("authorization_endpoint").GetString()!;
 
             string state = this.GenerateRandomBase64Url(32);
+            string nonce = this.GenerateRandomBase64Url(32);
             string codeVerifier = this.GenerateRandomBase64Url(64);
             string codeChallenge = this.ComputeCodeChallenge(codeVerifier);
 
@@ -45,6 +46,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
                 + "&redirect_uri=" + Uri.EscapeDataString(provider.RedirectUri)
                 + "&scope=" + Uri.EscapeDataString(GetScope(provider))
                 + "&state=" + Uri.EscapeDataString(state)
+                + "&nonce=" + Uri.EscapeDataString(nonce)
                 + "&code_challenge=" + Uri.EscapeDataString(codeChallenge)
                 + "&code_challenge_method=S256";
 
@@ -53,6 +55,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
                 AuthorizationUrl = authorizationUrl,
                 State = state,
                 CodeVerifier = codeVerifier,
+                Nonce = nonce,
             };
         }
 
@@ -79,6 +82,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
         }
 
         /// <inheritdoc/>
+        [System.Obsolete("The resource-owner-password-credentials-grant is removed from the current OAuth-guidance because it makes the application handle the credentials of the identity-provider and rules out every protection which happens at the provider (second factor, risk-based checks, consent). Use the authorization-code-flow with PKCE (InitiateLoginAsync + ExchangeCodeAsync) instead.")]
         public async Task<OIDCPasswordLoginResult> LoginWithPasswordAsync(OIDCProviderConfiguration provider, string username, string password)
         {
             JsonDocument discovery = await this.FetchDiscoveryAsync(provider);
@@ -123,6 +127,10 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
         /// <inheritdoc/>
         public async Task<OIDCTokenResult> ValidateAccessTokenAsync(OIDCProviderConfiguration provider, string accessToken)
         {
+            if (string.IsNullOrWhiteSpace(provider.Audience))
+            {
+                throw new InvalidOperationException($"The OIDC-provider '{provider.Id}' has no audience configured. The audience of an access-token must be validated, otherwise any token which the same provider issued for another client would be accepted here. Set OIDCProviderConfiguration.Audience; an opt-out is intentionally not offered.");
+            }
             JsonDocument discovery = await this.FetchDiscoveryAsync(provider);
             IDictionary<string, string> claims = await this.ValidateJwtAndParseClaimsAsync(provider, discovery, accessToken, provider.Audience);
             return CreateTokenResult(claims);

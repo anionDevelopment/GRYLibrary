@@ -28,9 +28,10 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
 
         /// <summary>
         /// The audience that an incoming access-token must contain when it is validated on subsequent requests
-        /// (see <see cref="IOIDCService.ValidateAccessTokenAsync"/>). If <see langword="null"/> or empty,
-        /// the audience of incoming access-tokens is not validated (only issuer, signature and lifetime are checked).
-        /// This does not affect id-token-validation, whose audience is always the <see cref="ClientId"/>.
+        /// (see <see cref="IOIDCService.ValidateAccessTokenAsync"/>). This is required: validating an access-token
+        /// without a configured audience throws, because otherwise any token which the same provider issued for
+        /// another client would be accepted here. This does not affect id-token-validation, whose audience is always
+        /// the <see cref="ClientId"/>.
         /// </summary>
         public string? Audience { get; set; }
 

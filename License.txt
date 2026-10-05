@@ -14,4 +14,4 @@ Terms of use:
 -Neither you nor any of your users may intend to generate profit from the use of this product in any form.
 -You must not provide administrative access to any third-party individuals or organizations.
 -You may grant usage access to this product only to people within your organization or to private users for their personal use.
--You are allowed to implement changes in this product if you accept and comply the conditions defined the Contributor license agreement.
+-You are allowed to implement changes in this product if you accept and comply with the conditions defined in the Contributor License Agreement.

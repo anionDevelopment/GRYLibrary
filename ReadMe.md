@@ -6,7 +6,8 @@ GRYLibrary is a collection with some useful .NET classes and functions which are
 
 The GRYLibrary follows the declarative-programming-paradigm where possible:
 
-You should say what you want to do, and not how to do it. This paradigm results in code which is easy to understand and can be written very quickly without loosing the overview of your code.
+You should say what you want to do, and not how to do it.
+This paradigm results in code which is easy to understand and can be written very quickly without losing the overview of your code.
 
 ## Getting Started
 
@@ -26,46 +27,41 @@ The GRYLibrary-reference can be found [here](https://aniondev.github.io/GRYLibra
 
 ## OWASP-Top-10-analysis
 
-This section records the result of a security-analysis of this library against the
-[OWASP Top 10:2025](https://owasp.org/Top10/2025/), which is the current official release of that list. Every one of the ten
-categories is assessed explicitly.
+This section records the result of a security-analysis of this library against the [OWASP Top 10:2025](https://owasp.org/Top10/2025/), which is the current official release of that list.
+Every one of the ten categories is assessed explicitly.
 
-The analysed version is 2.1.3. The analysis is a review of the source-code; it is not a penetration-test, so a statement which
-could not be decided from the code is marked as an assumption instead of being claimed. The findings are stated from the point of
-view of a consumer: this library is not an application but the framework which its consumers build their api-server on, so a weak
-default here becomes a weakness in every product which uses it, and a security-control which the library does not offer is a
-control which no consumer has.
+The analysed version is 2.1.3.
+The analysis is a review of the source-code; it is not a penetration-test, so a statement which could not be decided from the code is marked as an assumption instead of being claimed.
+The findings are stated from the point of view of a consumer: this library is not an application but the framework which its consumers build their api-server on, so a weak default here becomes a weakness in every product which uses it, and a security-control which the library does not offer is a control which no consumer has.
 
-Each finding additionally carries a "Fixable without breaking changes"-line. It states whether the finding can be remediated in a
-way which is definitely not a breaking change for a consumer - that is: no behaviour-change when the library is used as intended,
-no additional configuration required and no interface-change. The verdict is one of "Yes", "No" or "Partial" ("Partial" means
-that one part of the recommended remediation is breaking-change-free while another part is not). It describes only the
-breaking-change-risk, not the severity or the effort of the fix.
+Each finding additionally carries a "Fixable without breaking changes"-line.
+It states whether the finding can be remediated in a way which is definitely not a breaking change for a consumer - that is: no behaviour-change when the library is used as intended, no additional configuration required and no interface-change.
+The verdict is one of "Yes", "No" or "Partial" ("Partial" means that one part of the recommended remediation is breaking-change-free while another part is not).
+It describes only the breaking-change-risk, not the severity or the effort of the fix.
 
-Each finding also carries a "State"-line which records how the finding is currently handled. Its value is one of "open" (not
-yet addressed), "fixed" (remediated in the meantime) or "accepted" (the risk is knowingly accepted and will not be fixed). The
-same state is repeated in the "Status"-column of the summary-table at the end of the section.
+Each finding also carries a "State"-line which records how the finding is currently handled.
+Its value is one of "open" (not yet addressed), "fixed" (remediated in the meantime) or "accepted" (the risk is knowingly accepted and will not be fixed).
+The same state is repeated in the "Status"-column of the summary-table at the end of the section.
 
 ### Scope
 
-The analysis concentrates on the parts which an api-server-consumer really runs, because those are the ones with an attack-
-surface:
+The analysis concentrates on the parts which an api-server-consumer really runs, because those are the ones with an attack-surface:
 
-| Area | Files | Relevance |
-| --- | --- | --- |
-| Pipeline-composition and hosting | `APIServer/APIServer.cs`, `APIServer/Settings/Configuration/ServerConfiguration.cs` | decides which middleware runs in which order, and configures kestrel and tls |
-| Authentication | `APIServer/MidT/Auth/AuthenticationMiddleware.cs`, `APIServer/Mid/AuthS/*` | decides for every request whether it is authenticated |
-| Authorization | `APIServer/MidT/Aut/AuthorizationMiddleware.cs`, `APIServer/Mid/AutS/*` | decides whether the caller may perform the operation |
-| Credential-transport | `APIServer/Services/CredH/*` | extracts the access-token from the request |
-| Authentication-services | `APIServer/Services/Trans/TransientAuthenticationService.cs`, `APIServer/CommonDBTypes/User.cs`, `APIServer/CommonAuthenticationTypes/AccessToken.cs` | the reference-implementation of login, password-handling and token-handling |
-| OpenID-Connect | `APIServer/Services/OIDC/*` | validates tokens of an external identity-provider |
-| Request-logging | `APIServer/Mid/M05DLog/*`, `APIServer/Mid/General/GeneralMiddleware.cs` | decides what of every request is written to a log-file |
-| Exception-handling | `APIServer/MidT/Exception/*`, `APIServer/Mid/Ex/*` | decides which status-code and which body a failed request gets |
-| Threat-protection | `APIServer/MidT/RateLimit/*`, `APIServer/MidT/WAF/*`, `APIServer/MidT/Obfuscation/*`, `APIServer/MidT/Captcha/*` | the security-controls the library offers |
-| Maintenance-routes | `APIServer/MaintenanceRoutes/*` | endpoints which every consumer exposes |
-| Data-access | `APIServer/Services/Database/*` | builds and executes the sql of its consumers |
-| Cryptography | `Crypto/*` | the primitives a consumer picks from |
-| Logging | `Logging/GRYLogger/*` | the facility a consumer builds its audit-log on |
+| Area                             | Files                                                                                                                                                 | Relevance                                                                    |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Pipeline-composition and hosting | `APIServer/APIServer.cs`, `APIServer/Settings/Configuration/ServerConfiguration.cs`                                                                   | decides which middleware runs in which order, and configures kestrel and tls |
+| Authentication                   | `APIServer/MidT/Auth/AuthenticationMiddleware.cs`, `APIServer/Mid/AuthS/*`                                                                            | decides for every request whether it is authenticated                        |
+| Authorization                    | `APIServer/MidT/Aut/AuthorizationMiddleware.cs`, `APIServer/Mid/AutS/*`                                                                               | decides whether the caller may perform the operation                         |
+| Credential-transport             | `APIServer/Services/CredH/*`                                                                                                                          | extracts the access-token from the request                                   |
+| Authentication-services          | `APIServer/Services/Trans/TransientAuthenticationService.cs`, `APIServer/CommonDBTypes/User.cs`, `APIServer/CommonAuthenticationTypes/AccessToken.cs` | the reference-implementation of login, password-handling and token-handling  |
+| OpenID-Connect                   | `APIServer/Services/OIDC/*`                                                                                                                           | validates tokens of an external identity-provider                            |
+| Request-logging                  | `APIServer/Mid/M05DLog/*`, `APIServer/Mid/General/GeneralMiddleware.cs`                                                                               | decides what of every request is written to a log-file                       |
+| Exception-handling               | `APIServer/MidT/Exception/*`, `APIServer/Mid/Ex/*`                                                                                                    | decides which status-code and which body a failed request gets               |
+| Threat-protection                | `APIServer/MidT/RateLimit/*`, `APIServer/MidT/WAF/*`, `APIServer/MidT/Obfuscation/*`, `APIServer/MidT/Captcha/*`                                      | the security-controls the library offers                                     |
+| Maintenance-routes               | `APIServer/MaintenanceRoutes/*`                                                                                                                       | endpoints which every consumer exposes                                       |
+| Data-access                      | `APIServer/Services/Database/*`                                                                                                                       | builds and executes the sql of its consumers                                 |
+| Cryptography                     | `Crypto/*`                                                                                                                                            | the primitives a consumer picks from                                         |
+| Logging                          | `Logging/GRYLogger/*`                                                                                                                                 | the facility a consumer builds its audit-log on                              |
 
 ### A01:2025 Broken Access Control
 
@@ -202,8 +198,7 @@ surface:
 
 ### A03:2025 Software Supply Chain Failures
 
-The positive part first: every nuget-dependency is pinned to an exact version with the bracket-notation, and the project keeps a
-lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
+The positive part first: every nuget-dependency is pinned to an exact version with the bracket-notation, and the project keeps a lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
 
 ~~**GRY-09 - A deprecated data-access-package is referenced**~~ (Medium, confirmed)
 
@@ -308,9 +303,7 @@ lock-file (`RestorePackagesWithLockFile`), so a restore resolves reproducibly.
 
 ### A05:2025 Injection
 
-No sql-injection was found in the data-access-layer: a command is built from a sql-text plus real `DbParameter`-objects which the
-concrete interactor creates (`GetParameter`), and the queries which the library executes itself against `information_schema` are
-constant texts with bound parameters.
+No sql-injection was found in the data-access-layer: a command is built from a sql-text plus real `DbParameter`-objects which the concrete interactor creates (`GetParameter`), and the queries which the library executes itself against `information_schema` are constant texts with bound parameters.
 
 ~~**GRY-15 - The migration-statements are assembled by string-interpolation**~~ (Low, confirmed)
 
@@ -545,9 +538,8 @@ constant texts with bound parameters.
   generated from a cryptographically strong source. It remains a deviation from what the specification asks for.
 - Recommendation: send a nonce, keep it next to the code-verifier and compare it against the claim of the id-token.
 
-Beyond the individual findings: the library has no password-policy, no password-change- or reset-flow, no failed-login-counter
-and no re-authentication for a sensitive operation. Every consumer therefore has to build those itself, which is why the products
-built on it regularly do not have them.
+Beyond the individual findings: the library has no password-policy, no password-change- or reset-flow, no failed-login-counter and no re-authentication for a sensitive operation.
+Every consumer therefore has to build those itself, which is why the products built on it regularly do not have them.
 
 ### A08:2025 Software or Data Integrity Failures
 
@@ -586,8 +578,8 @@ built on it regularly do not have them.
 
 ### A09:2025 Security Logging and Alerting Failures
 
-The good part first: request-headers are logged only when a consumer lists them explicitly in `LoggedHTTPRequeustHeader`, which
-is empty by default. The credential-header and a `password`-header are therefore not written to the log by default.
+The good part first: request-headers are logged only when a consumer lists them explicitly in `LoggedHTTPRequeustHeader`, which is empty by default.
+The credential-header and a `password`-header are therefore not written to the log by default.
 
 ~~**GRY-30 - The complete request- and response-body is written to the log-file for every request**~~ (High, confirmed)
 
@@ -658,14 +650,12 @@ is empty by default. The credential-header and a `password`-header are therefore
   distinguish "credentials are wrong" from "the check could not be performed", so that the second case can answer with a
   service-unavailable.
 
-The library also offers no notion of a security-event and no alerting-hook: a failed login, a refused authorization and a blocked
-request all end up in the ordinary log, so a consumer which wants to alert on them has to parse text.
+The library also offers no notion of a security-event and no alerting-hook: a failed login, a refused authorization and a blocked request all end up in the ordinary log, so a consumer which wants to alert on them has to parse text.
 
 ### A10:2025 Mishandling of Exceptional Conditions
 
-The default is sound in the most important respect: `DefaultExceptionHandlerMiddleware.GetExceptionResponceContent` returns an
-empty body, so no stack-trace and no exception-message reaches the client in any environment. A consumer which overrides it has
-to take care of that itself.
+The default is sound in the most important respect: `DefaultExceptionHandlerMiddleware.GetExceptionResponceContent` returns an empty body, so no stack-trace and no exception-message reaches the client in any environment.
+A consumer which overrides it has to take care of that itself.
 
 **GRY-34 - A security-decision is signalled as an exception and mapped by a separate, optional middleware** (Medium, confirmed)
 
@@ -738,17 +728,10 @@ to take care of that itself.
 
 ### Validation and test-coverage
 
-No test was found for any of the paths above: not for the decision of `AuthenticationIsRequired`, not for the route-allowlist,
-not for the authorization-middleware, not for the password-hashing or the login, not for the token-validity, not for the
-oidc-validation (audience, issuer, signature, expiry) and not for the body-logging. For a library whose purpose is to make these
-decisions for its consumers, that is the most important gap of this analysis: every finding above would be cheap to hold shut
-with a test, and without such tests a consumer has no way to tell which behaviour is intended and which is an accident.
+No test was found for any of the paths above: not for the decision of `AuthenticationIsRequired`, not for the route-allowlist, not for the authorization-middleware, not for the password-hashing or the login, not for the token-validity, not for the oidc-validation (audience, issuer, signature, expiry) and not for the body-logging.
+For a library whose purpose is to make these decisions for its consumers, that is the most important gap of this analysis: every finding above would be cheap to hold shut with a test, and without such tests a consumer has no way to tell which behaviour is intended and which is an accident.
 
-What is already sound and should be kept: the authorization-code-flow with pkce and s256, the state- and verifier-generation from
-`RandomNumberGenerator`, the full validation of issuer, signature and lifetime of a jwt against the discovery-document, the
-parameterized data-access-layer, the empty exception-response-body, the fact that request-headers are not logged by default, the
-secure default of `TrustForwardedHeader`, `AddServerHeader = false`, the thread-safe resource-loader which reads only embedded
-resources, and the exact pinning of every dependency together with a lock-file.
+What is already sound and should be kept: the authorization-code-flow with pkce and s256, the state- and verifier-generation from `RandomNumberGenerator`, the full validation of issuer, signature and lifetime of a jwt against the discovery-document, the parameterized data-access-layer, the empty exception-response-body, the fact that request-headers are not logged by default, the secure default of `TrustForwardedHeader`, `AddServerHeader = false`, the thread-safe resource-loader which reads only embedded resources, and the exact pinning of every dependency together with a lock-file.
 
 ### Prioritized remediation plan
 
@@ -772,45 +755,45 @@ resources, and the exact pinning of every dependency together with a lock-file.
 
 ### Summary of all findings
 
-| Id | OWASP-category | Affected component | Criticality | Confidence | Status |
-| --- | --- | --- | --- | --- | --- |
-| GRY-11 | A04 Cryptographic Failures | `TransientAuthenticationService.Hash` | Critical | confirmed | fixed |
-| GRY-01 | A01 Broken Access Control | `AuthenticationMiddleware.AuthenticationIsRequired` | High | confirmed | open |
-| GRY-03 | A01 Broken Access Control | `AutSRMiddleware.IsAuthorized`, `AutSAMiddleware.IsAuthorized` | High | confirmed | open |
-| GRY-12 | A04 Cryptographic Failures | `Crypto/Argon2`, `Crypto/GRYBCryptoSystem` | High | confirmed | fixed |
-| GRY-16 | A06 Insecure Design | `ExceptionManagerMiddleware`, `AuthSMiddleware`, `MaintenanceRoutesController` | High | confirmed | open |
-| GRY-17 | A06 Insecure Design | `MidT/RateLimit`, `MidT/WAF`, `MidT/Obfuscation`, `APIServer.cs` | High | confirmed | open |
-| GRY-23 | A07 Authentication Failures | `OIDCService.ValidateJwtAndParseClaimsAsync` | High | confirmed | fixed |
-| GRY-24 | A07 Authentication Failures | `AuthSMiddleware.TryGetOIDCAuthentication` | High | confirmed | open |
-| GRY-30 | A09 Security Logging and Alerting Failures | `DRequestLoggingMiddleware` | High | confirmed | fixed |
-| GRY-02 | A01 Broken Access Control | `AuthenticationMiddleware`, `DRequestLoggingMiddleware.IsIgnored` | Medium | confirmed | open |
-| GRY-04 | A01 Broken Access Control | `AuthorizationMiddleware.AuthorizationIsRequired` | Medium | confirmed | open |
-| GRY-05 | A01 Broken Access Control | `MaintenanceRoutesController` | Medium | confirmed | open |
-| GRY-06 | A02 Security Misconfiguration | `APIServer.cs` | Medium | confirmed | open |
-| GRY-07 | A02 Security Misconfiguration | `APIServer.cs` (kestrel-configuration) | Medium | confirmed | open |
-| GRY-09 | A03 Software Supply Chain Failures | `GRYLibrary.csproj` (`System.Data.SqlClient`) | Medium | confirmed | fixed |
-| GRY-13 | A04 Cryptographic Failures | `AccessToken`, `TransientAuthenticationService` | Medium | confirmed | open |
-| GRY-14 | A04 Cryptographic Failures | `OIDCService.FetchDiscoveryAsync`, `.FetchJwksAsync` | Medium | confirmed | open |
-| GRY-18 | A06 Insecure Design | `MFA/TOTP`, `User.CreateNewUser` | Medium | confirmed | open |
-| GRY-19 | A06 Insecure Design | `TransientAuthenticationService.Login`, `User` | Medium | confirmed | open |
-| GRY-20 | A06 Insecure Design | `APIServer.cs` (middleware-order) | Medium | confirmed | open |
-| GRY-21 | A06 Insecure Design | `OIDCService`, `AuthSMiddleware` | Medium | confirmed | open |
-| GRY-25 | A07 Authentication Failures | `AuthenticationMiddleware.IsAuthenticatedInternal`, `Tools.GetUser` | Medium | confirmed | fixed |
-| GRY-26 | A07 Authentication Failures | `HeaderService`, `HeaderTools`, `AuthSFilter` | Medium | confirmed | open |
-| GRY-28 | A08 Software or Data Integrity Failures | `Logging/GRYLogger` | Medium | confirmed | open |
-| GRY-31 | A09 Security Logging and Alerting Failures | `DRequestLoggingMiddleware.ShouldBeLogged` | Medium | confirmed | open |
-| GRY-32 | A09 Security Logging and Alerting Failures | `GeneralMiddleware` | Medium | confirmed | open |
-| GRY-33 | A09 Security Logging and Alerting Failures | `AuthSMiddleware` | Medium | confirmed | fixed |
-| GRY-34 | A10 Mishandling of Exceptional Conditions | `AuthenticationMiddleware`, `AuthorizationMiddleware`, `ExceptionManagerMiddleware` | Medium | confirmed | open |
-| GRY-35 | A10 Mishandling of Exceptional Conditions | `Tools.InitializationStateVisitor` | Medium | confirmed | open |
-| GRY-08 | A02 Security Misconfiguration | `APIServer.cs` (`AllowSynchronousIO`) | Low | confirmed | open |
-| GRY-10 | A03 Software Supply Chain Failures | `GRYLibrary.csproj` | Low | confirmed | fixed |
-| GRY-15 | A05 Injection | the database-interactors (migration-statements) | Low | confirmed | fixed |
-| GRY-22 | A06 Insecure Design | `OIDCService.LoginWithPasswordAsync` | Low | confirmed | fixed |
-| GRY-27 | A07 Authentication Failures | `OIDCService.InitiateLoginAsync` | Low | confirmed | fixed |
-| GRY-29 | A08 Software or Data Integrity Failures | `GRYLibrary.csproj` | Low | confirmed | fixed |
-| GRY-36 | A10 Mishandling of Exceptional Conditions | `GeneralMiddleware.GetIPAddress` | Low | confirmed | open |
-| GRY-37 | A10 Mishandling of Exceptional Conditions | several files on the authentication- and logging-path | Low | confirmed | open |
+| Id     | OWASP-category                             | Affected component                                                                  | Criticality | Confidence | Status |
+| ------ | ------------------------------------------ | ----------------------------------------------------------------------------------- | ----------- | ---------- | ------ |
+| GRY-11 | A04 Cryptographic Failures                 | `TransientAuthenticationService.Hash`                                               | Critical    | confirmed  | fixed  |
+| GRY-01 | A01 Broken Access Control                  | `AuthenticationMiddleware.AuthenticationIsRequired`                                 | High        | confirmed  | open   |
+| GRY-03 | A01 Broken Access Control                  | `AutSRMiddleware.IsAuthorized`, `AutSAMiddleware.IsAuthorized`                      | High        | confirmed  | open   |
+| GRY-12 | A04 Cryptographic Failures                 | `Crypto/Argon2`, `Crypto/GRYBCryptoSystem`                                          | High        | confirmed  | fixed  |
+| GRY-16 | A06 Insecure Design                        | `ExceptionManagerMiddleware`, `AuthSMiddleware`, `MaintenanceRoutesController`      | High        | confirmed  | open   |
+| GRY-17 | A06 Insecure Design                        | `MidT/RateLimit`, `MidT/WAF`, `MidT/Obfuscation`, `APIServer.cs`                    | High        | confirmed  | open   |
+| GRY-23 | A07 Authentication Failures                | `OIDCService.ValidateJwtAndParseClaimsAsync`                                        | High        | confirmed  | fixed  |
+| GRY-24 | A07 Authentication Failures                | `AuthSMiddleware.TryGetOIDCAuthentication`                                          | High        | confirmed  | open   |
+| GRY-30 | A09 Security Logging and Alerting Failures | `DRequestLoggingMiddleware`                                                         | High        | confirmed  | fixed  |
+| GRY-02 | A01 Broken Access Control                  | `AuthenticationMiddleware`, `DRequestLoggingMiddleware.IsIgnored`                   | Medium      | confirmed  | open   |
+| GRY-04 | A01 Broken Access Control                  | `AuthorizationMiddleware.AuthorizationIsRequired`                                   | Medium      | confirmed  | open   |
+| GRY-05 | A01 Broken Access Control                  | `MaintenanceRoutesController`                                                       | Medium      | confirmed  | open   |
+| GRY-06 | A02 Security Misconfiguration              | `APIServer.cs`                                                                      | Medium      | confirmed  | open   |
+| GRY-07 | A02 Security Misconfiguration              | `APIServer.cs` (kestrel-configuration)                                              | Medium      | confirmed  | open   |
+| GRY-09 | A03 Software Supply Chain Failures         | `GRYLibrary.csproj` (`System.Data.SqlClient`)                                       | Medium      | confirmed  | fixed  |
+| GRY-13 | A04 Cryptographic Failures                 | `AccessToken`, `TransientAuthenticationService`                                     | Medium      | confirmed  | open   |
+| GRY-14 | A04 Cryptographic Failures                 | `OIDCService.FetchDiscoveryAsync`, `.FetchJwksAsync`                                | Medium      | confirmed  | open   |
+| GRY-18 | A06 Insecure Design                        | `MFA/TOTP`, `User.CreateNewUser`                                                    | Medium      | confirmed  | open   |
+| GRY-19 | A06 Insecure Design                        | `TransientAuthenticationService.Login`, `User`                                      | Medium      | confirmed  | open   |
+| GRY-20 | A06 Insecure Design                        | `APIServer.cs` (middleware-order)                                                   | Medium      | confirmed  | open   |
+| GRY-21 | A06 Insecure Design                        | `OIDCService`, `AuthSMiddleware`                                                    | Medium      | confirmed  | open   |
+| GRY-25 | A07 Authentication Failures                | `AuthenticationMiddleware.IsAuthenticatedInternal`, `Tools.GetUser`                 | Medium      | confirmed  | fixed  |
+| GRY-26 | A07 Authentication Failures                | `HeaderService`, `HeaderTools`, `AuthSFilter`                                       | Medium      | confirmed  | open   |
+| GRY-28 | A08 Software or Data Integrity Failures    | `Logging/GRYLogger`                                                                 | Medium      | confirmed  | open   |
+| GRY-31 | A09 Security Logging and Alerting Failures | `DRequestLoggingMiddleware.ShouldBeLogged`                                          | Medium      | confirmed  | open   |
+| GRY-32 | A09 Security Logging and Alerting Failures | `GeneralMiddleware`                                                                 | Medium      | confirmed  | open   |
+| GRY-33 | A09 Security Logging and Alerting Failures | `AuthSMiddleware`                                                                   | Medium      | confirmed  | fixed  |
+| GRY-34 | A10 Mishandling of Exceptional Conditions  | `AuthenticationMiddleware`, `AuthorizationMiddleware`, `ExceptionManagerMiddleware` | Medium      | confirmed  | open   |
+| GRY-35 | A10 Mishandling of Exceptional Conditions  | `Tools.InitializationStateVisitor`                                                  | Medium      | confirmed  | open   |
+| GRY-08 | A02 Security Misconfiguration              | `APIServer.cs` (`AllowSynchronousIO`)                                               | Low         | confirmed  | open   |
+| GRY-10 | A03 Software Supply Chain Failures         | `GRYLibrary.csproj`                                                                 | Low         | confirmed  | fixed  |
+| GRY-15 | A05 Injection                              | the database-interactors (migration-statements)                                     | Low         | confirmed  | fixed  |
+| GRY-22 | A06 Insecure Design                        | `OIDCService.LoginWithPasswordAsync`                                                | Low         | confirmed  | fixed  |
+| GRY-27 | A07 Authentication Failures                | `OIDCService.InitiateLoginAsync`                                                    | Low         | confirmed  | fixed  |
+| GRY-29 | A08 Software or Data Integrity Failures    | `GRYLibrary.csproj`                                                                 | Low         | confirmed  | fixed  |
+| GRY-36 | A10 Mishandling of Exceptional Conditions  | `GeneralMiddleware.GetIPAddress`                                                    | Low         | confirmed  | open   |
+| GRY-37 | A10 Mishandling of Exceptional Conditions  | several files on the authentication- and logging-path                               | Low         | confirmed  | open   |
 
 ## Build
 

@@ -11,6 +11,17 @@ namespace GRYLibrary.Core.APIServer.Services.Database
 {
     public static class DBUtilities
     {
+        /// <summary>
+        /// Timeout in seconds of every statement which is run by <see cref="RunTransaction{T, ProjectSpecificDatabaseInteractor}"/> and also of the commit or
+        /// rollback which completes the transaction.
+        /// </summary>
+        /// <remarks>
+        /// It is deliberately high: on a system with slow or shared disks a commit has to wait until the database has flushed its write-ahead-log, and this
+        /// can take much longer than the usual default-timeout of 30 seconds of the database-providers. A timeout during a commit is especially bad because it
+        /// is undetermined afterwards whether the database applied the transaction or not.
+        /// </remarks>
+        public const int TransactionTimeoutInSeconds = 300;
+
         public static readonly IDictionary<string, GenericDatabaseInteractor> DatabaseInteractors = new Dictionary<string, GenericDatabaseInteractor>();
         public static GenericDatabaseInteractor ToGenericDatabaseInteractor(IDatabasePersistenceConfiguration databasePersistenceConfiguration, IGRYLog log)
         {
@@ -106,7 +117,7 @@ namespace GRYLibrary.Core.APIServer.Services.Database
                     using (DbCommand cmd = connection.CreateCommand())
                     {
                         cmd.CommandType = CommandType.Text;
-                        cmd.CommandTimeout = 300;
+                        cmd.CommandTimeout = TransactionTimeoutInSeconds;
                         if (runTransactional)
                         {
                             cmd.Transaction = transaction;
@@ -139,6 +150,26 @@ namespace GRYLibrary.Core.APIServer.Services.Database
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns the default command-timeout (in seconds) which a connection must have so that completing a transaction does not time out earlier than the
+        /// statements of the transaction do.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="DbTransaction.Commit"/> and <see cref="DbTransaction.Rollback"/> do not take a timeout: the database-providers (Npgsql and
+        /// MySqlConnector) use the default command-timeout of the connection for them, which is 30 seconds unless the connection-string says otherwise. The
+        /// timeout which <see cref="RunTransactionCore{T}"/> sets on its commands does not apply to them. A value which is already higher than
+        /// <see cref="TransactionTimeoutInSeconds"/> or which is 0 (no timeout) is kept, so a timeout which was configured explicitly is never shortened.
+        /// </remarks>
+        /// <param name="configuredTimeoutInSeconds">The default command-timeout which is configured in the connection-string.</param>
+        internal static int GetDefaultCommandTimeoutForConnection(int configuredTimeoutInSeconds)
+        {
+            if (configuredTimeoutInSeconds == 0)
+            {
+                return configuredTimeoutInSeconds;
+            }
+            return Math.Max(configuredTimeoutInSeconds, TransactionTimeoutInSeconds);
         }
 
         /// <summary>Completes <paramref name="transaction"/> by committing or rolling it back, depending on <paramref name="commit"/>.</summary>

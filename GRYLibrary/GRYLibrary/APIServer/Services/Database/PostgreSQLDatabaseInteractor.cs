@@ -78,7 +78,18 @@ WHERE schemaname NOT IN ('pg_catalog', 'information_schema');";
         }
         protected override DbConnection CreateNewConnectionObject(string connectionString)
         {
-            return new NpgsqlConnection(connectionString);
+            return new NpgsqlConnection(AdjustConnectionString(connectionString));
+        }
+
+        /// <summary>
+        /// Raises the default command-timeout of the connection-string to <see cref="DBUtilities.TransactionTimeoutInSeconds"/> (see
+        /// <see cref="DBUtilities.GetDefaultCommandTimeoutForConnection"/>), because Npgsql uses it as timeout for completing a transaction.
+        /// </summary>
+        internal static string AdjustConnectionString(string connectionString)
+        {
+            NpgsqlConnectionStringBuilder builder = new NpgsqlConnectionStringBuilder(connectionString);
+            builder.CommandTimeout = DBUtilities.GetDefaultCommandTimeoutForConnection(builder.CommandTimeout);
+            return builder.ConnectionString;
         }
         public override DbParameter GetParameter(string parameterName, object? value, Type type)
         {

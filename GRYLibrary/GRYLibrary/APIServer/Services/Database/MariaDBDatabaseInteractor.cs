@@ -76,7 +76,18 @@ insert into {migrationTableName}(MigrationName, ExecutionTimestamp) values ('{mi
 
         protected override DbConnection CreateNewConnectionObject(string connectionString)
         {
-            return new MySqlConnection(connectionString);
+            return new MySqlConnection(AdjustConnectionString(connectionString));
+        }
+
+        /// <summary>
+        /// Raises the default command-timeout of the connection-string to <see cref="DBUtilities.TransactionTimeoutInSeconds"/> (see
+        /// <see cref="DBUtilities.GetDefaultCommandTimeoutForConnection"/>), because MySqlConnector uses it as timeout for completing a transaction.
+        /// </summary>
+        internal static string AdjustConnectionString(string connectionString)
+        {
+            MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder(connectionString);
+            builder.DefaultCommandTimeout = (uint)DBUtilities.GetDefaultCommandTimeoutForConnection((int)builder.DefaultCommandTimeout);
+            return builder.ConnectionString;
         }
         public override DbParameter GetParameter(string parameterName, object? value, Type type)
         {

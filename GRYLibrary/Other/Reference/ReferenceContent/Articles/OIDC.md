@@ -2,16 +2,14 @@
 
 ## Description
 
-The GRYLibrary provides functionality to add [OpenID Connect (OIDC)](https://openid.net/developers/how-connect-works/)
-as an alternative login-mechanism to an application that is built as a web-API with the GRYLibrary.
+The GRYLibrary provides functionality to add [OpenID Connect (OIDC)](https://openid.net/developers/how-connect-works/) as an alternative login-mechanism to an application that is built as a web-API with the GRYLibrary.
 
 The idea is a clean separation of responsibilities:
 
 - The application only supplies the *configuration* of the OIDC-provider (for example a [Keycloak](https://www.keycloak.org/)-server).
 - The GRYLibrary implements the actual protocol: it talks to the provider, performs the login and validates the tokens.
 
-The functionality is exposed by the injectable service `IOIDCService`
-(namespace `GRYLibrary.Core.APIServer.Services.OIDC`) and its default-implementation `OIDCService`.
+The functionality is exposed by the injectable service `IOIDCService` (namespace `GRYLibrary.Core.APIServer.Services.OIDC`) and its default-implementation `OIDCService`.
 
 ## Provider-configuration
 
@@ -31,8 +29,7 @@ OIDCProviderConfiguration provider = new OIDCProviderConfiguration
 };
 ```
 
-The application typically reads these values from its own configuration-file so that a deployment can point the
-application at its own OIDC-provider without any code-change.
+The application typically reads these values from its own configuration-file so that a deployment can point the application at its own OIDC-provider without any code-change.
 
 ## Registration
 
@@ -46,13 +43,14 @@ The application keeps ownership of the `OIDCProviderConfiguration`-values and pa
 
 ## The two login-flows
 
-The GRYLibrary supports two different ways to log a user in. They solve different use-cases.
+The GRYLibrary supports two different ways to log a user in.
+They solve different use-cases.
 
 ### 1. Authorization-code-flow with PKCE (recommended)
 
-This is the standard, recommended browser-based flow. The user's password is entered *at the provider* and is never
-seen by the application. It supports multi-factor-authentication, consent-screens and social-logins, because the whole
-interactive login happens on the provider's login-page.
+This is the standard, recommended browser-based flow.
+The user's password is entered *at the provider* and is never seen by the application.
+It supports multi-factor-authentication, consent-screens and social-logins, because the whole interactive login happens on the provider's login-page.
 
 The flow works like this:
 
@@ -77,17 +75,15 @@ Use this flow whenever the login happens in a browser and you can redirect the u
 
 ### 2. Password-flow (resource-owner-password-credentials)
 
-The password-flow lets an application keep its existing classic `username`/`password`-login-form but delegate the
-credential-check to the OIDC-provider. When OIDC is used, the application's own login-implementation forwards the
-received credentials to the GRYLibrary, which authenticates them against the provider and returns the resulting token:
+The password-flow lets an application keep its existing classic `username`/`password`-login-form but delegate the credential-check to the OIDC-provider.
+When OIDC is used, the application's own login-implementation forwards the received credentials to the GRYLibrary, which authenticates them against the provider and returns the resulting token:
 
 ```csharp
 OIDCPasswordLoginResult result = await oidcService.LoginWithPasswordAsync(provider, username, password);
 // result.AccessToken is the token issued by the provider; return it to the client.
 ```
 
-`OIDCPasswordLoginResult` contains the `AccessToken`, optionally a `RefreshToken` and `IdToken`, the lifetime
-(`ExpiresInSeconds`) and — if an id-token was returned — the validated `Subject` and further claims.
+`OIDCPasswordLoginResult` contains the `AccessToken`, optionally a `RefreshToken` and `IdToken`, the lifetime (`ExpiresInSeconds`) and — if an id-token was returned — the validated `Subject` and further claims.
 
 A login-implementation can therefore branch like this:
 
@@ -115,15 +111,12 @@ public AccessToken Login(string userName, string password)
 
 The password-flow above is the OAuth-2.0 "resource-owner-password-credentials"-grant, usually abbreviated **ROPC**.
 
-**What it is:** Instead of redirecting the user to the provider's login-page, the application collects the `username`
-and `password` itself and sends them directly to the provider's token-endpoint (`grant_type=password`). The provider
-checks the credentials and, if they are correct, returns the tokens.
+**What it is:** Instead of redirecting the user to the provider's login-page, the application collects the `username` and `password` itself and sends them directly to the provider's token-endpoint (`grant_type=password`).
+The provider checks the credentials and, if they are correct, returns the tokens.
 
-**Which use-case it is for:** It exists for the situation where an application already has a classic username/password
-login-form and wants to delegate the credential-check to a central identity-provider **without changing that form or
-adding a browser-redirect**. In other words: the user-experience stays exactly the same (enter username and password in
-the application), but the identity is verified by the OIDC-provider instead of a local user-database. This is exactly
-the case this article's password-flow addresses.
+**Which use-case it is for:** It exists for the situation where an application already has a classic username/password login-form and wants to delegate the credential-check to a central identity-provider **without changing that form or adding a browser-redirect**.
+In other words: the user-experience stays exactly the same (enter username and password in the application), but the identity is verified by the OIDC-provider instead of a local user-database.
+This is exactly the case this article's password-flow addresses.
 
 **Consequences you must be aware of:**
 
@@ -137,17 +130,15 @@ the case this article's password-flow addresses.
 - The provider's client must explicitly allow this grant. In Keycloak this is the setting **"Direct Access Grants
   Enabled"** on the client. For a confidential client you additionally have to configure the `ClientSecret`.
 
-In short: prefer the authorization-code-flow. Use the password-flow only when you deliberately want to keep a classic
-login-form and delegate only the credential-verification to the provider, and when the application is trusted with the
-password.
+In short: prefer the authorization-code-flow.
+Use the password-flow only when you deliberately want to keep a classic login-form and delegate only the credential-verification to the provider, and when the application is trusted with the password.
 
 ## Authenticating subsequent requests with an OIDC-token
 
-After a login via OIDC, the client sends the provider's access-token (a JWT) with each subsequent request. The
-authentication-middleware (`AuthSMiddleware`) can validate such a token in addition to application-local tokens.
+After a login via OIDC, the client sends the provider's access-token (a JWT) with each subsequent request.
+The authentication-middleware (`AuthSMiddleware`) can validate such a token in addition to application-local tokens.
 
-This is enabled by registering an `IOIDCAuthenticationConfiguration` (besides `AddOIDC()`), which lists the providers
-whose tokens are accepted:
+This is enabled by registering an `IOIDCAuthenticationConfiguration` (besides `AddOIDC()`), which lists the providers whose tokens are accepted:
 
 ```csharp
 services.AddOIDC();
@@ -165,8 +156,8 @@ With this registration in place, `AuthSMiddleware` behaves as follows for every 
    audience, if `OIDCProviderConfiguration.Audience` is set). On success the request is authenticated and a principal is
    built from the token's claims (the `sub`-claim becomes the user-identifier).
 
-If neither an `IOIDCService` nor an `IOIDCAuthenticationConfiguration` is registered, only application-local tokens are
-accepted and the behaviour is unchanged. This makes the OIDC-token-validation strictly opt-in.
+If neither an `IOIDCService` nor an `IOIDCAuthenticationConfiguration` is registered, only application-local tokens are accepted and the behaviour is unchanged.
+This makes the OIDC-token-validation strictly opt-in.
 
 You can also call `ValidateAccessTokenAsync` directly if you need to validate an OIDC-token yourself:
 
@@ -176,14 +167,14 @@ OIDCTokenResult result = await oidcService.ValidateAccessTokenAsync(provider, in
 
 ### Mapping the OIDC-identity to a local user
 
-Authentication (who the user is) is handled by the GRYLibrary. Authorization (what the user is allowed to do) usually
-depends on the application's own roles and user-records. Because the GRYLibrary cannot know how an external identity maps
-to a local user, the application stays responsible for that mapping. The recommended approach is:
+Authentication (who the user is) is handled by the GRYLibrary.
+Authorization (what the user is allowed to do) usually depends on the application's own roles and user-records.
+Because the GRYLibrary cannot know how an external identity maps to a local user, the application stays responsible for that mapping.
+The recommended approach is:
 
 - On the first successful OIDC-login, provision a local user that is keyed by the OIDC-`Subject` (the `sub`-claim), and
   assign it the roles the application needs.
 - Make the application's authentication-service resolve that local user for the OIDC-token so that role-based
   authorization keeps working the same way as for local users.
 
-This keeps the whole authorization-model of the application unchanged while OIDC is used only as an alternative way to
-prove the user's identity.
+This keeps the whole authorization-model of the application unchanged while OIDC is used only as an alternative way to prove the user's identity.

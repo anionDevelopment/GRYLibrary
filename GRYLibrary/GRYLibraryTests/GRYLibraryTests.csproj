@@ -11,6 +11,7 @@
     <PreserveCompilationContext>false</PreserveCompilationContext>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <NuGetAuditMode>all</NuGetAuditMode>
     <Copyright>Copyright © 2026 Marius Göcke</Copyright>
     <Description>GRYLibraryTests is the test-project for GRYLibrary.</Description>
     <PackageProjectUrl>https://github.com/anionDevelopment/GRYLibrary</PackageProjectUrl>

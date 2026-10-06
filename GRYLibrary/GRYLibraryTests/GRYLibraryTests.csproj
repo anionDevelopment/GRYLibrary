@@ -3,14 +3,15 @@
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <Authors>Marius Göcke</Authors>
-    <Version>2.1.4</Version>
-    <AssemblyVersion>2.1.4</AssemblyVersion>
-    <FileVersion>2.1.4</FileVersion>
+    <Version>2.1.5</Version>
+    <AssemblyVersion>2.1.5</AssemblyVersion>
+    <FileVersion>2.1.5</FileVersion>
     <SelfContained>false</SelfContained>
     <IsPackable>false</IsPackable>
     <PreserveCompilationContext>false</PreserveCompilationContext>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <NuGetAuditMode>all</NuGetAuditMode>
     <Copyright>Copyright © 2026 Marius Göcke</Copyright>
     <Description>GRYLibraryTests is the test-project for GRYLibrary.</Description>
     <PackageProjectUrl>https://github.com/anionDevelopment/GRYLibrary</PackageProjectUrl>

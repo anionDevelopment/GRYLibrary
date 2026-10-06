@@ -35,6 +35,7 @@
     ]
   },
   "settings": {
+    "dotnet.defaultSolution": "GRYLibrary/GRYLibrary.sln",
     "terminal.integrated.cwd": "${workspaceFolder}",
     "window.title": "${dirty} ${rootName}",
     "spellright.documentTypes": [

@@ -34,11 +34,11 @@ namespace GRYLibrary.Core.Misc
                 string line = rawLine.Trim();
                 if (line.Contains(' '))
                 {
-                    string[] splitted = line.Split(' ');
-                    int amountOfWhitespaces = splitted.Length - 1;
+                    string[] parts = line.Split(' ');
+                    int amountOfWhitespaces = parts.Length - 1;
                     if (0 < amountOfWhitespaces)
                     {
-                        string rawPath = splitted[1];
+                        string rawPath = parts[1];
                         if (rawPath.Contains("..") || rawPath == "./")
                         {
                             continue;
@@ -100,7 +100,7 @@ namespace GRYLibrary.Core.Misc
                 ExecuteGitCommand(repositoryFolder, $"repack -a -d -n --max-pack-size=10m", true, writeOutputToConsole: writeOutputToConsole);
             }
         }
-        public static bool GitRepositoryContainsFiles(string repositoryFolder, out ISet<string> missingFiles, IEnumerable<Tuple<string/*file*/, ISet<string>/*aliase*/>> fileLists)
+        public static bool GitRepositoryContainsFiles(string repositoryFolder, out ISet<string> missingFiles, IEnumerable<Tuple<string/*file*/, ISet<string>/*aliases*/>> fileLists)
         {
             missingFiles = new HashSet<string>();
             foreach (Tuple<string, ISet<string>> file in fileLists)
@@ -150,8 +150,8 @@ namespace GRYLibrary.Core.Misc
             {
                 if (line.Contains('/'))
                 {
-                    string[] splitted = line.Split(_Separators, 2);
-                    return new Tuple<string, string>(splitted[0].Trim(), splitted[1].Trim());
+                    string[] parts = line.Split(_Separators, 2);
+                    return new Tuple<string, string>(parts[0].Trim(), parts[1].Trim());
                 }
                 else
                 {
@@ -301,7 +301,7 @@ namespace GRYLibrary.Core.Misc
         /// <param name="printErrorsAsInformation">
         /// Represents a value which indicates if the git-output which goes to stderr should be treated as stdout.
         /// The default-value is true since even if no error occurs git write usual information to stderr.
-        /// If really an error occures (=the exit-code of git is not 0) then this function throws an exception
+        /// If really an error occurs (=the exit-code of git is not 0) then this function throws an exception
         /// </param>
         public static void GitFetch(string repositoryFolder, string remoteName = "--all", bool printErrorsAsInformation = true, bool writeOutputToConsole = false)
         {
@@ -372,7 +372,7 @@ namespace GRYLibrary.Core.Misc
             return false;
         }
         /// <remarks>
-        /// <paramref name="revision"/> can be all kinds of revision-labels, for example "HEAD" or branch-names (e. g. "master") oder revision-ids (e. g. "a1b2c3b4").
+        /// <paramref name="revision"/> can be all kinds of revision-labels, for example "HEAD" or branch-names (e. g. "master") or revision-ids (e. g. "a1b2c3b4").
         /// </remarks>
         public static int GetAmountOfCommitsInGitRepository(string repositoryFolder, string revision = "HEAD")
         {
@@ -385,7 +385,7 @@ namespace GRYLibrary.Core.Misc
         }
 
         /// <remarks>
-        /// <paramref name="ancestor"/> and <paramref name="descendant"/> can be all kinds of revision-labels, for example "HEAD" or branch-names (e. g. "master") oder revision-ids (e. g. "a1b2c3b4").
+        /// <paramref name="ancestor"/> and <paramref name="descendant"/> can be all kinds of revision-labels, for example "HEAD" or branch-names (e. g. "master") or revision-ids (e. g. "a1b2c3b4").
         /// </remarks>
         public static bool IsGitCommitAncestor(string repositoryFolder, string ancestor, string descendant = "HEAD")
         {

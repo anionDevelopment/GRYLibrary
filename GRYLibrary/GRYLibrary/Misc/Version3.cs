@@ -93,12 +93,12 @@ namespace GRYLibrary.Core.Misc
 
         public static Version3 Parse(string applicationVersion)
         {
-            string[] splitted = applicationVersion.Split('.');
-            if (splitted.Length != 3)
+            string[] parts = applicationVersion.Split('.');
+            if (parts.Length != 3)
             {
                 throw new ArgumentException($"'{applicationVersion}' is not a valid {nameof(Version3)}-value because it does not consist of exactly 3 parts.", nameof(applicationVersion));
             }
-            return new Version3(ulong.Parse(splitted[0]), ulong.Parse(splitted[1]), ulong.Parse(splitted[2]));
+            return new Version3(ulong.Parse(parts[0]), ulong.Parse(parts[1]), ulong.Parse(parts[2]));
         }
     }
 }

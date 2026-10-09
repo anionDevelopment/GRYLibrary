@@ -15,7 +15,7 @@ namespace GRYLibrary.Tests.Testcases
         public void TestLogProgress()
         {
             GRYLog logObject = GRYLog.Create();
-            logObject.Configuration.Initliaze();
+            logObject.Configuration.Initialize();
             logObject.Configuration.StoreProcessedLogItemsInternally = true;
             logObject.LogProgress(0, 4);
             logObject.LogProgress(3, 122);
@@ -34,7 +34,7 @@ namespace GRYLibrary.Tests.Testcases
             System.Console.SetOut(stringWriter);
 
             GRYLog logObject = GRYLog.Create();
-            logObject.Configuration.Initliaze();
+            logObject.Configuration.Initialize();
             Console logTarget = new Console
             {
                 Format = GRYLogLogFormat.GRYLogFormat

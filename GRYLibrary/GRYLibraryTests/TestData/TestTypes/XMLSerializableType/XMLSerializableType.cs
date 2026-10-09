@@ -13,7 +13,7 @@ namespace GRYLibrary.Tests.TestData.TestTypes.XMLSerializableType
     public class XMLSerializableType : IXmlSerializable
     {
         public XMLSerializableType() { }
-        public CycleA Cyle { get; set; }
+        public CycleA Cycle { get; set; }
         public SimpleDataStructure1 SimpleDataStructure1 { get; set; }
         public GenericType<int> GenericInt { get; set; }
         public GenericType<SimpleDataStructure1> GenericSimpleDataStructure1 { get; set; }
@@ -21,7 +21,7 @@ namespace GRYLibrary.Tests.TestData.TestTypes.XMLSerializableType
         {
             XMLSerializableType result = new()
             {
-                Cyle = CycleA.GetRandom(),
+                Cycle = CycleA.GetRandom(),
                 SimpleDataStructure1 = SimpleDataStructure1.GetRandom(),
                 GenericInt = new GenericType<int>()
                 {

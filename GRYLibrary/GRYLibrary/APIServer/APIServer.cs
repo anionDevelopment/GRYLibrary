@@ -200,11 +200,11 @@ namespace GRYLibrary.Core.APIServer
         #region Create or load config-file
 
         private static IPersistedAPIServerConfiguration<PersistedAppSpecificConfiguration> LoadConfiguration<PersistedAppSpecificConfiguration>(
-            ISet<Type> knownTypes, GRYEnvironment evironment, ExecutionMode executionMode, string configurationFile, bool throwErrorIfConfigurationDoesNotExistInProduction,
+            ISet<Type> knownTypes, GRYEnvironment environment, ExecutionMode executionMode, string configurationFile, bool throwErrorIfConfigurationDoesNotExistInProduction,
             PersistedAPIServerConfiguration<PersistedAppSpecificConfiguration> initialConfiguration, out bool fileWasCreatedNew)
                 where PersistedAppSpecificConfiguration : new()
         {
-            if (throwErrorIfConfigurationDoesNotExistInProduction && evironment is Productive && !File.Exists(configurationFile))
+            if (throwErrorIfConfigurationDoesNotExistInProduction && environment is Productive && !File.Exists(configurationFile))
             {
                 throw new FileNotFoundException($"Configurationfile \"{configurationFile}\" does not exist.");
             }

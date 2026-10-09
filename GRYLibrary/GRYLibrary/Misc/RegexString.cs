@@ -20,7 +20,7 @@ namespace GRYLibrary.Core.Misc
                 }
                 else
                 {
-                    throw new ArgumentException($"Value \"{this._Value}\" is not assignable because it does not match the regex \"{this._Regex}\".");
+                    throw new ArgumentException($"Value \"{value}\" is not assignable because it does not match the regex \"{this._Regex}\".");
                 }
             }
         }

@@ -35,6 +35,7 @@ namespace GRYLibrary.Core.APIServer.Utilities
             this._ResetDatabaseScript = resetDatabaseScript;
             this._Log = log;
             this._TestDatabaseFolder = testDatabaseFolder;
+            this.ConnectionString = configuration.DatabaseConnectionString;
             this.IsConnected = false;
             bool containerStarted = false;
             try

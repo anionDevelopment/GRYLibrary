@@ -10,7 +10,7 @@ namespace GRYLibrary.Core.Crypto
     {
         #region AES
         private const int _IVLength = 16;
-#pragma warning disable SYSLIB0022 // Typ oder Element ist veraltet
+#pragma warning disable SYSLIB0022 // Type or member is obsolete
         private const int _AESBlockLength = 16;
 
         /// <inheritdoc/>
@@ -120,7 +120,7 @@ namespace GRYLibrary.Core.Crypto
         {
             return Utilities.PadLeft(System.Text.Encoding.ASCII.GetBytes(nameof(AES256)), 10);
         }
-#pragma warning restore SYSLIB0022 // Typ oder Element ist veraltet
+#pragma warning restore SYSLIB0022 // Type or member is obsolete
         #endregion
     }
 }

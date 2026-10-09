@@ -22,7 +22,7 @@ namespace GRYLibrary.Core.Misc
     /// </remarks>
     internal/*Internal because implementation not tested yet*/ sealed class RedundantIdler
     {
-        //TODO change the identification for first/second intance to a system that does not compare process-names:
+        //TODO change the identification for first/second instance to a system that does not compare process-names:
         //If you start MyProgram.exe twice manually then both of them should run independently and have their own backup-instance.
         private RedundantIdler() { }
 

@@ -89,7 +89,7 @@ namespace GRYLibrary.Core.Logging.GRYLogger
             this.EventId = 101;
             this.Category = 1;
             this.Moment = moment;
-            this.DefaultConfigurationGRYLogConfiguration.Initliaze();
+            this.DefaultConfigurationGRYLogConfiguration.Initialize();
         }
         #endregion 
         public void Format(IGRYLogConfiguration configuration, out string formattedMessage, out int colorBegin, out int colorEnd, out ConsoleColor consoleColor, GRYLogLogFormat format)

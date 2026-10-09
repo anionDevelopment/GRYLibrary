@@ -50,7 +50,7 @@ namespace GRYLibrary.Core.APIServer.MidT.Auth
             {
                 return true;
             }
-            if (this.TryGetAuthorizeAttribute(context, out AuthorizeAttribute _))//this check is here because authorization can not be checked when authentication is not given. this implies that if authorization if rewuired, then authentication is required too.
+            if (this.TryGetAuthorizeAttribute(context, out AuthorizeAttribute _))//this check is here because authorization can not be checked when authentication is not given. this implies that if authorization is required, then authentication is required too.
             {
                 return true;
             }

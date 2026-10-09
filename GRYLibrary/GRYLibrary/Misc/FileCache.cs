@@ -19,11 +19,11 @@ namespace GRYLibrary.Core.Misc
         {
             foreach (string line in File.ReadLines(this.CacheFile, this.Encoding))
             {
-                string[] splitted = line.Split(';');
+                string[] parts = line.Split(';');
                 TKey tkey = new TKey();
-                tkey.DeserializeFromString(splitted[0]);
+                tkey.DeserializeFromString(parts[0]);
                 TValue tvalue = new TValue();
-                tvalue.DeserializeFromString(splitted[1]);
+                tvalue.DeserializeFromString(parts[1]);
                 this.Cache[tkey] = tvalue;
             }
         }

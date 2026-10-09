@@ -64,7 +64,7 @@ namespace GRYLibrary.Core.Misc
                     {
                         Identifier = (NonTerminalSymbol)state.Rule.Expected.First(),
                         Substituted = [],
-                        Expected = rule.Subsitution,
+                        Expected = rule.Substitution,
                     },
                     J = k,
                 });
@@ -144,7 +144,7 @@ namespace GRYLibrary.Core.Misc
         public class ProductionRule
         {
             public NonTerminalSymbol Identifier;
-            public List<Symbol> Subsitution;
+            public List<Symbol> Substitution;
         }
     }
 }

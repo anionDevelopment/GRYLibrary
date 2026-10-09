@@ -1,0 +1,5 @@
+[codespell]
+# ".gitignore" is the standard Visual Studio template (patterns like "[Rr]elease" and the tool-name "Paket"); the listed changelog-files quote corrected misspellings on purpose. ".codespellrc" itself is skipped because its comments name these false positives.
+skip = ./.codespellrc,./GRYLibrary/.gitignore,./Other/Resources/Changelog/v2.0.30.md,./Other/Resources/Changelog/v2.1.6.md
+# "FO" is the XML-element-name of FlatComplexObject; changing it would break existing serialized data.
+ignore-words-list = fo

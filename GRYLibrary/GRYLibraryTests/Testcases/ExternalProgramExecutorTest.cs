@@ -78,7 +78,7 @@ namespace GRYLibrary.Tests.Testcases
             //arrange
             using TemporaryDirectory temporaryDirectory = new();
             GRYLog logObject = GRYLog.Create();
-            logObject.Configuration.Initliaze();
+            logObject.Configuration.Initialize();
             logObject.Configuration.StoreProcessedLogItemsInternally = true;
             // On Windows "echo" is a built-in cmd-command and not an executable, so the test relies on "echo2" (a program which is expected to be available on developer-machines; see Hints.md).
             // On Linux and macOS the regular "echo"-executable is used.

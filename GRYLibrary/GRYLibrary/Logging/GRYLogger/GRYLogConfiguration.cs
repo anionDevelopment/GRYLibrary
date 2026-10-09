@@ -32,7 +32,7 @@ namespace GRYLibrary.Core.Logging.GRYLogger
 
         public void AddLogLevel(LogLevel debug);
         public LoggedMessageTypeConfiguration GetLoggedMessageTypesConfigurationByLogLevel(LogLevel logLevel);
-        public void Initliaze();
+        public void Initialize();
         public void SetEnabledOfAllLogTargets(bool writeOutputToConsole);
     }
     /// <inheritdoc cref="IGRYLogConfiguration"/>
@@ -55,11 +55,11 @@ namespace GRYLibrary.Core.Logging.GRYLogger
         {
             if (initializeWithDefaultValues)
             {
-                this.Initliaze();
+                this.Initialize();
             }
         }
 
-        public void Initliaze()
+        public void Initialize()
         {
             this.LogTargets = [
                 new Console() { Enabled = true, Format = GRYLogLogFormat.OnlyMessage },

@@ -12,5 +12,3 @@
 - [ExternalProgramExecutorWrapper](./Articles/ExternalProgramExecutorWrapper.md)
 - [GRYLog](./Articles/GRYLog.md)
 - [SimpleGenericXMLSerializer](./Articles/SimpleGenericXMLSerializer.md)
-- [WebAPI security findings](./Articles/WebAPISecurityFindings.md)
-- [Open issues](./Articles/OpenIssues.md)

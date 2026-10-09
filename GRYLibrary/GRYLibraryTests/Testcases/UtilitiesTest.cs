@@ -911,6 +911,11 @@ namespace GRYLibrary.Tests.Testcases
                 Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:\Y\Z.mp3"));
                 Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:/Y/Z"));
                 Assert.IsTrue(GUtilities.IsAbsoluteLocalFilePath(@"X:/Y/Z.mp3"));
+                // Drive-relative paths (like "X:Y") are neither absolute nor relative to the current working directory.
+                Assert.Throws<NotSupportedException>(() => GUtilities.IsAbsoluteLocalFilePath(@"X:"));
+                Assert.Throws<NotSupportedException>(() => GUtilities.IsAbsoluteLocalFilePath(@"X:Y"));
+                Assert.Throws<NotSupportedException>(() => GUtilities.IsAbsoluteLocalFilePath(@"X:YZ.log"));
+                Assert.Throws<NotSupportedException>(() => GUtilities.IsRelativeLocalFilePath(@"X:YZ.log"));
             }
             else
             {

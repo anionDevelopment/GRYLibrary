@@ -243,7 +243,7 @@ namespace GRYLibrary.Core.Misc
         /// <remarks>
         /// For performance-reasons this function will be reduced to a string-representation comparison.
         /// For this reason it is required to specify a <paramref name="serializableFunction"/> thich returns a string-representation for a list-item.
-        /// It is also required to pass a <paramref name="separator"/> which will never occurr in any string-representation of any list-item.
+        /// It is also required to pass a <paramref name="separator"/> which will never occur in any string-representation of any list-item.
         /// </remarks>
         /// <returns>
         /// Returns true if and only if the given <paramref name="subList"/> is contained in <paramref name="list"/> in the correct order.
@@ -1683,9 +1683,15 @@ namespace GRYLibrary.Core.Misc
 
                     bool isInvalid = c1 || c2 || c3 || c4;
 
+                    bool isDriveRelative = colonCount == 1 && this._Path.Length > 1 && this._Path[1] == ':' && (this._Path.Length == 2 || (this._Path[2] != '\\' && this._Path[2] != '/'));
+
                     if (isInvalid)
                     {
                         throw new ArgumentException($"'{this._Path}' is invalid as path.");
+                    }
+                    else if (isDriveRelative)
+                    {
+                        throw new NotSupportedException($"Drive-relative paths like '{this._Path}' are not supported. Use a fully qualified path (like '{this._Path[..2]}\\...') or a path relative to the current working directory instead.");
                     }
                     else
                     {
@@ -3241,28 +3247,28 @@ namespace GRYLibrary.Core.Misc
             {
                 return input;
             }
-            char[] splitted = input.ToCharArray();
+            char[] characters = input.ToCharArray();
             char lastChar = default;
-            for (int i = 0; i < splitted.Length; i++)
+            for (int i = 0; i < characters.Length; i++)
             {
                 if (i == 0)
                 {
-                    splitted[i] = splitted[i].ToString().ToUpper().First();
+                    characters[i] = characters[i].ToString().ToUpper().First();
                 }
                 if (i > 0)
                 {
                     if (printCharUppercaseDependentOnPreviousChar(lastChar))
                     {
-                        splitted[i] = splitted[i].ToString().ToUpper().First();
+                        characters[i] = characters[i].ToString().ToUpper().First();
                     }
                     else
                     {
-                        splitted[i] = splitted[i].ToString().ToLower().First();
+                        characters[i] = characters[i].ToString().ToLower().First();
                     }
                 }
-                lastChar = splitted[i];
+                lastChar = characters[i];
             }
-            return new string(splitted);
+            return new string(characters);
         }
         public static bool IsAllUpper(this string input)
         {

@@ -53,7 +53,7 @@ namespace GRYLibrary.Core.APIServer.Mid.M04CC
                         statusCode = HttpStatusCode.BadRequest;
                         message = failMessage;
                     }
-                    //TODO if too many failed requests so that the user should be blocked (maybe in the context of the Blacklist-middleware) send an unreasolvable captcha whose text ist always something like "blocked".
+                    //TODO if too many failed requests so that the user should be blocked (maybe in the context of the Blacklist-middleware) send an unresolvable captcha whose text is always something like "blocked".
                 }
                 System.Text.Encoding encoding = Misc.Utilities.GetEncodingByIdentifier(this._CaptchaMiddlewareSettings.Encoding);
                 (string id, byte[] picture) = this.GenerateCaptcha();

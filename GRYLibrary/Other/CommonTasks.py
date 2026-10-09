@@ -4,7 +4,7 @@ from ScriptCollection.TFCPS.DotNet.CertificateGeneratorInformationNoGenerate imp
  
 def common_tasks():
     tf:TFCPS_CodeUnitSpecific_DotNet_Functions=TFCPS_CodeUnitSpecific_DotNet_CLI.parse(__file__)
-    tf.do_common_tasks(tf.get_version_of_project(),CertificateGeneratorInformationNoGenerate())#codeunit-version should alsways be the same as project-version
+    tf.do_common_tasks(tf.get_version_of_project(),CertificateGeneratorInformationNoGenerate())#codeunit-version should always be the same as project-version
 
 
 if __name__ == "__main__":

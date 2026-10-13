@@ -150,7 +150,7 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
         private IDictionary<string, IList<string?>> GetHeader(HttpRequest request)
         {
             Dictionary<string, IList<string?>> result = [];
-            foreach (string headerToLog in this._RequestLoggingSettings.LoggedHTTPRequeustHeader)
+            foreach (string headerToLog in this._RequestLoggingSettings.LoggedHTTPRequestHeader)
             {
                 if (!result.TryGetValue(headerToLog, out IList<string?>? value))
                 {
@@ -197,7 +197,7 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
                 string formatted;
                 if (logFullRequest)
                 {
-                    formatted = this.FormatLogEntryFull(request, duration, user, this._RequestLoggingSettings.MaximalLengthofRequestBodies, this._RequestLoggingSettings.MaximalLengthOfResponseBodies, header);
+                    formatted = this.FormatLogEntryFull(request, duration, user, this._RequestLoggingSettings.MaximalLengthOfRequestBodies, this._RequestLoggingSettings.MaximalLengthOfResponseBodies, header);
                 }
                 else
                 {
@@ -248,7 +248,7 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
             return false;
         }
 
-        public virtual string FormatLogEntryFull(Request request, TimeSpan? duration, ClaimsPrincipal user, uint maximalLengthofRequestBodies, uint maximalLengthofResponseBodies, IDictionary<string, IList<string?>> header)
+        public virtual string FormatLogEntryFull(Request request, TimeSpan? duration, ClaimsPrincipal user, uint maximalLengthOfRequestBodies, uint maximalLengthOfResponseBodies, IDictionary<string, IList<string?>> header)
         {
             string clientIPAsString = this.FormatIPAddress(request.ClientIPAddress);
             string result = $"Request received:{Environment.NewLine}"
@@ -267,10 +267,10 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
                     result = result + $"    - {kvp.Key}: {value}{Environment.NewLine}";
                 }
             }
-            result = result + $"    Body: {this.FormatBodyOrSuppress(request.RequestBody, maximalLengthofRequestBodies, request.Route, this._RequestLoggingSettings.RoutesWhereRequestBodyIsNotLogged)}{Environment.NewLine}"
+            result = result + $"    Body: {this.FormatBodyOrSuppress(request.RequestBody, maximalLengthOfRequestBodies, request.Route, this._RequestLoggingSettings.RoutesWhereRequestBodyIsNotLogged)}{Environment.NewLine}"
                         + $"  Response-details:{Environment.NewLine}"
                         + $"    Statuscode: {request.ResponseStatusCode}{Environment.NewLine}"
-                        + $"    Body: {this.FormatBodyOrSuppress(request.ResponseBody, maximalLengthofResponseBodies, request.Route, this._RequestLoggingSettings.RoutesWhereResponseBodyIsNotLogged)}{Environment.NewLine}";
+                        + $"    Body: {this.FormatBodyOrSuppress(request.ResponseBody, maximalLengthOfResponseBodies, request.Route, this._RequestLoggingSettings.RoutesWhereResponseBodyIsNotLogged)}{Environment.NewLine}";
             if (user == null)
             {
                 result = result + $"  Authentication: (anonymous){Environment.NewLine}";
@@ -293,7 +293,7 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
             return result;
         }
 
-        private string FormatBody((string info, string? content, byte[] plainContent) body, uint maximalLengthofRequestBodies)
+        private string FormatBody((string info, string? content, byte[] plainContent) body, uint maximalLengthOfRequestBodies)
         {
             string result;
             if (body.content == null)
@@ -302,7 +302,7 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
             }
             else
             {
-                result = $"{body.info} ({this.Truncate(body.content, maximalLengthofRequestBodies, (ulong)body.plainContent.LongLength)})";
+                result = $"{body.info} ({this.Truncate(body.content, maximalLengthOfRequestBodies, (ulong)body.plainContent.LongLength)})";
             }
             return result;
         }
@@ -362,21 +362,21 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
             string result = null;
             if (user == null)
             {
-                result = this.AddAdditionalInformtion(result, $"Authentication: (anonymous)");
+                result = this.AddAdditionalInformation(result, $"Authentication: (anonymous)");
             }
             else
             {
-                result = this.AddAdditionalInformtion(result, $"Authentication: user \"{user.Identity.Name}\"");
+                result = this.AddAdditionalInformation(result, $"Authentication: user \"{user.Identity.Name}\"");
             }
             if (duration.HasValue)
             {
-                result = this.AddAdditionalInformtion(result, $"Duration: {GUtilities.DurationToUserFriendlyString(duration.Value, 0)}");
+                result = this.AddAdditionalInformation(result, $"Duration: {GUtilities.DurationToUserFriendlyString(duration.Value, 0)}");
             }
             //add more additional information if desired
             return result;
         }
 
-        private string AddAdditionalInformtion(string result, string message)
+        private string AddAdditionalInformation(string result, string message)
         {
 
             if (result == null)

@@ -68,12 +68,12 @@ namespace GRYLibrary.Core.Misc
         #region Get file extension on windows
         public static string GetDefaultProgramToOpenFile(string extensionWithDot)
         {
-            return FileExtentionInfo(AssocStr.Executable, extensionWithDot);
+            return FileExtensionInfo(AssocStr.Executable, extensionWithDot);
         }
 
         [DllImport("Shlwapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern uint AssocQueryString(AssocF flags, AssocStr str, string pszAssoc, string pszExtra, [Out] StringBuilder pszOut, [In][Out] ref uint pcchOut);
-        private static string FileExtentionInfo(AssocStr assocStr, string extensionWithDot)
+        private static string FileExtensionInfo(AssocStr assocStr, string extensionWithDot)
         {
 #pragma warning disable CA1806 // Do not ignore method results
             uint pcchOut = 0;

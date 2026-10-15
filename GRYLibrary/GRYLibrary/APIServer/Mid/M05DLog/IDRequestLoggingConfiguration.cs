@@ -9,10 +9,10 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
         public bool AddMillisecondsInLogTimestamps { get; set; }
         public bool LogClientIP { get; set; }
         public GRYLogConfiguration RequestsLogConfiguration { get; set; }
-        public uint MaximalLengthofRequestBodies { get; set; }
+        public uint MaximalLengthOfRequestBodies { get; set; }
         public uint MaximalLengthOfResponseBodies { get; set; }
         public ISet<string> NotLoggedRoutes { get; set; }
-        public ISet<string> LoggedHTTPRequeustHeader { get; set; }
+        public ISet<string> LoggedHTTPRequestHeader { get; set; }
 
         /// <summary>
         /// Routes (as regular-expressions) whose request-body is not written to the log-file. The route is still

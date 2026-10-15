@@ -81,7 +81,7 @@ namespace GRYLibrary.Core.APIServer.Mid.Ex
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 this.Log("Error while processing request", context, exceptionForFormatting, (uint)context.Response.StatusCode, Microsoft.Extensions.Logging.LogLevel.Error);
             }
-            (string ContentType, string bodyContent) = this.GetExceptionResponceContent(context.Response.StatusCode, context, exceptionForFormatting);
+            (string ContentType, string bodyContent) = this.GetExceptionResponseContent(context.Response.StatusCode, context, exceptionForFormatting);
             context.Response.ContentType = ContentType;
             context.Response.WriteAsync(bodyContent).Wait();
         }
@@ -109,7 +109,7 @@ namespace GRYLibrary.Core.APIServer.Mid.Ex
             this._Log.Log($"Request {context.Items["RequestId"]} resulted in statuscode {statuscode}. Technical reason: {technicalReason}", exception, loglevel);
         }
 
-        public virtual (string ContentType, string bodyContent) GetExceptionResponceContent(int httpStatusCode, HttpContext context, Exception exception)
+        public virtual (string ContentType, string bodyContent) GetExceptionResponseContent(int httpStatusCode, HttpContext context, Exception exception)
         {
             return (null, string.Empty);
         }

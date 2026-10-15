@@ -11,10 +11,10 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
         public GRYLogConfiguration RequestsLogConfiguration { get; set; } = GRYLogConfiguration.GetCommonConfiguration(AbstractFilePath.FromString("./Requests.log"), true);
         public bool Enabled { get; set; } = true;
         public bool LogClientIP { get; set; } = true;
-        public uint MaximalLengthofRequestBodies { get; set; } = 4000;
+        public uint MaximalLengthOfRequestBodies { get; set; } = 4000;
         public uint MaximalLengthOfResponseBodies { get; set; } = 4000;
         public ISet<string> NotLoggedRoutes { get; set; } = new HashSet<string>();
-        public ISet<string> LoggedHTTPRequeustHeader { get; set; } = new HashSet<string>();
+        public ISet<string> LoggedHTTPRequestHeader { get; set; } = new HashSet<string>();
         public ISet<string> RoutesWhereRequestBodyIsNotLogged { get; set; } = new HashSet<string>();
         public ISet<string> RoutesWhereResponseBodyIsNotLogged { get; set; } = new HashSet<string>();
 

@@ -506,8 +506,8 @@
       },
       "MySqlConnector": {
         "type": "Transitive",
-        "resolved": "2.4.0",
-        "contentHash": "78M+gVOjbdZEDIyXQqcA7EYlCGS3tpbUELHvn6638A2w0pkPI625ixnzsa5staAd3N9/xFmPJtkKDYwsXpFi/w==",
+        "resolved": "2.6.2",
+        "contentHash": "dlTc/tsBa42szdvpj4nrHvQVUb0gsMwR9HT6J0Zz2OSqfP0CdYlGw+qQPqCpbnO97idfvclSjKYtM6y5QaBQaQ==",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
           "Microsoft.Extensions.Logging.Abstractions": "8.0.2"
@@ -751,6 +751,7 @@
           "Microsoft.Extensions.Logging.EventLog": "[10.0.3, 10.0.3]",
           "Microsoft.Extensions.Options": "[10.0.3, 10.0.3]",
           "Microsoft.Win32.Registry": "[5.0.0, 5.0.0]",
+          "MySqlConnector": "[2.6.2, 2.6.2]",
           "NJsonSchema": "[11.5.2, 11.5.2]",
           "NSwag.AspNetCore": "[14.6.3, 14.6.3]",
           "Npgsql": "[10.0.1, 10.0.1]",

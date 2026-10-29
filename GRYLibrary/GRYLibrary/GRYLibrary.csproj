@@ -3,9 +3,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <Authors>Marius Göcke</Authors>
-    <Version>2.1.9</Version>
-    <AssemblyVersion>2.1.9</AssemblyVersion>
-    <FileVersion>2.1.9</FileVersion>
+    <Version>2.1.10</Version>
+    <AssemblyVersion>2.1.10</AssemblyVersion>
+    <FileVersion>2.1.10</FileVersion>
     <SelfContained>false</SelfContained>
     <IsPackable>false</IsPackable>
     <PreserveCompilationContext>false</PreserveCompilationContext>
@@ -77,6 +77,7 @@
     <PackageReference Include="Npgsql" Version="[10.0.1]" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="[10.0.0]" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="[9.0.0]" />
+    <PackageReference Include="MySqlConnector" Version="[2.6.2]" />
     <PackageReference Include="prometheus-net" Version="[8.2.1]" />
     <PackageReference Include="System.Collections.Immutable" Version="[10.0.3]" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[10.0.3]" />

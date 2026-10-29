@@ -34,16 +34,16 @@ namespace GRYLibrary.Core.APIServer.MidT.Aut
         {
             if (this.TryGetAuthorizeAttribute(context, out AuthorizeAttribute authorizeAttribute))
             {
-                bool result = authorizeAttribute.Groups.Any();
-                if (result)
+                // The presence of an AuthorizeAttribute always requires an authorization-check. An empty authorized-groups-set does not disable the check: it means that no group is accepted, so the authorization-check fails closed and denies the request instead of admitting every authenticated user.
+                if (authorizeAttribute.Groups.Any())
                 {
                     this._Log.Log($"Authorization for request {context.Items["RequestId"]} is required because of authorized-groups: {string.Join(", ", authorizeAttribute.Groups)}", Microsoft.Extensions.Logging.LogLevel.Trace);
                 }
                 else
                 {
-                    this._Log.Log($"Authorization for request {context.Items["RequestId"]} is not required because of empty authorized-groups-set.", Microsoft.Extensions.Logging.LogLevel.Trace);
+                    this._Log.Log($"Authorization for request {context.Items["RequestId"]} is required. The authorized-groups-set is empty, so no group is accepted and the request will be denied.", Microsoft.Extensions.Logging.LogLevel.Trace);
                 }
-                return result;
+                return true;
             }
             else
             {

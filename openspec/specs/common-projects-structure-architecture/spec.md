@@ -59,7 +59,7 @@ Every document of this repository which describes the current state of the produ
 
 #### Scenario: A document states something which the source-code does not do
 
-- **WHEN** a document states a behaviour, a feature, a limitation, a default-value, a name or a path which the source-code does not implement that way
+- **WHEN** a document states a behavior, a feature, a limitation, a default-value, a name or a path which the source-code does not implement that way
 - **THEN** this is a defect of the same weight as a defect in the source-code, and it is resolved by correcting the document to the state which the source-code implements
 
 #### Scenario: The documented state is the wanted state and the source-code is the wrong side
@@ -145,3 +145,6 @@ This applies to the changelog-files below `Other/Resources/Changelog`, to the lo
 
 - **WHEN** an entry of a changelog, of a log-file or of an archived change describes a state which the product does not have anymore
 - **THEN** the entry stays unchanged, because it documents what was true when it was written, and changing it would destroy the history instead of documenting the product
+
+
+<!-- This file is generated. Do not modify. -->

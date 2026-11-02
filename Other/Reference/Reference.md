@@ -143,7 +143,7 @@ The analyses recorded the following as already sound and worth keeping:
 - The authorization-code-flow with pkce and S256, and the state- and verifier-generation from `RandomNumberGenerator`.
 - The full validation of issuer, signature and lifetime of a jwt against the discovery-document.
 - The parameterized data-access-layer: a command is built from a sql-text plus real `DbParameter`-objects, and the queries which the library executes itself against `information_schema` are constant texts with bound parameters.
-- The default exception-handler (`GetExceptionResponceContent`) returns an empty body, so no stack-trace and no exception-message reaches the client.
+- The default exception-handler (`GetExceptionResponseContent`) returns an empty body, so no stack-trace and no exception-message reaches the client.
 - Request-headers are logged only when a consumer lists them explicitly in `LoggedHTTPRequeustHeader`, which is empty by default.
 - The secure default of `TrustForwardedHeader` (`false`).
 - Kestrel is configured with `AddServerHeader = false`.

@@ -2,6 +2,7 @@ using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.ConcreteEnvironments;
 using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.Services;
+using GRYLibrary.Core.APIServer.Services.Database;
 using GRYLibrary.Core.APIServer.Services.Init;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using GRYLibrary.Core.APIServer.Settings;
@@ -159,11 +160,19 @@ namespace GRYLibrary.Core.APIServer.Utilities
                     }
                     if (!isAvailableResult.Item1)
                     {
-                        logger.Log($"Database is not available yet because of the reason \"{isAvailableResult.Item2!.Message}\".", LogLevel.Information);
-                        amoutnOfFails = amoutnOfFails + 1;
-                        if (amoutnOfFails == maximalAmountOfAttempts)
+                        if (DBUtilities.IsCausedByDatabaseStartingUp(isAvailableResult.Item2))
                         {
-                            throw new DependencyNotAvailableException("Database is not available.", isAvailableResult.Item2!);
+                            //The database is reachable and recovers on its own, so this attempt does not count against maximalAmountOfAttempts.
+                            logger.Log($"Database is reachable but still starting up (reason: \"{isAvailableResult.Item2!.Message}\"). Continue waiting.", LogLevel.Information);
+                        }
+                        else
+                        {
+                            logger.Log($"Database is not available yet because of the reason \"{isAvailableResult.Item2!.Message}\".", LogLevel.Information);
+                            amoutnOfFails = amoutnOfFails + 1;
+                            if (amoutnOfFails == maximalAmountOfAttempts)
+                            {
+                                throw new DependencyNotAvailableException("Database is not available.", isAvailableResult.Item2!);
+                            }
                         }
                         Thread.Sleep(TimeSpan.FromSeconds(5));
                     }

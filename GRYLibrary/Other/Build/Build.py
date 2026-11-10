@@ -4,7 +4,7 @@ def build():
 
     tf:TFCPS_CodeUnitSpecific_DotNet_Functions=TFCPS_CodeUnitSpecific_DotNet_CLI.parse(__file__)
     # the runtimes this codeunit is built for are stated by its project-file (RuntimeIdentifiers)
-    tf.build(False)
+    tf.build(False,False)
 
 
 if __name__ == "__main__":

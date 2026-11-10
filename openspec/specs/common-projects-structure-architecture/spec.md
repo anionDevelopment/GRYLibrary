@@ -6,7 +6,7 @@ Records the architectural and documentation-related constraints which every chan
 They are not derivable from the source-code itself:
 
 - They state what decides whether the product is in a healthy state and how the codeunits of the repository may depend on each other.
-- They require that the documentation which describes the current state of the product agrees with what the source-code actually does. A document which describes an older state of the product is still a syntactically valid document, and neither the compiler nor the pipeline notices it. Without this a reader can not decide whether a sentence of the documentation is a fact about the product or a leftover of a state which does not exist anymore.
+- They require that the documentation which describes the current state of the product agrees with what the source-code actually does. A document which describes an older state of the product is still a syntactically valid document, and neither the compiler nor the pipeline notices it. Without this a reader cannot decide whether a sentence of the documentation is a fact about the product or a leftover of a state which does not exist anymore.
 
 How findings of code-reviews, security-checks, bug-searches, performance-analyses and similar analyses are documented is specified in the specification `common-projects-structure-findings`.
 
@@ -59,7 +59,7 @@ Every document of this repository which describes the current state of the produ
 
 #### Scenario: A document states something which the source-code does not do
 
-- **WHEN** a document states a behaviour, a feature, a limitation, a default-value, a name or a path which the source-code does not implement that way
+- **WHEN** a document states a behavior, a feature, a limitation, a default-value, a name or a path which the source-code does not implement that way
 - **THEN** this is a defect of the same weight as a defect in the source-code, and it is resolved by correcting the document to the state which the source-code implements
 
 #### Scenario: The documented state is the wanted state and the source-code is the wrong side
@@ -145,3 +145,6 @@ This applies to the changelog-files below `Other/Resources/Changelog`, to the lo
 
 - **WHEN** an entry of a changelog, of a log-file or of an archived change describes a state which the product does not have anymore
 - **THEN** the entry stays unchanged, because it documents what was true when it was written, and changing it would destroy the history instead of documenting the product
+
+
+<!-- This file is generated. Do not modify. -->

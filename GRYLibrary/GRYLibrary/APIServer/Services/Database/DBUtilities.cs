@@ -1,4 +1,5 @@
 using GRYLibrary.Core.Logging.GRYLogger;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,6 +22,29 @@ namespace GRYLibrary.Core.APIServer.Services.Database
         /// is undetermined afterwards whether the database applied the transaction or not.
         /// </remarks>
         public const int TransactionTimeoutInSeconds = 300;
+
+        /// <summary>
+        /// Returns whether <paramref name="exception"/> or one of its inner exceptions states that the database-server is reachable but still starting up
+        /// (for example while it runs a crash-recovery after an unclean shutdown) and therefore does not accept connections yet.
+        /// </summary>
+        /// <remarks>
+        /// This state resolves itself without any intervention. On a system with slow disks it can last several minutes (for example because of the
+        /// end-of-recovery-checkpoint), so waiting for the database must not give up while this state lasts.
+        /// Currently only PostgreSQL is detected (SQLSTATE 57P03 "cannot_connect_now").
+        /// </remarks>
+        public static bool IsCausedByDatabaseStartingUp(Exception? exception)
+        {
+            Exception? currentException = exception;
+            while (currentException != null)
+            {
+                if (currentException is PostgresException postgresException && postgresException.SqlState == PostgresErrorCodes.CannotConnectNow)
+                {
+                    return true;
+                }
+                currentException = currentException.InnerException;
+            }
+            return false;
+        }
 
         public static readonly IDictionary<string, GenericDatabaseInteractor> DatabaseInteractors = new Dictionary<string, GenericDatabaseInteractor>();
         public static GenericDatabaseInteractor ToGenericDatabaseInteractor(IDatabasePersistenceConfiguration databasePersistenceConfiguration, IGRYLog log)

@@ -5,6 +5,14 @@ using System.Linq;
 
 namespace GRYLibrary.Core.Playlists.ConcretePlaylistHandler
 {
+    /// <summary>
+    /// Loads the songs of playlist-files (m3u and pls), including folder-entries and nested playlist-files.
+    /// </summary>
+    /// <remarks>
+    /// Items can be local items (audio-files, folders, other playlist-files) and links ("http://..." or "https://...").
+    /// Local audio-files are only loaded if their file-extension is contained in <see cref="AudioFileExtensions"/>; the content of the files is not checked.
+    /// Links are always loaded; whether a link is a remote file or a stream can only be determined when it is requested.
+    /// </remarks>
     public class PlaylistLoader : PlaylistFileHandler
     {
         public IDictionary<string, string> Replacements { get; set; } = new Dictionary<string, string>();
@@ -12,6 +20,11 @@ namespace GRYLibrary.Core.Playlists.ConcretePlaylistHandler
         public PLSHandler PLSHandler { get; set; } = new PLSHandler();
         public bool TreatEqualMetadataAsSameTrack { get; set; } = false;
         public PlaylistLoader() { }
+
+        /// <summary>
+        /// The file-extensions (lowercase, including the leading dot) of the local audio-files which are loaded; the comparison is case-insensitive.
+        /// </summary>
+        public static IReadOnlySet<string> AudioFileExtensions { get; } = new HashSet<string> { ".mp3", ".m4a", ".wma", ".wav", ".aac", ".flac", ".aiff", ".aif" };
 
         public override void AddItemsToPlaylist(string playlistFile, IEnumerable<string> newItems)
         {
@@ -87,6 +100,11 @@ namespace GRYLibrary.Core.Playlists.ConcretePlaylistHandler
             }).Select(group => group.First()));
         }
 
+        private static bool IsAudioFile(string file)
+        {
+            return AudioFileExtensions.Contains(Path.GetExtension(file).ToLowerInvariant());
+        }
+
         public override ISet<string> GetSongs(string playlistFile)
         {
             (ISet<string> songs, ISet<string> _) = this.GetItemsAndNotExistingItems(playlistFile);
@@ -113,30 +131,28 @@ namespace GRYLibrary.Core.Playlists.ConcretePlaylistHandler
             item = this.Replace(item);
             if (!this.IsLink(item))
             {
+                bool isFolder = item.EndsWith('/') || item.EndsWith('\\');
                 if (Utilities.IsRelativeLocalFilePath(item))
                 {
                     item = item.ResolveToFullPath(workingDirectory);
                 }
                 item = item.Replace('\\', '/');
+                if (isFolder && !item.EndsWith('/'))
+                {
+                    item = item + '/';//ResolveToFullPath removes the trailing separator, but it marks the item as folder
+                }
             }
             item = item.Trim();
             return item;
         }
 
+        /// <summary>
+        /// Returns whether the item is a link to a stream (and not a local item).
+        /// </summary>
         private bool IsLink(string item)
         {
-            if (item.EndsWith(".mp3"))
-            {
-                if (item.StartsWith("https://"))
-                {
-                    return true;
-                }
-                if (item.StartsWith("http://"))//obsolete
-                {
-                    return true;
-                }
-            }
-            return false;
+            string trimmedItem = item.Trim();
+            return trimmedItem.StartsWith("https://") || trimmedItem.StartsWith("http://");
         }
 
         private IEnumerable<string> Replace(IEnumerable<string> items)
@@ -159,7 +175,11 @@ namespace GRYLibrary.Core.Playlists.ConcretePlaylistHandler
             foreach (string item in items)
             {
                 string normalizedItem = this.NormalizedItem(item, workingDirectory);
-                if (normalizedItem.EndsWith('/'))
+                if (this.IsLink(normalizedItem))
+                {
+                    result.Add(normalizedItem);
+                }
+                else if (normalizedItem.EndsWith('/'))
                 {
                     if (Directory.Exists(normalizedItem))
                     {
@@ -170,7 +190,7 @@ namespace GRYLibrary.Core.Playlists.ConcretePlaylistHandler
                         notExistingItems.Add(normalizedItem);
                     }
                 }
-                else if (normalizedItem.EndsWith(".mp3"))
+                else if (IsAudioFile(normalizedItem))
                 {
                     result.Add(normalizedItem);
                 }

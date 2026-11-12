@@ -78,7 +78,7 @@ namespace GRYLibrary.Tests.Testcases.Playlists.ConcretePlaylistHandler
 
         [TestMethod]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
-        public void AddItemsToPlaylist_ItemWasDeletedBefore_ItemIsContainedAgain()
+        public void AddItemsToPlaylist_ItemWasDeletedBefore_NoLineIsRemovedAndItemStaysExcluded()
         {
             //arrange
             Encoding encoding = new UTF8Encoding(false);
@@ -86,7 +86,6 @@ namespace GRYLibrary.Tests.Testcases.Playlists.ConcretePlaylistHandler
             using TempFolder tempFolder = new TempFolder();
             string m3uFile = Path.Combine(tempFolder.Path, "test.m3u");
             string song1 = Path.Combine(tempFolder.Path, "testfile1.mp3");
-            string song2 = Path.Combine(tempFolder.Path, "testfile2.mp3");
             File.WriteAllText(m3uFile, "./testfile1.mp3\n./testfile2.mp3\n", encoding);
             m3uHandler.DeleteItemsFromPlaylist(m3uFile, new string[] { "./testfile1.mp3" });
 
@@ -94,12 +93,87 @@ namespace GRYLibrary.Tests.Testcases.Playlists.ConcretePlaylistHandler
             m3uHandler.AddItemsToPlaylist(m3uFile, new string[] { song1 });
 
             //assert
-            Assert.AreEqual($"./testfile1.mp3\n./testfile2.mp3\n{song1}", File.ReadAllText(m3uFile, encoding));
+            Assert.AreEqual("./testfile1.mp3\n./testfile2.mp3\n-./testfile1.mp3\n", File.ReadAllText(m3uFile, encoding));
             (ISet<string> included, ISet<string> excluded) = m3uHandler.GetItemsAndExcludedItems(m3uFile);
-            Assert.AreEqual(0, excluded.Count);
-            Assert.IsTrue(included.Contains(song1));
+            Assert.IsTrue(excluded.Contains("./testfile1.mp3"));
             Assert.IsTrue(included.Contains("./testfile2.mp3"));
-            Assert.IsFalse(included.Contains(song2));
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void AddItemsToPlaylist_ItemIsContainedAlready_FileIsNotChanged()
+        {
+            //arrange
+            Encoding encoding = new UTF8Encoding(false);
+            M3UHandler m3uHandler = new M3UHandler();
+            using TempFolder tempFolder = new TempFolder();
+            string m3uFile = Path.Combine(tempFolder.Path, "test.m3u");
+            string song1 = Path.Combine(tempFolder.Path, "testfile1.mp3");
+            File.WriteAllText(m3uFile, "\"./testfile1.mp3\"\n./testfile2.mp3", encoding);
+
+            //act
+            m3uHandler.AddItemsToPlaylist(m3uFile, new string[] { song1, "./testfile2.mp3" });
+
+            //assert
+            Assert.AreEqual("\"./testfile1.mp3\"\n./testfile2.mp3", File.ReadAllText(m3uFile, encoding));
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void AddItemsToPlaylist_SameItemTwice_AppendsItOnlyOnce()
+        {
+            //arrange
+            Encoding encoding = new UTF8Encoding(false);
+            M3UHandler m3uHandler = new M3UHandler();
+            using TempFolder tempFolder = new TempFolder();
+            string m3uFile = Path.Combine(tempFolder.Path, "test.m3u");
+            File.WriteAllText(m3uFile, "./testfile1.mp3\n", encoding);
+
+            //act
+            m3uHandler.AddItemsToPlaylist(m3uFile, new string[] { "./testfile2.mp3" });
+            m3uHandler.AddItemsToPlaylist(m3uFile, new string[] { "./testfile2.mp3", "./testfile2.mp3" });
+
+            //assert
+            Assert.AreEqual("./testfile1.mp3\n./testfile2.mp3", File.ReadAllText(m3uFile, encoding));
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void DeleteItemsFromPlaylist_ExclusionLineIsContainedAlready_FileIsNotChanged()
+        {
+            //arrange
+            Encoding encoding = new UTF8Encoding(false);
+            M3UHandler m3uHandler = new M3UHandler();
+            using TempFolder tempFolder = new TempFolder();
+            string m3uFile = Path.Combine(tempFolder.Path, "test.m3u");
+            string song1 = Path.Combine(tempFolder.Path, "testfile1.mp3");
+            File.WriteAllText(m3uFile, "./testfile1.mp3\n./testfile2.mp3\n", encoding);
+            m3uHandler.DeleteItemsFromPlaylist(m3uFile, new string[] { "./testfile1.mp3" });
+
+            //act
+            m3uHandler.DeleteItemsFromPlaylist(m3uFile, new string[] { song1, "./testfile1.mp3" });
+
+            //assert
+            Assert.AreEqual("./testfile1.mp3\n./testfile2.mp3\n-./testfile1.mp3\n", File.ReadAllText(m3uFile, encoding));
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void DeleteItemsFromPlaylist_AbsoluteItem_AppendsExclusionLineWithMinusAsPrefixAndKeepsAllLines()
+        {
+            //arrange
+            Encoding encoding = new UTF8Encoding(false);
+            M3UHandler m3uHandler = new M3UHandler();
+            using TempFolder tempFolder = new TempFolder();
+            string m3uFile = Path.Combine(tempFolder.Path, "test.m3u");
+            string song = Path.Combine(tempFolder.Path, "Music", "mysong.mp3");
+            File.WriteAllText(m3uFile, "#EXTM3U\n./Music/\n", encoding);
+
+            //act
+            m3uHandler.DeleteItemsFromPlaylist(m3uFile, new string[] { song });
+
+            //assert
+            Assert.AreEqual($"#EXTM3U\n./Music/\n-{song}\n", File.ReadAllText(m3uFile, encoding));
         }
 
         [TestMethod]

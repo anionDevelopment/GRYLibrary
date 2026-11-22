@@ -17,6 +17,47 @@ namespace GRYLibrary.Tests.Testcases
     public class ExternalProgramExecutorTest
     {
         [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void CreateEpewArgumentStringUsesLogFileArgumentWhichIsSupportedByEpew()
+        {
+            //arrange
+            string logFile = "/tmp/epew.log";
+
+            //act
+            string result = ExternalProgramExecutor.CreateEpewArgumentString("program", null, null, false, null, Verbosity.Normal, false, logFile, null, new RunSynchronously(), null, null, null);
+
+            //assert
+            Assert.Contains($"--LogFile \"{logFile}\"", result);
+            Assert.DoesNotContain("--Logfile", result);
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void CreateEpewArgumentStringDoesNotContainArgumentWhichIsNotSupportedByEpew()
+        {
+            //arrange
+            RunSynchronously waitingState = new() { ThrowErrorIfExitCodeIsNotZero = true };
+
+            //act
+            string result = ExternalProgramExecutor.CreateEpewArgumentString("program", null, null, false, null, Verbosity.Normal, false, null, null, waitingState, null, null, null);
+
+            //assert
+            Assert.DoesNotContain("ThrowErrorIfExitCodeIsNotZero", result);
+            Assert.AreEqual("--Program \"program\" --Verbosity " + (int)Verbosity.Normal, result);
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void CreateEpewArgumentStringContainsNotSynchronousForAsynchronousExecution()
+        {
+            //act
+            string result = ExternalProgramExecutor.CreateEpewArgumentString("program", null, null, false, null, Verbosity.Normal, false, null, null, new RunAsynchronously(), null, null, null);
+
+            //assert
+            Assert.EndsWith(" --NotSynchronous", result);
+        }
+
+        [TestMethod]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
         public void TestEchoWithSomeSpecialCharacter()
         {

@@ -173,7 +173,7 @@ namespace GRYLibrary.Core.ExecutePrograms
             }
             if (logFile != null)
             {
-                result = $"{result} --Logfile \"{logFile}\"";
+                result = $"{result} --LogFile \"{logFile}\"";
             }
             if (title != null)
             {
@@ -188,7 +188,11 @@ namespace GRYLibrary.Core.ExecutePrograms
             {
                 result = $"{result} --User \"{user}\" --Password \"{password}\"";
             }
-            result = $"{result} {waitingState.Accept(_GetWaitingStateCreateEpewArgumentStringVisitor)}";
+            string waitingStateArgument = waitingState.Accept(_GetWaitingStateCreateEpewArgumentStringVisitor);
+            if (waitingStateArgument.Length > 0)
+            {
+                result = $"{result} {waitingStateArgument}";
+            }
             // TODO add missing Epew-arguments
             return result;
         }
@@ -202,14 +206,8 @@ namespace GRYLibrary.Core.ExecutePrograms
 
             public string Handle(RunSynchronously runSynchronously)
             {
-                if (runSynchronously.ThrowErrorIfExitCodeIsNotZero)
-                {
-                    return "--ThrowErrorIfExitCodeIsNotZero";
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                // Epew has no argument for ThrowErrorIfExitCodeIsNotZero: Epew returns the exit-code of the executed program, so the caller of Epew decides how to handle a non-zero exit-code.
+                return string.Empty;
             }
         }
 

@@ -39,13 +39,22 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
             return this._PasswordHasher.Hash(password);
         }
 
+        /// <summary>
+        /// Hash of a random password which is verified instead of a real password-hash if there is no user with the given name (or if the user has no password-hash).
+        /// </summary>
+        /// <remarks>
+        /// This makes every login perform exactly one password-hash-verification with the same cost, so the duration of a login does not reveal whether a user with the given name exists.
+        /// </remarks>
+        private static readonly string _DummyPasswordHash = new PasswordHasher().Hash(RandomNumberGenerator.GetString(AccessTokenAlphabet, AccessTokenLength));
+
         public virtual AccessToken Login(string userName, string password)
         {
-            if (!this._TransientAuthenticationServicePersistence.UserWithNameExists(userName))
+            UserType? user = this._TransientAuthenticationServicePersistence.UserWithNameExists(userName) ? this.GetUserByNameTyped(userName) : null;
+            if (user == null || string.IsNullOrEmpty(user.PasswordHash))
             {
+                this._PasswordHasher.Verify(password, _DummyPasswordHash);
                 return this.ThrowInvalidCredentialsException();
             }
-            UserType user = this.GetUserByNameTyped(userName);
             if (!this._PasswordHasher.Verify(password, user.PasswordHash))
             {
                 return this.ThrowInvalidCredentialsException();

@@ -150,13 +150,13 @@ services.AddSingleton<IOIDCAuthenticationConfiguration>(new OIDCAuthenticationCo
 
 With this registration in place, `AuthSMiddleware` behaves as follows for every incoming request:
 
-1. First it checks whether the presented token is a valid application-local token (the existing behaviour).
+1. First it checks whether the presented token is a valid application-local token (the existing behavior).
 2. If it is not, it tries to validate the token as an OIDC-token via `IOIDCService.ValidateAccessTokenAsync`. The token's
    signature is verified against the provider's published keys (JWKS) and its issuer and lifetime are checked (and its
    audience, if `OIDCProviderConfiguration.Audience` is set). On success the request is authenticated and a principal is
    built from the token's claims (the `sub`-claim becomes the user-identifier).
 
-If neither an `IOIDCService` nor an `IOIDCAuthenticationConfiguration` is registered, only application-local tokens are accepted and the behaviour is unchanged.
+If neither an `IOIDCService` nor an `IOIDCAuthenticationConfiguration` is registered, only application-local tokens are accepted and the behavior is unchanged.
 This makes the OIDC-token-validation strictly opt-in.
 
 You can also call `ValidateAccessTokenAsync` directly if you need to validate an OIDC-token yourself:

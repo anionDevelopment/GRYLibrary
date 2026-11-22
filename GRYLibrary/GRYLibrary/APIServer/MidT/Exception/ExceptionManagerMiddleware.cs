@@ -22,7 +22,7 @@ namespace GRYLibrary.Core.APIServer.MidT.Exception
         /// this the user would get an empty page for every address which does not exist.
         ///
         /// It does nothing by default, so an application which does not want an own page for this keeps the
-        /// behaviour it had.
+        /// behavior it had.
         /// </summary>
         protected virtual void HandleNotFound(HttpContext context)
         {

@@ -86,7 +86,7 @@ namespace GRYLibrary.Core.AOA.SerializeHelper
             }
             public void Handle(FlatComplexObject simplifiedObject)
             {
-                object @object = this.GetDeserialisedObjectOrDefault(simplifiedObject.ObjectId);
+                object @object = this.GetDeserializedObjectOrDefault(simplifiedObject.ObjectId);
                 Type typeOfObject = @object.GetType();
                 foreach (FlatAttribute attribute in simplifiedObject.Attributes)
                 {
@@ -131,7 +131,7 @@ namespace GRYLibrary.Core.AOA.SerializeHelper
 
             public void Handle(FlatEnumerable simplifiedEnumerable)
             {
-                object enumerable = this.GetDeserialisedObjectOrDefault(simplifiedEnumerable.ObjectId);
+                object enumerable = this.GetDeserializedObjectOrDefault(simplifiedEnumerable.ObjectId);
                 if (Utilities.IsDefault(enumerable))
                 {
                     return;
@@ -142,7 +142,7 @@ namespace GRYLibrary.Core.AOA.SerializeHelper
                 foreach (Guid itemId in simplifiedEnumerable.Items)
                 {
                     object itemForEnumerable;
-                    itemForEnumerable = this.GetDeserialisedObjectOrDefault(itemId);
+                    itemForEnumerable = this.GetDeserializedObjectOrDefault(itemId);
                     object[] arguments;
                     if (isDictionaryGeneric)
                     {
@@ -166,7 +166,7 @@ namespace GRYLibrary.Core.AOA.SerializeHelper
                 Utilities.NoOperation();
             }
 
-            private object GetDeserialisedObjectOrDefault(Guid id)
+            private object GetDeserializedObjectOrDefault(Guid id)
             {
                 if (default(Guid).Equals(id))
                 {

@@ -10,6 +10,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
         public string DisplayName { get; set; }
 
         /// <summary>OIDC authority base URL (e.g. "https://keycloak.example.com/realms/myrealm").</summary>
+        /// <remarks>Must be an absolute https-url. <see cref="OIDCService"/> throws an <see cref="System.InvalidOperationException"/> otherwise.</remarks>
         public string Authority { get; set; }
 
         /// <summary>The client_id registered in the OIDC provider.</summary>

@@ -29,6 +29,8 @@ OIDCProviderConfiguration provider = new OIDCProviderConfiguration
 };
 ```
 
+The `Authority` must be an absolute https-url. The endpoints which `OIDCService` takes from the discovery-document of the provider (`authorization_endpoint`, `token_endpoint` and `jwks_uri`) must be https-urls as well. Otherwise `OIDCService` throws an `InvalidOperationException` before it sends any request to such an url. An opt-out (for example for a local provider which is only reachable via http) is intentionally not offered, because a plaintext-connection allows an attacker on the network-path to replace the signing-keys and forge tokens.
+
 The application typically reads these values from its own configuration-file so that a deployment can point the application at its own OIDC-provider without any code-change.
 
 ## Registration

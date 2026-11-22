@@ -33,7 +33,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
         public async Task<OIDCAuthorizationRequest> InitiateLoginAsync(OIDCProviderConfiguration provider)
         {
             JsonDocument discovery = await this.FetchDiscoveryAsync(provider);
-            string authorizationEndpoint = discovery.RootElement.GetProperty("authorization_endpoint").GetString()!;
+            string authorizationEndpoint = GetHttpsEndpointFromDiscovery(discovery, "authorization_endpoint");
 
             string state = this.GenerateRandomBase64Url(32);
             string nonce = this.GenerateRandomBase64Url(32);
@@ -63,7 +63,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
         public async Task<OIDCTokenResult> ExchangeCodeAsync(OIDCProviderConfiguration provider, string code, string codeVerifier)
         {
             JsonDocument discovery = await this.FetchDiscoveryAsync(provider);
-            string tokenEndpoint = discovery.RootElement.GetProperty("token_endpoint").GetString()!;
+            string tokenEndpoint = GetHttpsEndpointFromDiscovery(discovery, "token_endpoint");
 
             Dictionary<string, string> form = new Dictionary<string, string>
             {
@@ -86,7 +86,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
         public async Task<OIDCPasswordLoginResult> LoginWithPasswordAsync(OIDCProviderConfiguration provider, string username, string password)
         {
             JsonDocument discovery = await this.FetchDiscoveryAsync(provider);
-            string tokenEndpoint = discovery.RootElement.GetProperty("token_endpoint").GetString()!;
+            string tokenEndpoint = GetHttpsEndpointFromDiscovery(discovery, "token_endpoint");
 
             Dictionary<string, string> form = new Dictionary<string, string>
             {
@@ -138,8 +138,31 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
 
         private async Task<JsonDocument> FetchDiscoveryAsync(OIDCProviderConfiguration provider)
         {
+            EnsureIsHttpsUrl(provider.Authority, $"authority of the OIDC-provider '{provider.Id}'");
             string discoveryUrl = provider.Authority.TrimEnd('/') + "/.well-known/openid-configuration";
             return await this.FetchJsonAsync(discoveryUrl);
+        }
+
+        private static string GetHttpsEndpointFromDiscovery(JsonDocument discovery, string propertyName)
+        {
+            string endpoint = discovery.RootElement.GetProperty(propertyName).GetString()!;
+            EnsureIsHttpsUrl(endpoint, $"'{propertyName}' from the discovery-document");
+            return endpoint;
+        }
+
+        /// <summary>
+        /// Ensures that <paramref name="url"/> is an absolute url with the scheme https.
+        /// </summary>
+        /// <remarks>
+        /// Every url used by this service must be protected by tls, otherwise an attacker on the network-path could replace the discovery-document or the signing-keys (and with that forge tokens) or read the authorization-code and the client-secret.
+        /// An opt-out is intentionally not offered.
+        /// </remarks>
+        private static void EnsureIsHttpsUrl(string url, string description)
+        {
+            if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) || uri.Scheme != Uri.UriSchemeHttps)
+            {
+                throw new InvalidOperationException($"The {description} must be an absolute https-url, but it is '{url}'.");
+            }
         }
 
         private async Task<JsonDocument> PostTokenRequestAsync(string tokenEndpoint, IDictionary<string, string> form)
@@ -164,7 +187,7 @@ namespace GRYLibrary.Core.APIServer.Services.OIDC
         /// </summary>
         private async Task<IDictionary<string, string>> ValidateJwtAndParseClaimsAsync(OIDCProviderConfiguration provider, JsonDocument discovery, string token, string? validAudience)
         {
-            string jwksUri = discovery.RootElement.GetProperty("jwks_uri").GetString()!;
+            string jwksUri = GetHttpsEndpointFromDiscovery(discovery, "jwks_uri");
             string issuer = discovery.RootElement.GetProperty("issuer").GetString()!;
 
             JsonWebKeySet jwks = await this.FetchJwksAsync(jwksUri);

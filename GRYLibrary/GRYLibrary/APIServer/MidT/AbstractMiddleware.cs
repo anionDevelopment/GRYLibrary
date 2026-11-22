@@ -42,6 +42,16 @@ namespace GRYLibrary.Core.APIServer.MidT
             return this.TryGetAttributeFromContext(context, out actionAttribute);
         }
 
+        public bool TryGetPreventRequestBodyLogAttribute(HttpContext context, out PreventRequestBodyLogAttribute preventRequestBodyLogAttribute)
+        {
+            return this.TryGetAttributeFromContext(context, out preventRequestBodyLogAttribute);
+        }
+
+        public bool TryGetPreventResponseBodyLogAttribute(HttpContext context, out PreventResponseBodyLogAttribute preventResponseBodyLogAttribute)
+        {
+            return this.TryGetAttributeFromContext(context, out preventResponseBodyLogAttribute);
+        }
+
         private bool TryGetAttributeFromContext<T>(HttpContext context, out T attribute)
             where T : Attribute
         {

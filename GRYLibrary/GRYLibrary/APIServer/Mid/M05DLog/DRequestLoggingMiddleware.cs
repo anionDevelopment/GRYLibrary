@@ -83,8 +83,8 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
             try
             {
                 DateTimeOffset moment = this._TimeService.GetCurrentLocalTimeAsDateTimeOffset();
-                (string info, string? content, byte[] plainContent) requestBody = BytesToString(requestBodyBytes, this._Encoding);
-                (string info, string? content, byte[] plainContent) responseBody = BytesToString(responseBodyBytes, this._Encoding);
+                (string info, string? content, byte[] plainContent) requestBody = this.TryGetPreventRequestBodyLogAttribute(context, out _) ? GetNotLoggedBody() : BytesToString(requestBodyBytes, this._Encoding);
+                (string info, string? content, byte[] plainContent) responseBody = this.TryGetPreventResponseBodyLogAttribute(context, out _) ? GetNotLoggedBody() : BytesToString(responseBodyBytes, this._Encoding);
                 string requestRoute = context.Request.Path;
                 ushort responseHTTPStatusCode = (ushort)context.Response.StatusCode;
                 IPAddress? clientIP = (IPAddress?)context.Items["ClientIPAddress"];
@@ -114,6 +114,17 @@ namespace GRYLibrary.Core.APIServer.Mid.M05DLog
             {
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Returns a placeholder which is used instead of a body whose logging is prevented by <see cref="PreventRequestBodyLogAttribute"/> or <see cref="PreventResponseBodyLogAttribute"/>.
+        /// </summary>
+        /// <remarks>
+        /// The placeholder replaces the body already when the <see cref="Request"/>-object is created, so the content of the body is not available for any (possibly overridden) formatting-function and is therefore never logged, regardless of the configuration.
+        /// </remarks>
+        private static (string info, string? content, byte[] plainContent) GetNotLoggedBody()
+        {
+            return ("(not logged)", null, Array.Empty<byte>());
         }
 
         private void AddDataToMetrics(Request request)

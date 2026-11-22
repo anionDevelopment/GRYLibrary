@@ -2,6 +2,7 @@ using GRYLibrary.Core.APIServer.MidT.General;
 using GRYLibrary.Core.APIServer.Settings.Configuration;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -37,7 +38,7 @@ namespace GRYLibrary.Core.APIServer.Mid.General
             {
                 if (context.Request.Headers.TryGetValue("X-Forwarded-For", out Microsoft.Extensions.Primitives.StringValues value) && (value != default(string)))
                 {
-                    result = IPAddress.Parse((string)value!);
+                    result = GetClientIPAddressFromForwardedForHeader(value!);
                 }
             }
             if (result != null)
@@ -48,6 +49,21 @@ namespace GRYLibrary.Core.APIServer.Mid.General
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Returns the client-ip-address from the value of an "X-Forwarded-For"-header.
+        /// </summary>
+        /// <remarks>
+        /// The header can contain several comma-separated addresses (and can also be sent several times), where every proxy appends the address of its client.
+        /// Only the last address is taken because it is the one which was appended by the trusted reverse-proxy directly in front of this server.
+        /// All addresses before it can be set arbitrarily by the client, so taking one of them would allow to spoof the client-ip-address.
+        /// </remarks>
+        /// <exception cref="FormatException">Thrown if the last address is not a valid ip-address.</exception>
+        internal static IPAddress GetClientIPAddressFromForwardedForHeader(Microsoft.Extensions.Primitives.StringValues headerValue)
+        {
+            string lastAddress = string.Join(",", headerValue.ToArray()).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Last();
+            return IPAddress.Parse(lastAddress);
         }
     }
 }

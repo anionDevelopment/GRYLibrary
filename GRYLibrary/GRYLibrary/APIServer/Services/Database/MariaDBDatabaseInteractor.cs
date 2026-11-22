@@ -3,7 +3,6 @@ using GRYLibrary.Core.Logging.GRYLogger;
 using MySqlConnector;
 using System;
 using System.Data.Common;
-using System.Text.RegularExpressions;
 
 namespace GRYLibrary.Core.APIServer.Services.Database
 {
@@ -15,18 +14,6 @@ namespace GRYLibrary.Core.APIServer.Services.Database
         }
         public MariaDBDatabaseInteractor(IDatabasePersistenceConfiguration configuration, IGRYLog log) : base(configuration, log)
         {
-        }
-
-#pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
-        //"Password" must be covered too because that is the keyword which is actually used in the connection-strings of this database-type.
-        private static readonly Regex PasswordHideRegex = new Regex("(Password|PWD)=([^;]+)(;|$)", RegexOptions.IgnoreCase);
-
-#pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
-        public override string EscapePasswordInConnectionString(string connectionString)
-        {
-            string replaceString = "********";
-            connectionString = PasswordHideRegex.Replace(connectionString, match => $"{match.Groups[1]}={replaceString}{match.Groups[3]}");
-            return connectionString;
         }
 
         public override DbCommand CreateCommand(string sql)

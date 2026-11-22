@@ -23,11 +23,6 @@ namespace GRYLibrary.Core.APIServer.Services.Database
             throw new NotImplementedException();
         }
 
-        public override string EscapePasswordInConnectionString(string connectionString)
-        {
-            throw new NotImplementedException();
-        }
-
         public override string GetSQLStatementForRunningMigration(string migrationContent, string migrationTableName, string migrationName, DateTimeOffset now)
         {
             throw new NotImplementedException();

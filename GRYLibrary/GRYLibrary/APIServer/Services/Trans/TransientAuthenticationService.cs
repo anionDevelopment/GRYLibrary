@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using AccessToken = GRYLibrary.Core.APIServer.CommonAuthenticationTypes.AccessToken;
 using User = GRYLibrary.Core.APIServer.CommonDBTypes.User;
 
@@ -54,12 +55,23 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
                 throw new NotAuthorizedException($"User '{userName}' is locked.");
             }
             AccessToken newAccessToken = new AccessToken();
-            newAccessToken.Value = Guid.NewGuid().ToString();
+            newAccessToken.Value = GenerateAccessTokenValue();
             newAccessToken.OwnerUserId = user.Id;
             newAccessToken.ExpiredMoment = this._TimeService.GetCurrentLocalTimeAsDateTimeOffset().AddDays(1);//TODO make this configurable
             this._TransientAuthenticationServicePersistence.AddAccessToken(newAccessToken);
             user.AccessToken.Add(newAccessToken);
             return newAccessToken;
+        }
+
+        private const string AccessTokenAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        private const int AccessTokenLength = 36;
+
+        /// <summary>
+        /// Generates an alphanumeric access-token-value using a cryptographically secure random number generator.
+        /// </summary>
+        private static string GenerateAccessTokenValue()
+        {
+            return RandomNumberGenerator.GetString(AccessTokenAlphabet, AccessTokenLength);
         }
 
         private AccessToken ThrowInvalidCredentialsException()

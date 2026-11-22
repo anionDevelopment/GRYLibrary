@@ -4,6 +4,7 @@ using GRYLibrary.Core.APIServer.MidT.Auth;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Security.Claims;
 
 namespace GRYLibrary.Core.APIServer.Services.Aut.M
@@ -128,7 +129,7 @@ namespace GRYLibrary.Core.APIServer.Services.Aut.M
             throw new NotImplementedException();
         }
 
-        public AccessToken Login(string userName, string password)
+        public AccessToken Login(string userName, string password, IPAddress? clientIPAddress)
         {
             throw new NotImplementedException();
         }

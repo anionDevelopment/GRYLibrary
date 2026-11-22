@@ -1,11 +1,13 @@
 using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.LoginThrottling;
 using GRYLibrary.Core.Crypto;
 using GRYLibrary.Core.Exceptions;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using AccessToken = GRYLibrary.Core.APIServer.CommonAuthenticationTypes.AccessToken;
@@ -26,12 +28,14 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
         private readonly ITimeService _TimeService;
         private readonly ITransientAuthenticationServicePersistence<UserType> _TransientAuthenticationServicePersistence;
         private readonly IAuthenticationServiceSettings _AuthenticationServiceSettings;
+        private readonly ILoginThrottlingService _LoginThrottlingService;
         private readonly PasswordHasher _PasswordHasher = new PasswordHasher();
-        public TransientAuthenticationService(ITimeService timeService, ITransientAuthenticationServicePersistence<UserType> transientAuthenticationServicePersistence, IAuthenticationServiceSettings authenticationServiceSettings)
+        public TransientAuthenticationService(ITimeService timeService, ITransientAuthenticationServicePersistence<UserType> transientAuthenticationServicePersistence, IAuthenticationServiceSettings authenticationServiceSettings, ILoginThrottlingService loginThrottlingService)
         {
             this._TimeService = timeService;
             this._TransientAuthenticationServicePersistence = transientAuthenticationServicePersistence;
             this._AuthenticationServiceSettings = authenticationServiceSettings;
+            this._LoginThrottlingService = loginThrottlingService;
         }
 
         public virtual string Hash(string password)
@@ -47,18 +51,20 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
         /// </remarks>
         private static readonly string _DummyPasswordHash = new PasswordHasher().Hash(RandomNumberGenerator.GetString(AccessTokenAlphabet, AccessTokenLength));
 
-        public virtual AccessToken Login(string userName, string password)
+        public virtual AccessToken Login(string userName, string password, IPAddress? clientIPAddress)
         {
+            this._LoginThrottlingService.AssertLoginIsAllowed(userName, clientIPAddress);
             UserType? user = this._TransientAuthenticationServicePersistence.UserWithNameExists(userName) ? this.GetUserByNameTyped(userName) : null;
             if (user == null || string.IsNullOrEmpty(user.PasswordHash))
             {
                 this._PasswordHasher.Verify(password, _DummyPasswordHash);
-                return this.ThrowInvalidCredentialsException();
+                return this.FailLogin(userName, clientIPAddress);
             }
             if (!this._PasswordHasher.Verify(password, user.PasswordHash))
             {
-                return this.ThrowInvalidCredentialsException();
+                return this.FailLogin(userName, clientIPAddress);
             }
+            this._LoginThrottlingService.RegisterSuccessfulLogin(userName);
             if (user.UserIsLocked)
             {
                 throw new NotAuthorizedException($"User '{userName}' is locked.");
@@ -81,6 +87,12 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
         private static string GenerateAccessTokenValue()
         {
             return RandomNumberGenerator.GetString(AccessTokenAlphabet, AccessTokenLength);
+        }
+
+        private AccessToken FailLogin(string userName, IPAddress? clientIPAddress)
+        {
+            this._LoginThrottlingService.RegisterFailedLogin(userName, clientIPAddress);
+            return this.ThrowInvalidCredentialsException();
         }
 
         private AccessToken ThrowInvalidCredentialsException()

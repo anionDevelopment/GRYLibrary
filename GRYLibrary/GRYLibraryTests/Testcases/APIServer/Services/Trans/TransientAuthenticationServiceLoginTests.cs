@@ -1,5 +1,6 @@
 using GRYLibrary.Core.APIServer.CommonAuthenticationTypes;
 using GRYLibrary.Core.APIServer.CommonDBTypes;
+using GRYLibrary.Core.APIServer.Services.LoginThrottling;
 using GRYLibrary.Core.APIServer.Services.OtherServices;
 using GRYLibrary.Core.APIServer.Services.Trans;
 using GRYLibrary.Core.Exceptions;
@@ -7,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 
 namespace GRYLibrary.Tests.Testcases.APIServer.Services.Trans
 {
@@ -15,11 +17,12 @@ namespace GRYLibrary.Tests.Testcases.APIServer.Services.Trans
     {
         private const string ExistingUserName = "existing-user";
         private const string CorrectPassword = "correct-password";
+        private static readonly IPAddress ClientIPAddress = IPAddress.Parse("192.0.2.1");
 
         private static TransientAuthenticationService<User> GetServiceWithUser()
         {
             TimeService timeService = new TimeService();
-            TransientAuthenticationService<User> service = new TransientAuthenticationService<User>(timeService, new TransientAuthenticationServicePersistence<User>(timeService), new AuthenticationServiceSettings());
+            TransientAuthenticationService<User> service = new TransientAuthenticationService<User>(timeService, new TransientAuthenticationServicePersistence<User>(timeService), new AuthenticationServiceSettings(), new LoginThrottlingService(timeService, new LoginThrottlingConfiguration() { AmountOfFailedLoginsPerUserNameUntilLock = 1000, AmountOfFailedLoginsPerIPAddressUntilLock = 1000 }));
             service.AddUserTyped(User.CreateNewUser(ExistingUserName, service.Hash(CorrectPassword), timeService));
             service.AddUserTyped(User.CreateNewUser("user-without-password", string.Empty, timeService));
             return service;
@@ -27,7 +30,7 @@ namespace GRYLibrary.Tests.Testcases.APIServer.Services.Trans
 
         private static string GetMessageOfFailedLogin(TransientAuthenticationService<User> service, string userName, string password)
         {
-            BadRequestException exception = Assert.ThrowsExactly<BadRequestException>(() => service.Login(userName, password));
+            BadRequestException exception = Assert.ThrowsExactly<BadRequestException>(() => service.Login(userName, password, ClientIPAddress));
             return exception.Message;
         }
 
@@ -37,7 +40,7 @@ namespace GRYLibrary.Tests.Testcases.APIServer.Services.Trans
             TimeSpan[] durations = Enumerable.Range(0, 5).Select(_ =>
             {
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                Assert.ThrowsExactly<BadRequestException>(() => service.Login(userName, "wrong-password"));
+                Assert.ThrowsExactly<BadRequestException>(() => service.Login(userName, "wrong-password", ClientIPAddress));
                 stopwatch.Stop();
                 return stopwatch.Elapsed;
             }).OrderBy(duration => duration).ToArray();
@@ -52,7 +55,7 @@ namespace GRYLibrary.Tests.Testcases.APIServer.Services.Trans
             TransientAuthenticationService<User> service = GetServiceWithUser();
 
             // act
-            AccessToken accessToken = service.Login(ExistingUserName, CorrectPassword);
+            AccessToken accessToken = service.Login(ExistingUserName, CorrectPassword, ClientIPAddress);
 
             // assert
             Assert.IsFalse(string.IsNullOrEmpty(accessToken.Value));

@@ -8,6 +8,13 @@ namespace GRYLibrary.Core.APIServer.Settings.Configuration
         public string DevelopmentCertificatePasswordHex { get; set; }
         public string DevelopmentCertificatePFXHex { get; set; }
         public bool HostAPISpecificationForInNonDevelopmentEnvironment { get; set; }
+        /// <summary>
+        /// If true then the client-ip-address is taken from the last entry of the "X-Forwarded-For"-header (if the header is present) instead of from the connection.
+        /// </summary>
+        /// <remarks>
+        /// Only enable this if the server is only reachable through a reverse-proxy which appends the address of its client to this header, because otherwise a client can choose its own logged and throttled ip-address.
+        /// If the last entry is not a valid ip-address then the request fails with a <see cref="System.FormatException"/>.
+        /// </remarks>
         public bool TrustForwardedHeader { get; set; }
         public void SetDomainAndPublichUrlToDefault(string domain);
         public string GetServerAddress();

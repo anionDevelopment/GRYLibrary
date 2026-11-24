@@ -13,6 +13,10 @@ namespace GRYLibrary.Core.APIServer.Services.Interfaces
     {
         public string Hash(string password);
         public void AddUser(User user);
+        /// <summary>
+        /// Checks the credentials and returns a new access-token for the user if they are correct.
+        /// </summary>
+        /// <param name="clientIPAddress">The ip-address of the client which sends the login-request (available in a controller as <c>HttpContext.Items["ClientIPAddress"]</c>). It is used to throttle failed logins per ip-address. Null if the ip-address is unknown.</param>
         public AccessToken Login(string userName, string password, IPAddress? clientIPAddress);
         public bool AccessTokenIsValid(string accessToken);
         public ClaimsPrincipal GetPrincipal(string accessToken);

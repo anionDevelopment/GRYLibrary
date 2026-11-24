@@ -90,7 +90,7 @@ OIDCPasswordLoginResult result = await oidcService.LoginWithPasswordAsync(provid
 A login-implementation can therefore branch like this:
 
 ```csharp
-public AccessToken Login(string userName, string password)
+public AccessToken Login(string userName, string password, IPAddress? clientIPAddress)
 {
     if (this.OIDCIsEnabled)
     {

@@ -63,6 +63,35 @@ namespace GRYLibrary.Tests.Testcases.APIServer.Services.Trans
 
         [TestMethod]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void LoginReturnsAccessTokenWhichConsistsOf36AlphanumericCharacters()
+        {
+            // arrange
+            TransientAuthenticationService<User> service = GetServiceWithUser();
+
+            // act
+            AccessToken accessToken = service.Login(ExistingUserName, CorrectPassword, ClientIPAddress);
+
+            // assert
+            Assert.AreEqual(36, accessToken.Value.Length);
+            Assert.IsTrue(accessToken.Value.All(char.IsAsciiLetterOrDigit), $"Access-token-value contains a character which is not alphanumeric: '{accessToken.Value}'.");
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void SeveralLoginsReturnDifferentAccessTokens()
+        {
+            // arrange
+            TransientAuthenticationService<User> service = GetServiceWithUser();
+
+            // act
+            string[] accessTokenValues = Enumerable.Range(0, 3).Select(_ => service.Login(ExistingUserName, CorrectPassword, ClientIPAddress).Value).ToArray();
+
+            // assert
+            Assert.AreEqual(accessTokenValues.Length, accessTokenValues.Distinct().Count());
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
         public void FailedLoginsCanNotBeDistinguishedByTheirMessage()
         {
             // arrange

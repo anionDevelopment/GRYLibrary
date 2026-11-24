@@ -11,4 +11,5 @@
 - [APIServer](./Articles/APIServer.md)
 - [ExternalProgramExecutorWrapper](./Articles/ExternalProgramExecutorWrapper.md)
 - [GRYLog](./Articles/GRYLog.md)
+- [OIDC](./Articles/OIDC.md)
 - [SimpleGenericXMLSerializer](./Articles/SimpleGenericXMLSerializer.md)

@@ -301,7 +301,7 @@ namespace GRYLibrary.Core.APIServer.Utilities
 
             public HealthCheckResult Handle(Initializing initializing)
             {
-                return HealthCheckResult.Healthy("Initializing");
+                return HealthCheckResult.Degraded("Initializing");
             }
 
             public HealthCheckResult Handle(Initialized initialized)

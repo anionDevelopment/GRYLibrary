@@ -106,7 +106,7 @@ namespace GRYLibrary.Core.AOA
         /// Sets the values of all properties of <paramref name="thisObject"/> to the value of the equal property of <paramref name="deserializedObject"/>.
         /// </summary>
         /// <remarks>
-        /// This function does not create a deep copy of the property-values. It reassignes only the property-target-objects of <paramref name="thisObject"/>.
+        /// This function does not create a deep copy of the property-values. It reassigns only the property-target-objects of <paramref name="thisObject"/>.
         /// If <paramref name="thisObject"/> is an <see cref="IEnumerable"/> then only the references of the items of the enumeration will be copied, no property-values.
         /// </remarks>
         internal void CopyContentOfObject(object thisObject, object deserializedObject)

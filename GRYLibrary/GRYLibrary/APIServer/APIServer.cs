@@ -4,6 +4,7 @@ using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.ExecutionModes.Visitors;
 using GRYLibrary.Core.APIServer.Formatter;
 using GRYLibrary.Core.APIServer.Mid.General;
+using GRYLibrary.Core.APIServer.MaintenanceRoutes;
 using GRYLibrary.Core.APIServer.MidT;
 using GRYLibrary.Core.APIServer.MidT.Aut;
 using GRYLibrary.Core.APIServer.MidT.Auth;
@@ -361,6 +362,10 @@ namespace GRYLibrary.Core.APIServer
                 {
                     mvcOptions.InputFormatters.Add(new ByteArrayInputFormatter());
                     mvcOptions.UseGeneralRoutePrefix(ServerConfiguration.APIRoutePrefix);
+                    if (this._Configuration.InitializationInformation.ApplicationConstants.HostMaintenanceInformation is HostMaintenanceRoutes hostMaintenanceRoutes)
+                    {
+                        mvcOptions.Conventions.Add(new MaintenanceRoutesPrefixConvention(hostMaintenanceRoutes.RoutePrefix));
+                    }
                 });//TODO add handling for /robots.txt
                 // A common route whose link is not configured is not hosted at all. The convention is added through
                 // the options-pattern and not directly, because it needs the configured information, which is

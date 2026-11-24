@@ -1,12 +1,15 @@
 using GRYLibrary.Core.APIServer.CommonDBTypes;
 using GRYLibrary.Core.APIServer.Services.Interfaces;
+using GRYLibrary.Core.APIServer.Services.LoginThrottling;
 using GRYLibrary.Core.Crypto;
 using GRYLibrary.Core.Exceptions;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using AccessToken = GRYLibrary.Core.APIServer.CommonAuthenticationTypes.AccessToken;
 using User = GRYLibrary.Core.APIServer.CommonDBTypes.User;
 
@@ -25,12 +28,14 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
         private readonly ITimeService _TimeService;
         private readonly ITransientAuthenticationServicePersistence<UserType> _TransientAuthenticationServicePersistence;
         private readonly IAuthenticationServiceSettings _AuthenticationServiceSettings;
+        private readonly ILoginThrottlingService _LoginThrottlingService;
         private readonly PasswordHasher _PasswordHasher = new PasswordHasher();
-        public TransientAuthenticationService(ITimeService timeService, ITransientAuthenticationServicePersistence<UserType> transientAuthenticationServicePersistence, IAuthenticationServiceSettings authenticationServiceSettings)
+        public TransientAuthenticationService(ITimeService timeService, ITransientAuthenticationServicePersistence<UserType> transientAuthenticationServicePersistence, IAuthenticationServiceSettings authenticationServiceSettings, ILoginThrottlingService loginThrottlingService)
         {
             this._TimeService = timeService;
             this._TransientAuthenticationServicePersistence = transientAuthenticationServicePersistence;
             this._AuthenticationServiceSettings = authenticationServiceSettings;
+            this._LoginThrottlingService = loginThrottlingService;
         }
 
         public virtual string Hash(string password)
@@ -38,28 +43,56 @@ namespace GRYLibrary.Core.APIServer.Services.Trans
             return this._PasswordHasher.Hash(password);
         }
 
-        public virtual AccessToken Login(string userName, string password)
+        /// <summary>
+        /// Hash of a random password which is verified instead of a real password-hash if there is no user with the given name (or if the user has no password-hash).
+        /// </summary>
+        /// <remarks>
+        /// This makes every login perform exactly one password-hash-verification with the same cost, so the duration of a login does not reveal whether a user with the given name exists.
+        /// </remarks>
+        private static readonly string _DummyPasswordHash = new PasswordHasher().Hash(RandomNumberGenerator.GetString(AccessTokenAlphabet, AccessTokenLength));
+
+        public virtual AccessToken Login(string userName, string password, IPAddress? clientIPAddress)
         {
-            if (!this._TransientAuthenticationServicePersistence.UserWithNameExists(userName))
+            this._LoginThrottlingService.AssertLoginIsAllowed(userName, clientIPAddress);
+            UserType? user = this._TransientAuthenticationServicePersistence.UserWithNameExists(userName) ? this.GetUserByNameTyped(userName) : null;
+            if (user == null || string.IsNullOrEmpty(user.PasswordHash))
             {
-                return this.ThrowInvalidCredentialsException();
+                this._PasswordHasher.Verify(password, _DummyPasswordHash);
+                return this.FailLogin(userName, clientIPAddress);
             }
-            UserType user = this.GetUserByNameTyped(userName);
             if (!this._PasswordHasher.Verify(password, user.PasswordHash))
             {
-                return this.ThrowInvalidCredentialsException();
+                return this.FailLogin(userName, clientIPAddress);
             }
+            this._LoginThrottlingService.RegisterSuccessfulLogin(userName);
             if (user.UserIsLocked)
             {
                 throw new NotAuthorizedException($"User '{userName}' is locked.");
             }
             AccessToken newAccessToken = new AccessToken();
-            newAccessToken.Value = Guid.NewGuid().ToString();
+            newAccessToken.Value = GenerateAccessTokenValue();
             newAccessToken.OwnerUserId = user.Id;
             newAccessToken.ExpiredMoment = this._TimeService.GetCurrentLocalTimeAsDateTimeOffset().AddDays(1);//TODO make this configurable
             this._TransientAuthenticationServicePersistence.AddAccessToken(newAccessToken);
             user.AccessToken.Add(newAccessToken);
             return newAccessToken;
+        }
+
+        private const string AccessTokenAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        private const int AccessTokenLength = 36;
+
+        /// <summary>
+        /// Generates an alphanumeric access-token-value using a cryptographically secure random number generator.
+        /// </summary>
+        private static string GenerateAccessTokenValue()
+        {
+            return RandomNumberGenerator.GetString(AccessTokenAlphabet, AccessTokenLength);
+        }
+
+        private AccessToken FailLogin(string userName, IPAddress? clientIPAddress)
+        {
+            this._LoginThrottlingService.RegisterFailedLogin(userName, clientIPAddress);
+            return this.ThrowInvalidCredentialsException();
         }
 
         private AccessToken ThrowInvalidCredentialsException()

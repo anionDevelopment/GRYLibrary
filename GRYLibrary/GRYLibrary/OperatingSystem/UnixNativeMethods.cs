@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace GRYLibrary.Core.OperatingSystem
 {
     /// <summary>
-    /// Contains the functions of the c-standard-library which are required to implement the operating-system-specific behaviour of unix-based operating-systems.
+    /// Contains the functions of the c-standard-library which are required to implement the operating-system-specific behavior of unix-based operating-systems.
     /// </summary>
     /// <remarks>
     /// On <see cref="ConcreteOperatingSystems.Linux"/> "libc" is resolved to the installed c-standard-library and on <see cref="ConcreteOperatingSystems.OSX"/> it is resolved to "libSystem.dylib".

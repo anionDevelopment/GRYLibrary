@@ -29,6 +29,8 @@ OIDCProviderConfiguration provider = new OIDCProviderConfiguration
 };
 ```
 
+The `Authority` must be an absolute https-url. The endpoints which `OIDCService` takes from the discovery-document of the provider (`authorization_endpoint`, `token_endpoint` and `jwks_uri`) must be https-urls as well. Otherwise `OIDCService` throws an `InvalidOperationException` before it sends any request to such an url. An opt-out (for example for a local provider which is only reachable via http) is intentionally not offered, because a plaintext-connection allows an attacker on the network-path to replace the signing-keys and forge tokens.
+
 The application typically reads these values from its own configuration-file so that a deployment can point the application at its own OIDC-provider without any code-change.
 
 ## Registration
@@ -88,7 +90,7 @@ OIDCPasswordLoginResult result = await oidcService.LoginWithPasswordAsync(provid
 A login-implementation can therefore branch like this:
 
 ```csharp
-public AccessToken Login(string userName, string password)
+public AccessToken Login(string userName, string password, IPAddress? clientIPAddress)
 {
     if (this.OIDCIsEnabled)
     {
@@ -150,13 +152,13 @@ services.AddSingleton<IOIDCAuthenticationConfiguration>(new OIDCAuthenticationCo
 
 With this registration in place, `AuthSMiddleware` behaves as follows for every incoming request:
 
-1. First it checks whether the presented token is a valid application-local token (the existing behaviour).
+1. First it checks whether the presented token is a valid application-local token (the existing behavior).
 2. If it is not, it tries to validate the token as an OIDC-token via `IOIDCService.ValidateAccessTokenAsync`. The token's
    signature is verified against the provider's published keys (JWKS) and its issuer and lifetime are checked (and its
    audience, if `OIDCProviderConfiguration.Audience` is set). On success the request is authenticated and a principal is
    built from the token's claims (the `sub`-claim becomes the user-identifier).
 
-If neither an `IOIDCService` nor an `IOIDCAuthenticationConfiguration` is registered, only application-local tokens are accepted and the behaviour is unchanged.
+If neither an `IOIDCService` nor an `IOIDCAuthenticationConfiguration` is registered, only application-local tokens are accepted and the behavior is unchanged.
 This makes the OIDC-token-validation strictly opt-in.
 
 You can also call `ValidateAccessTokenAsync` directly if you need to validate an OIDC-token yourself:

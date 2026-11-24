@@ -51,7 +51,29 @@ namespace GRYLibrary.Core.APIServer.Services.Database
 
         protected abstract DbConnection CreateNewConnectionObject(string connectionString);
         public abstract DbCommand CreateCommand(string sql);
-        public abstract string EscapePasswordInConnectionString(string connectionString);
+#pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
+        /// <summary>
+        /// Matches the value of a password-keyword in a connection-string.
+        /// The keywords "Password", "PWD" and "PSW" are matched case-insensitively, also with whitespace around the "=", and the value may be quoted (with " or ') and then contain a ";".
+        /// </summary>
+        private static readonly Regex _PasswordInConnectionStringRegex = new Regex(@"(?<prefix>(?:^|;)\s*(?:password|pwd|psw)\s*=\s*)(?:""(?:[^""]|"""")*""|'(?:[^']|'')*'|[^;]*)", RegexOptions.IgnoreCase);
+#pragma warning restore SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
+
+        /// <summary>
+        /// Returns <paramref name="connectionString"/> with every password replaced by a placeholder, so that the result can be logged.
+        /// </summary>
+        public virtual string EscapePasswordInConnectionString(string connectionString)
+        {
+            return GetConnectionStringWithEscapedPassword(connectionString);
+        }
+
+        /// <summary>
+        /// Returns <paramref name="connectionString"/> with every password replaced by a placeholder, so that the result can be logged.
+        /// </summary>
+        public static string GetConnectionStringWithEscapedPassword(string connectionString)
+        {
+            return _PasswordInConnectionStringRegex.Replace(connectionString, match => match.Groups["prefix"].Value + "********");
+        }
         public abstract string CreateSQLStatementForGetAllTableNames();
         public abstract string CreateSQLStatementForCreatingMigrationMaintenanceTableIfNotExist(string tableName);
         public abstract string GetSQLStatementForSelectMigrationMaintenanceTableContent(string migrationTableName);
@@ -195,19 +217,13 @@ namespace GRYLibrary.Core.APIServer.Services.Database
             string connectionStringForLog = this._Configuration.DatabaseConnectionString;
             if (this._Configuration.EscapePasswordInLog)
             {
-                connectionStringForLog = this.EscapePassword(this._Configuration.DatabaseConnectionString);
+                connectionStringForLog = this.EscapePasswordInConnectionString(this._Configuration.DatabaseConnectionString);
             }
             GUtilities.AssertCondition(Regex.IsMatch(connectionStringForLog, @"Database=[^;]+", RegexOptions.IgnoreCase), $"Connectionstring \"{connectionStringForLog}\" does not contain a databasename-specification.");
             this.Log.Log($"Try to create database-connection using connection-string \"{connectionStringForLog}\".", LogLevel.Information);
             DbConnection conn = this.CreateNewConnectionObject(this._Configuration.DatabaseConnectionString);
             conn.Open();
             return conn;
-        }
-
-        private string EscapePassword(string databaseConnectionString)
-        {
-            string output = Regex.Replace(databaseConnectionString, @"Password=[^;]+", "Password=********");
-            return output;
         }
 
         /// <inheritdoc/>

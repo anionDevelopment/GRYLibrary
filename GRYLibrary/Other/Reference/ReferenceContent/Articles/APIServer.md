@@ -56,3 +56,27 @@ string shortValue = Utilities.GenerateSecureRandomValue(7); // an odd amount wor
 ```
 
 `Random` is deliberately not used for this: it is meant to be fast and reproducible, which is the opposite of what a password needs - whoever knows a few of its values can compute the following ones, and a value which can be computed is no secret.
+
+## Login-throttling
+
+`IAuthenticationService.Login(userName, password, clientIPAddress)` throttles logins to prevent online-password-guessing.
+The throttling is done by an `ILoginThrottlingService` (default-implementation: `LoginThrottlingService`), which must be registered as singleton:
+
+```csharp
+services.AddSingleton<ILoginThrottlingConfiguration>(new LoginThrottlingConfiguration());
+services.AddSingleton<ILoginThrottlingService, LoginThrottlingService>();
+```
+
+The client-ip-address is available in the controller as `(IPAddress?)HttpContext.Items["ClientIPAddress"]`.
+
+The throttling works per user-name and per ip-address:
+
+- From `AmountOfFailedLoginsPerUserNameUntilLock` (default: 5) failed logins for a user-name on, further logins for this user-name are locked, regardless of the ip-address.
+- From `AmountOfFailedLoginsPerIPAddressUntilLock` (default: 20) failed logins from an ip-address on, further logins from this address are locked, regardless of the user-name. The threshold is higher because several users can share one ip-address. Ipv6-addresses are throttled per /64-network, and all clients with an unknown ip-address share one counter.
+- The first lock lasts `InitialLockDuration` (default: 1 minute). Every further failed login doubles the duration up to `MaximalLockDuration` (default: 15 minutes).
+- After `DurationUntilFailedLoginsAreForgotten` (default: 1 hour) without failed login the counter is forgotten.
+- A successful login resets only the counter of the user-name. The counter of the ip-address is not reset, otherwise an attacker could reset it by logging in with an own account.
+- A locked login is rejected with http-status 429 before the password is verified, also if the password is correct.
+- Failed logins for user-names which do not exist are counted as well, so the throttling does not reveal whether a user-name exists.
+
+The counters are kept in memory. They are lost when the application restarts and are not shared between several instances of the application. This is accepted by design.

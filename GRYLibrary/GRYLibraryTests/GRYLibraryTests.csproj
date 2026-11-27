@@ -3,9 +3,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <Authors>Marius Göcke</Authors>
-    <Version>2.1.12</Version>
-    <AssemblyVersion>2.1.12</AssemblyVersion>
-    <FileVersion>2.1.12</FileVersion>
+    <Version>2.1.13</Version>
+    <AssemblyVersion>2.1.13</AssemblyVersion>
+    <FileVersion>2.1.13</FileVersion>
     <SelfContained>false</SelfContained>
     <IsPackable>false</IsPackable>
     <PreserveCompilationContext>false</PreserveCompilationContext>
@@ -93,4 +93,7 @@
       <ReferenceCopyLocalPaths Include="$(PkgMicrosoft_Extensions_Logging_Abstractions)\lib\net10.0\Microsoft.Extensions.Logging.Abstractions.dll" />
     </ItemGroup>
   </Target>
+  <ItemGroup>
+    <EmbeddedResource Include="Testcases\Misc\ConfigurationFileMigrations\*.xslt" LogicalName="GRYLibrary.Tests.ConfigurationFileMigrations.%(Filename)%(Extension)" />
+  </ItemGroup>
 </Project>

@@ -9,6 +9,7 @@
 
 - [Introduction](./Articles/Introduction.md)
 - [APIServer](./Articles/APIServer.md)
+- [ConfigurationFileMigrations](./Articles/ConfigurationFileMigrations.md)
 - [ExternalProgramExecutorWrapper](./Articles/ExternalProgramExecutorWrapper.md)
 - [GRYLog](./Articles/GRYLog.md)
 - [OIDC](./Articles/OIDC.md)

@@ -4,6 +4,7 @@ using GRYLibrary.Core.APIServer.ExecutionModes;
 using GRYLibrary.Core.APIServer.MaintenanceRoutes;
 using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.FilePath;
+using GRYLibrary.Core.Misc.MetaConfiguration.Migrations;
 using System;
 using System.Collections.Generic;
 
@@ -54,6 +55,13 @@ namespace GRYLibrary.Core.APIServer.Settings
         public IList<Type> CustomMiddlewares1 { get; set; }
         public IList<Type> CustomMiddlewares2 { get; set; }
         public ISet<Type> KnownTypes { get; set; }
+        /// <summary>
+        /// The custom migrations of the configuration-file of the application. They will be applied directly after the internal migrations of GRYLibrary. See <see cref="Configuration.APIServerConfigurationFileMigrations"/>.
+        /// </summary>
+        /// <remarks>
+        /// Usually they are loaded from embedded xslt-resources of the application using <see cref="Misc.MetaConfiguration.Migrations.ConfigurationFileMigration.LoadFromEmbeddedResources(System.Reflection.Assembly, string)"/>.
+        /// </remarks>
+        public IList<ConfigurationFileMigration> CustomConfigurationFileMigrations { get; set; }
         public bool ListenOnEveryIP { get; set; }
     }
     public interface IApplicationConstants<AppSpecificConstants> : IApplicationConstants
@@ -136,6 +144,7 @@ namespace GRYLibrary.Core.APIServer.Settings
         public IList<Type> CustomMiddlewares1 { get; set; } = [];
         public IList<Type> CustomMiddlewares2 { get; set; } = [];
         public ISet<Type> KnownTypes { get; set; } = new HashSet<Type>();
+        public IList<ConfigurationFileMigration> CustomConfigurationFileMigrations { get; set; } = [];
         public bool UseWebSockets { get; set; }
         public bool ListenOnEveryIP { get; set; }
 

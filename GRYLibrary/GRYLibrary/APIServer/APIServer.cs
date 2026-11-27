@@ -20,12 +20,14 @@ using GRYLibrary.Core.APIServer.Settings.Configuration;
 using GRYLibrary.Core.APIServer.Utilities;
 using GRYLibrary.Core.APIServer.Verbs;
 using GRYLibrary.Core.Exceptions;
+using GRYLibrary.Core.Logging.GeneralPurposeLogger;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
 using GRYLibrary.Core.Misc.ConsoleApplication;
 using GRYLibrary.Core.Misc.FilePath;
 using GRYLibrary.Core.Misc.MetaConfiguration;
 using GRYLibrary.Core.Misc.MetaConfiguration.ConfigurationFormats;
+using GRYLibrary.Core.Misc.MetaConfiguration.Migrations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -162,7 +164,7 @@ namespace GRYLibrary.Core.APIServer
                 #endregion
 
                 #region Load configuration
-                IPersistedAPIServerConfiguration<PersistedApplicationSpecificConfiguration> persistedAPIServerConfiguration = LoadConfiguration(apiServerConfiguration.InitializationInformation.ApplicationConstants.KnownTypes, apiServerConfiguration.InitializationInformation.ApplicationConstants.Environment, apiServerConfiguration.InitializationInformation.ApplicationConstants.ExecutionMode, apiServerConfiguration.InitializationInformation.ApplicationConstants.GetConfigurationFile(), apiServerConfiguration.InitializationInformation.ApplicationConstants.ThrowErrorIfConfigurationDoesNotExistInProduction, apiServerConfiguration.InitializationInformation.InitialApplicationConfiguration, out bool fileWasCreatedNew);
+                IPersistedAPIServerConfiguration<PersistedApplicationSpecificConfiguration> persistedAPIServerConfiguration = LoadConfiguration(apiServerConfiguration.InitializationInformation.ApplicationConstants.KnownTypes, apiServerConfiguration.InitializationInformation.ApplicationConstants.Environment, apiServerConfiguration.InitializationInformation.ApplicationConstants.ExecutionMode, apiServerConfiguration.InitializationInformation.ApplicationConstants.GetConfigurationFile(), apiServerConfiguration.InitializationInformation.ApplicationConstants.ThrowErrorIfConfigurationDoesNotExistInProduction, apiServerConfiguration.InitializationInformation.InitialApplicationConfiguration, APIServerConfigurationFileMigrations.GetAllMigrations(apiServerConfiguration.InitializationInformation.ApplicationConstants.CustomConfigurationFileMigrations), apiServerConfiguration.InitializationInformation.InitialLogger, out bool fileWasCreatedNew);
                 bool isFirstInitializationRun = fileWasCreatedNew;
                 bool initializeLogAsVerbose = apiServerConfiguration.CommandlineParameter.InitialVerboseValue && isFirstInitializationRun;
                 GUtilities.AssertCondition(persistedAPIServerConfiguration != null, "Could not load persisted API-server configuration.");
@@ -202,7 +204,7 @@ namespace GRYLibrary.Core.APIServer
 
         private static IPersistedAPIServerConfiguration<PersistedAppSpecificConfiguration> LoadConfiguration<PersistedAppSpecificConfiguration>(
             ISet<Type> knownTypes, GRYEnvironment environment, ExecutionMode executionMode, string configurationFile, bool throwErrorIfConfigurationDoesNotExistInProduction,
-            PersistedAPIServerConfiguration<PersistedAppSpecificConfiguration> initialConfiguration, out bool fileWasCreatedNew)
+            PersistedAPIServerConfiguration<PersistedAppSpecificConfiguration> initialConfiguration, IList<ConfigurationFileMigration> migrations, IGeneralLogger migrationLog, out bool fileWasCreatedNew)
                 where PersistedAppSpecificConfiguration : new()
         {
             if (throwErrorIfConfigurationDoesNotExistInProduction && environment is Productive && !File.Exists(configurationFile))
@@ -211,7 +213,7 @@ namespace GRYLibrary.Core.APIServer
             }
             else
             {
-                GetPersistedAPIServerConfigurationVisitor<PersistedAppSpecificConfiguration> visitor = new GetPersistedAPIServerConfigurationVisitor<PersistedAppSpecificConfiguration>(configurationFile, initialConfiguration, knownTypes);
+                GetPersistedAPIServerConfigurationVisitor<PersistedAppSpecificConfiguration> visitor = new GetPersistedAPIServerConfigurationVisitor<PersistedAppSpecificConfiguration>(configurationFile, initialConfiguration, knownTypes, migrations, migrationLog);
                 IPersistedAPIServerConfiguration<PersistedAppSpecificConfiguration> result = executionMode.Accept(visitor);
                 fileWasCreatedNew = visitor.FileWasCreatedNew;
                 return result;
@@ -224,13 +226,15 @@ namespace GRYLibrary.Core.APIServer
             private readonly ISet<Type> _KnownTypes;
             public bool FileWasCreatedNew { get; private set; }
 
-            public GetPersistedAPIServerConfigurationVisitor(string file, PersistedAPIServerConfiguration<PersistedAppSpecificConfiguration> initialValue, ISet<Type> knownTypes)
+            public GetPersistedAPIServerConfigurationVisitor(string file, PersistedAPIServerConfiguration<PersistedAppSpecificConfiguration> initialValue, ISet<Type> knownTypes, IList<ConfigurationFileMigration> migrations, IGeneralLogger migrationLog)
             {
                 this._MetaConfiguration = new MetaConfigurationSettings<PersistedAPIServerConfiguration<PersistedAppSpecificConfiguration>, IPersistedAPIServerConfiguration<PersistedAppSpecificConfiguration>>()
                 {
                     ConfigurationFormat = XML.Instance,
                     File = file,
-                    InitialValue = initialValue
+                    InitialValue = initialValue,
+                    Migrations = migrations,
+                    MigrationLog = migrationLog
                 };
                 this._KnownTypes = knownTypes;
             }
@@ -252,7 +256,6 @@ namespace GRYLibrary.Core.APIServer
 
             private IPersistedAPIServerConfiguration<PersistedAppSpecificConfiguration> UsePersistedConfiguration()
             {
-                //TODO add option to define config-file-migrations here
                 PersistedAPIServerConfiguration<PersistedAppSpecificConfiguration> result = MetaConfigurationManager.GetConfiguration(this._MetaConfiguration, this._KnownTypes, out bool fileWasCreatedNew);
                 this.FileWasCreatedNew = fileWasCreatedNew;
                 return result;

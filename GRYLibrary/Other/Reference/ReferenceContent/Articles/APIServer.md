@@ -80,3 +80,7 @@ The throttling works per user-name and per ip-address:
 - Failed logins for user-names which do not exist are counted as well, so the throttling does not reveal whether a user-name exists.
 
 The counters are kept in memory. They are lost when the application restarts and are not shared between several instances of the application. This is accepted by design.
+
+## Migrations of the configuration-file
+
+When a persisted property is renamed, moved or removed, existing configuration-files have to be migrated before they are loaded. How GRYLibrary does that and how an application adds its own migrations is described in the article [ConfigurationFileMigrations](./ConfigurationFileMigrations.md).

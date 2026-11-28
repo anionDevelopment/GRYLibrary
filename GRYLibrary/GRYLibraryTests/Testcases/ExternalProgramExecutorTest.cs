@@ -48,13 +48,24 @@ namespace GRYLibrary.Tests.Testcases
 
         [TestMethod]
         [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
-        public void CreateEpewArgumentStringContainsNotSynchronousForAsynchronousExecution()
+        public void CreateEpewArgumentStringContainsNotSynchronousFalseForOwnedAsynchronousExecution()
         {
             //act
             string result = ExternalProgramExecutor.CreateEpewArgumentString("program", null, null, false, null, Verbosity.Normal, false, null, null, new RunAsynchronously(), null, null, null);
 
             //assert
-            Assert.EndsWith(" --NotSynchronous", result);
+            Assert.EndsWith(" --NotSynchronous False", result);
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.UnitTest))]
+        public void CreateEpewArgumentStringContainsNotSynchronousTrueForDetachedAsynchronousExecution()
+        {
+            //act
+            string result = ExternalProgramExecutor.CreateEpewArgumentString("program", null, null, false, null, Verbosity.Normal, false, null, null, new RunAsynchronously() { RunDetached = true }, null, null, null);
+
+            //assert
+            Assert.EndsWith(" --NotSynchronous True", result);
         }
 
         [TestMethod]
@@ -267,6 +278,143 @@ namespace GRYLibrary.Tests.Testcases
             Assert.IsFalse(externalProgramExecutor.IsRunning);
             Assert.AreEqual(0, externalProgramExecutor.ExitCode);
             Assert.AreEqual("x", externalProgramExecutor.AllStdOutLines.Single());
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void TestDetachedExecutionProvidesTheProcessIdAndStartsTheProgram()
+        {
+            //arrange
+            ExternalProgramExecutor externalProgramExecutor = CreateExecutorForALongRunningDetachedProgram();
+
+            //act
+            externalProgramExecutor.Run();
+
+            //assert
+            int processId = externalProgramExecutor.ProcessId;
+            try
+            {
+                Assert.IsTrue(ProcessIsRunning(processId));
+            }
+            finally
+            {
+                KillProcess(processId);
+            }
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void TestDetachedProcessSurvivesDisposeOfTheExecutor()
+        {
+            //arrange
+            int processId;
+
+            //act
+            using (ExternalProgramExecutor externalProgramExecutor = CreateExecutorForALongRunningDetachedProgram())
+            {
+                externalProgramExecutor.Run();
+                processId = externalProgramExecutor.ProcessId;
+                Assert.IsTrue(ProcessIsRunning(processId));
+            }
+
+            //assert
+            try
+            {
+                Assert.IsTrue(ProcessIsRunning(processId));
+            }
+            finally
+            {
+                KillProcess(processId);
+            }
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void TestDetachedExecutionDoesNotProvideAResultWhichRequiresTermination()
+        {
+            //arrange
+            ExternalProgramExecutor externalProgramExecutor = CreateExecutorForALongRunningDetachedProgram();
+            externalProgramExecutor.Run();
+
+            //act and assert
+            try
+            {
+                Assert.Throws<InvalidOperationException>(() => _ = externalProgramExecutor.ExitCode);
+                Assert.Throws<InvalidOperationException>(() => _ = externalProgramExecutor.AllStdOutLines);
+                Assert.Throws<InvalidOperationException>(() => _ = externalProgramExecutor.AllStdErrLines);
+                Assert.Throws<InvalidOperationException>(() => _ = externalProgramExecutor.ExecutionDuration);
+            }
+            finally
+            {
+                KillProcess(externalProgramExecutor.ProcessId);
+            }
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void TestDetachedExecutionCanNotBeTerminatedByTheExecutor()
+        {
+            //arrange
+            ExternalProgramExecutor externalProgramExecutor = CreateExecutorForALongRunningDetachedProgram();
+            externalProgramExecutor.Run();
+
+            //act and assert
+            try
+            {
+                Assert.Throws<InvalidOperationException>(externalProgramExecutor.Terminate);
+            }
+            finally
+            {
+                KillProcess(externalProgramExecutor.ProcessId);
+            }
+        }
+
+        [TestMethod]
+        [TestProperty(nameof(GRYLibrary.Core.Misc.TestKind), nameof(GRYLibrary.Core.Misc.TestKind.IntegrationTest))]
+        public void TestDetachedExecutionCombinedWithAUserThrowsAnException()
+        {
+            //arrange
+            (string program, string argument) = TestUtilities.GetLongRunningProgram(60);
+            ExternalProgramExecutor externalProgramExecutor = new(new ExternalProgramExecutorConfiguration()
+            {
+                Program = program,
+                Argument = argument,
+                User = "someuser",
+                Password = "somepassword",
+                WaitingState = new RunAsynchronously() { RunDetached = true },
+            });
+
+            //act and assert
+            Assert.Throws<ArgumentException>(externalProgramExecutor.Run);
+        }
+
+        private static ExternalProgramExecutor CreateExecutorForALongRunningDetachedProgram()
+        {
+            (string program, string argument) = TestUtilities.GetLongRunningProgram(60);
+            return new ExternalProgramExecutor(new ExternalProgramExecutorConfiguration()
+            {
+                Program = program,
+                Argument = argument,
+                WaitingState = new RunAsynchronously() { RunDetached = true },
+            });
+        }
+
+        /// <remarks>
+        /// A detached process is not owned by its executor, so a testcase which starts one must end it itself to not leak
+        /// a running process into the rest of the testrun.
+        /// </remarks>
+        private static void KillProcess(int processId)
+        {
+            try
+            {
+                using Process process = Process.GetProcessById(processId);
+                process.Kill(true);
+                process.WaitForExit();
+            }
+            catch (ArgumentException)
+            {
+                // The process is already gone; nothing has to be killed.
+            }
         }
 
         private static ExternalProgramExecutor CreateExecutorForALongRunningAsynchronousProgram()

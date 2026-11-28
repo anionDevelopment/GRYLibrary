@@ -1,4 +1,5 @@
 using GRYLibrary.Core.Exceptions;
+using GRYLibrary.Core.ExecutePrograms.Detached;
 using GRYLibrary.Core.ExecutePrograms.WaitingStates;
 using GRYLibrary.Core.Logging.GRYLogger;
 using GRYLibrary.Core.Misc;
@@ -46,11 +47,16 @@ namespace GRYLibrary.Core.ExecutePrograms
         public delegate void ExecutionFinishedHandler(ExternalProgramExecutor sender, int exitCode);
         public event ExecutionFinishedHandler ExecutionFinishedEvent;
         private bool _Running = false;
+        private bool _IsDetached = false;
         private TimeSpan _ExecutionDuration = default;
         public TimeSpan ExecutionDuration
         {
             get
             {
+                if (this._IsDetached)
+                {
+                    throw new InvalidOperationException(GetDetachedNotAvailableMessage(nameof(this.ExecutionDuration)));
+                }
                 if (this.CurrentExecutionState == ExecutionState.Terminated)
                 {
                     return this._ExecutionDuration;
@@ -81,7 +87,14 @@ namespace GRYLibrary.Core.ExecutePrograms
 
             public void Handle(RunAsynchronously runAsynchronously)
             {
-                this._ExternalProgramExecutor.StartAsynchronously();
+                if (runAsynchronously.RunDetached)
+                {
+                    this._ExternalProgramExecutor.StartDetached();
+                }
+                else
+                {
+                    this._ExternalProgramExecutor.StartAsynchronously();
+                }
             }
 
             public void Handle(RunSynchronously runSynchronously)
@@ -93,6 +106,52 @@ namespace GRYLibrary.Core.ExecutePrograms
         {
             this.Prepare();
             return this.StartProgram();
+        }
+        /// <summary>
+        /// Starts the program detached (fire-and-forget): the operating-system does not treat it as a child-process of
+        /// this executor and it keeps running after this executor is disposed. No standard-streams are redirected, no
+        /// exit-code is captured, no timeout is enforced and the process is not terminated on dispose. Only the
+        /// <see cref="ProcessId"/> becomes available.
+        /// </summary>
+        /// <exception cref="ArgumentException">
+        /// Will be thrown if the given working-directory does not exist, or if a detached execution is combined with
+        /// running the program as another user.
+        /// </exception>
+        /// <exception cref="ProcessStartException">
+        /// Will be thrown if the process could not be started.
+        /// </exception>
+        private void StartDetached()
+        {
+            this._IsDetached = true;
+            this.Prepare();
+            if (this.Configuration.User != null)
+            {
+                throw new ArgumentException("A detached execution can not be combined with running the program as another user.");
+            }
+            if (!Directory.Exists(this.Configuration.WorkingDirectory))
+            {
+                throw new ArgumentException($"The specified working-directory '{this.Configuration.WorkingDirectory}' does not exist.");
+            }
+            this._SubNamespace = this.LogObject.UseSubNamespace(this.Configuration.LogNamespace);
+            try
+            {
+                IDetachedProcessStarter starter = DetachedProcessStarter.GetForCurrentPlatform();
+                this.ProcessId = starter.StartDetached(this.Configuration.Program, this.Configuration.Argument, this.Configuration.WorkingDirectory, this.Configuration.CreateWindow);
+                this._Running = false;
+                if (this.Configuration.Verbosity != Verbosity.Quiet)
+                {
+                    this.LogObject.Log($"Started detached program with process-id {this.ProcessId}.", LogLevel.Debug);
+                }
+                this.CurrentExecutionState = ExecutionState.Terminated;
+            }
+            catch (Exception exception)
+            {
+                Utilities.IgnoreExceptions(() => this._SubNamespace?.Dispose());
+                Exception processStartException = new ProcessStartException($"Exception occurred while starting detached execution '{this.Configuration.Title}'", exception);
+                this.LogException(processStartException);
+                throw processStartException;
+            }
+            Utilities.IgnoreExceptions(() => this._SubNamespace?.Dispose());
         }
         /// <summary>
         /// Starts the program which was set in the properties.
@@ -201,7 +260,8 @@ namespace GRYLibrary.Core.ExecutePrograms
         {
             public string Handle(RunAsynchronously runAsynchronously)
             {
-                return "--NotSynchronous";
+                // Epew's --NotSynchronous option carries the RunDetached-value (True/False).
+                return $"--NotSynchronous {runAsynchronously.RunDetached}";
             }
 
             public string Handle(RunSynchronously runSynchronously)
@@ -579,6 +639,10 @@ namespace GRYLibrary.Core.ExecutePrograms
         {
             get
             {
+                if (this._IsDetached)
+                {
+                    throw new InvalidOperationException(GetDetachedNotAvailableMessage(nameof(this.AllStdErrLines)));
+                }
                 if (this.CurrentExecutionState == ExecutionState.Terminated)
                 {
                     return this._AllStdErrLinesAsArray;
@@ -607,6 +671,11 @@ namespace GRYLibrary.Core.ExecutePrograms
             return $"'{name}' is not available because the current {nameof(ExecutionState)}-value state is {Enum.GetName(this.CurrentExecutionState)} but it must{requiredInAsString} be in the state {Enum.GetName(state)} to be able to query it.";
         }
 
+        private static string GetDetachedNotAvailableMessage(string name)
+        {
+            return $"'{name}' is not available for a detached execution because the executor does not supervise a detached process.";
+        }
+
         private bool _processWasAbortedDueToTimeout;
         /// <exception cref="InvalidOperationException">
         /// If the process is not terminated yet.
@@ -615,6 +684,10 @@ namespace GRYLibrary.Core.ExecutePrograms
         {
             get
             {
+                if (this._IsDetached)
+                {
+                    throw new InvalidOperationException(GetDetachedNotAvailableMessage(nameof(this.ProcessWasAbortedDueToTimeout)));
+                }
                 if (this.CurrentExecutionState == ExecutionState.Terminated)
                 {
                     return this._processWasAbortedDueToTimeout;
@@ -634,6 +707,10 @@ namespace GRYLibrary.Core.ExecutePrograms
         {
             get
             {
+                if (this._IsDetached)
+                {
+                    throw new InvalidOperationException(GetDetachedNotAvailableMessage(nameof(this.ExitCode)));
+                }
                 if (this.CurrentExecutionState == ExecutionState.Terminated)
                 {
                     return this._ExitCode;
@@ -671,6 +748,10 @@ namespace GRYLibrary.Core.ExecutePrograms
         {
             get
             {
+                if (this._IsDetached)
+                {
+                    throw new InvalidOperationException(GetDetachedNotAvailableMessage(nameof(this.AllStdOutLines)));
+                }
                 if (this.CurrentExecutionState == ExecutionState.Terminated)
                 {
                     return this._AllStdOutLinesAsArray;
@@ -795,6 +876,11 @@ namespace GRYLibrary.Core.ExecutePrograms
             {
                 return;
             }
+            if (this._IsDetached)
+            {
+                // A detached process is not owned by this executor and must keep running after dispose.
+                return;
+            }
             this.Terminate();
         }
 
@@ -813,6 +899,10 @@ namespace GRYLibrary.Core.ExecutePrograms
             if (this.CurrentExecutionState == ExecutionState.NotStarted)
             {
                 throw new InvalidOperationException(this.GetInvalidOperationDueToNotTerminatedMessageByMembername(nameof(this.Terminate), ExecutionState.NotStarted, false));
+            }
+            if (this._IsDetached)
+            {
+                throw new InvalidOperationException("A detached execution can not be terminated by the executor.");
             }
             lock (this._ProcessLockObject)
             {

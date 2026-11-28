@@ -6,7 +6,7 @@ namespace GRYLibrary.Core.ExecutePrograms.WaitingStates
         private GetWaitingStateLabelVisitor() { }
         public string Handle(RunAsynchronously runAsynchronously)
         {
-            return "asynchronously";
+            return runAsynchronously.RunDetached ? "asynchronously (detached)" : "asynchronously";
         }
 
         public string Handle(RunSynchronously runSynchronously)
